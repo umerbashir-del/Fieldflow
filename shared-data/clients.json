@@ -1,0 +1,5 @@
+[
+  { "id": "client_evergreen", "account_id": "acct_northstar", "name": "Evergreen Properties", "city": "Raleigh" },
+  { "id": "client_harbor", "account_id": "acct_northstar", "name": "Harbor Dental Group", "city": "Durham" },
+  { "id": "client_summit", "account_id": "acct_northstar", "name": "Summit Retail", "city": "Cary" }
+]

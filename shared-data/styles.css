@@ -1,0 +1,18 @@
+:root { font-family: Inter, ui-sans-serif, system-ui, sans-serif; color: #15231c; background: #f5f8f5; }
+* { box-sizing: border-box; }
+body { margin: 0; }
+main { max-width: 1040px; margin: 0 auto; padding: 48px 24px; }
+header { display: flex; justify-content: space-between; gap: 20px; align-items: start; margin-bottom: 32px; }
+h1 { margin: 0 0 6px; font-size: clamp(2rem, 4vw, 3rem); } h2 { margin-top: 0; }
+.eyebrow { color: #28754d; font-weight: 750; letter-spacing: .08em; text-transform: uppercase; font-size: .75rem; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 16px; }
+.card { background: #fff; border: 1px solid #dbe6de; border-radius: 16px; padding: 20px; box-shadow: 0 3px 14px #1835240a; }
+.metric { font-size: 2rem; font-weight: 800; margin: 8px 0; }
+.job { display: flex; justify-content: space-between; gap: 16px; align-items: center; margin-top: 12px; padding: 16px; border-radius: 12px; background: #fff; border: 1px solid #dbe6de; }
+.muted { color: #617168; }
+.badge { display: inline-block; border-radius: 999px; padding: 5px 9px; background: #e1f4e7; color: #17613c; font-size: .8rem; font-weight: 700; text-transform: capitalize; }
+button { border: 0; border-radius: 8px; background: #17613c; color: white; padding: 10px 14px; font: inherit; cursor: pointer; }
+input { width: 100%; padding: 12px; border: 1px solid #bfcfc4; border-radius: 8px; font: inherit; }
+.messages { min-height: 260px; display: flex; flex-direction: column; gap: 10px; }
+.message { max-width: 80%; padding: 10px 14px; border-radius: 12px; background: #edf4ef; }.message.me { align-self: end; background: #17613c; color: white; }
+.form-row { display: flex; gap: 10px; margin-top: 14px; }.form-row input { flex: 1; }

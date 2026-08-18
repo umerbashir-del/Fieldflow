@@ -1,0 +1,6 @@
+[
+  { "id": "job_101", "account_id": "acct_northstar", "client_id": "client_evergreen", "title": "HVAC inspection", "scheduled_for": "2026-08-20", "status": "scheduled", "assignee": "Maya Chen" },
+  { "id": "job_102", "account_id": "acct_northstar", "client_id": "client_harbor", "title": "Equipment calibration", "scheduled_for": "2026-08-20", "status": "in_progress", "assignee": "Jordan Lee" },
+  { "id": "job_103", "account_id": "acct_northstar", "client_id": "client_summit", "title": "Safety follow-up", "scheduled_for": "2026-08-22", "status": "scheduled", "assignee": "Maya Chen" },
+  { "id": "job_104", "account_id": "acct_northstar", "client_id": "client_evergreen", "title": "Filter replacement", "scheduled_for": "2026-08-17", "status": "completed", "assignee": "Jordan Lee" }
+]

@@ -1,0 +1,20 @@
+{
+  "name": "fieldflow",
+  "private": true,
+  "workspaces": ["scheduling", "ops-dashboard", "chatbot", "analytics"],
+  "scripts": {
+    "dev:scheduling": "npm run dev --workspace=@fieldflow/scheduling",
+    "dev:ops": "npm run dev --workspace=@fieldflow/ops-dashboard",
+    "dev:chatbot": "npm run dev --workspace=@fieldflow/chatbot",
+    "dev:analytics": "npm run dev --workspace=@fieldflow/analytics",
+    "build": "npm run build --workspaces"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "latest",
+    "vite": "latest"
+  },
+  "dependencies": {
+    "react": "latest",
+    "react-dom": "latest"
+  }
+}
