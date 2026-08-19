@@ -18,6 +18,6 @@ All visible dates use the format `Month Day, Year` (for example, `August 20, 202
 | Area | Owner |
 | --- | --- |
 | Scheduling | Cheich Toure |
-| Internal Ops Dashboard | Umer Bashir |
+| Internal Ops Dashboard | John Ajala|
 | Chat Box | Soma Majumder |
-| Analysis / Customer Analytics | John Ajala |
+| Analysis / Customer Analytics | Umer Bashir|
