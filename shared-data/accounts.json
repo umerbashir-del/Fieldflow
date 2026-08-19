@@ -1,3 +1,5 @@
 [
-  { "id": "acct_northstar", "name": "Northstar Field Services", "plan": "Growth" }
+  { "id": "acct_horizon", "name": "Horizon Electric", "plan": "Starter" },
+  { "id": "acct_northstar", "name": "Northstar Field Services", "plan": "Growth" },
+  { "id": "acct_riverstone", "name": "Riverstone Mechanical", "plan": "Growth" }
 ]
