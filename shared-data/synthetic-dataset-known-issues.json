@@ -1,0 +1,33 @@
+{
+  "description": "Intentionally injected data-quality issues in synthetic-dataset.json, left unfixed on purpose so the Scheduler, Chatbot, Data Analyzer, and Internal Dashboard can be tested against imperfect data. Do not silently clean these up in the dataset itself.",
+  "reference_date": "2026-08-19",
+  "issues": [
+    {
+      "type": "missing_last_activity",
+      "customer_id": "acct_clearview",
+      "customer_name": "ClearView Cleaning Co.",
+      "description": "last_activity is null for every row belonging to this customer, instead of a date. Simulates a customer whose usage-tracking event never landed.",
+      "expected_handling": "Internal Dashboard's account-health flag should treat this as an 'Unknown' health state, not silently default it into Active/Declining/Inactive."
+    },
+    {
+      "type": "duplicate_job_id",
+      "job_id": "sj_0011",
+      "description": "sj_0011 appears twice in the dataset, on two different rows with different client_id/customer_id/job_date/job_status. Simulates an ID collision bug upstream.",
+      "rows": [
+        { "customer_id": "acct_horizon", "client_id": "cli2_triangledance", "job_date": "2026-01-31", "job_status": "Completed" },
+        { "customer_id": "acct_northstar", "client_id": "cli2_sableridge", "job_date": "2026-04-20", "job_status": "Scheduled" }
+      ],
+      "expected_handling": "Data Analyzer should detect job_id is not unique and either flag or de-duplicate explicitly, rather than double-counting job volume."
+    },
+    {
+      "type": "inconsistent_job_status",
+      "job_id": "sj_0026",
+      "customer_id": "acct_northstar",
+      "client_id": "cli2_carolinaauto",
+      "value": "in_progress",
+      "allowed_values": ["Scheduled", "Completed", "Cancelled"],
+      "description": "job_status uses a legacy-style lowercase value that isn't one of the three allowed values for this dataset. Simulates status drift from an older system/import.",
+      "expected_handling": "Consumers should validate job_status against the allowed set and flag/reject unrecognized values rather than silently bucketing them."
+    }
+  ]
+}
