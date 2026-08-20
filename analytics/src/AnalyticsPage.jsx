@@ -66,6 +66,10 @@ export default function AnalyticsPage() {
         </div>
       </header>
 
+      <div className="scheduler-action">
+        <a className="action-link" href={schedulingLink} title="Opens Scheduling with this account and selected date range.">Back to Scheduling</a>
+      </div>
+
       <section className="summary-grid" aria-label="Weekly job summary">
         <article className="card primary-card" title={`Counts every job scheduled from ${selectedRangeLabel}.`}>
           <p className="card-label">{selectedRangeLabel}</p>
@@ -132,7 +136,6 @@ export default function AnalyticsPage() {
       </section>
 
       <section className="integration-actions" aria-label="Connect with other FieldFlow tools">
-        <a className="action-link" href={schedulingLink} title="Opens Scheduling with this account and selected date range.">Open selected jobs in Scheduling</a>
         <div>
           <button className="copy-button" type="button" title="Copies the current Analytics summary so you can paste it into FieldFlow Chat." onClick={copyChatSummary}>Copy summary for Chat</button>
           {copyStatus && <p className="copy-status" role="status">{copyStatus}</p>}
