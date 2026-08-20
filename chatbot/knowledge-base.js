@@ -67,39 +67,39 @@ export function searchDocs(query) {
 export const FAQ = [
   {
     id: 'create-job',
-    keywords: ['create', 'new', 'add', 'schedule', 'job', 'appointment', 'booking'],
-    answer: "Open Scheduling and click New Job — pick the client, date, and assignee. That saves through POST /accounts/:account_id/jobs, so it's automatically scoped to your account.",
-    source: 'api-contract.md',
+    keywords: ['create', 'new', 'add', 'schedule', 'appointment', 'booking'],
+    answer: 'Open Scheduling and click New Job. Choose the client, date, and team member, then save it. The job will appear on your schedule.',
+    source: 'Scheduling',
   },
   {
     id: 'job-status',
     keywords: ['status', 'statuses', 'progress', 'complete', 'completed', 'cancel', 'cancelled', 'update'],
-    answer: 'FieldFlow uses four job statuses: scheduled, in_progress, completed, and cancelled. Change one from the job’s card — that calls PATCH /accounts/:account_id/jobs/:job_id.',
-    source: 'standards.md — Shared behavior',
+    answer: 'A job can be scheduled, in progress, completed, or cancelled. Open the job card to change its status whenever the work moves forward.',
+    source: 'Jobs',
   },
   {
     id: 'add-client',
     keywords: ['client', 'clients', 'customer', 'customers'],
-    answer: 'Add clients from the Clients tab in Scheduling. Keep records small — name and city; operational notes belong in the API, not copied into the product.',
-    source: 'data-model.md — Client',
+    answer: 'Open Scheduling, then go to the Clients tab. Add the customer’s name and city, and save the new client.',
+    source: 'Clients',
   },
   {
     id: 'account-scope',
     keywords: ['other', 'another', 'company', 'see', 'missing', 'scope', 'scoped', 'privacy', 'private', 'leak'],
-    answer: "Every job and client is scoped to one account_id, and FieldFlow never infers your account from your name or email. So you'll only ever see your own account's data, by design.",
-    source: 'standards.md — Account scope',
+    answer: "You can only see your own company’s jobs and clients. That keeps each company’s information private.",
+    source: 'Privacy',
   },
   {
     id: 'date-format',
     keywords: ['date', 'dates', 'format', 'when'],
-    answer: 'Dates are stored as ISO 8601 (YYYY-MM-DD) but always shown to you as Month Day, Year — for example, August 20, 2026.',
-    source: 'standards.md — Dates',
+    answer: 'Dates are shown in a simple format, like August 20, 2026, so they are easy to read.',
+    source: 'Scheduling',
   },
   {
     id: 'contact-support',
     keywords: ['support', 'message', 'help', 'contact', 'human', 'agent'],
-    answer: 'Send a message through the chat panel — it posts to POST /accounts/:account_id/chat/messages, so support automatically sees which account you’re asking from.',
-    source: 'api-contract.md',
+    answer: 'Send us a message here in the chat, and the support team will help you.',
+    source: 'Support',
   },
 ];
 

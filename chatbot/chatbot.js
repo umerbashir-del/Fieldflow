@@ -8,7 +8,7 @@ const SUGGESTIONS = [
   'What do job statuses mean?',
   "What's my plan?",
   "Why can't I see another company's jobs?",
-  "What's on my schedule today?",
+  'What jobs do I have this week?',
 ];
 
 const STATUS_LABEL = {
