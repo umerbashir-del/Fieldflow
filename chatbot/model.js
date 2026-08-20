@@ -64,8 +64,16 @@ export function getAnswer(rawQuery, accountId) {
       .sort((a, b) => a.scheduled_for.localeCompare(b.scheduled_for))
       .slice(0, 3);
     if (!upcoming.length) return { text: `${account.name} has no upcoming jobs right now.` };
-    const lines = upcoming.map((j) => `• ${j.title} for ${clientName(j.client_id, clients)} — ${formatDate(j.scheduled_for)} (${j.status.replace('_', ' ')})`);
-    return { text: `Here's what's coming up for ${account.name}:\n${lines.join('\n')}` };
+    return {
+      text: `Here's what's coming up for ${account.name}:`,
+      jobs: upcoming.map((j) => ({
+        title: j.title,
+        client: clientName(j.client_id, clients),
+        iso: j.scheduled_for,
+        status: j.status,
+        assignee: j.assignee,
+      })),
+    };
   }
 
   const faqMatch = matchFaq(lower);
