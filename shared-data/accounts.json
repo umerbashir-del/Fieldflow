@@ -1,5 +1,52 @@
 [
-  { "id": "acct_horizon", "name": "Horizon Electric", "plan": "Starter" },
-  { "id": "acct_northstar", "name": "Northstar Field Services", "plan": "Growth" },
-  { "id": "acct_riverstone", "name": "Riverstone Mechanical", "plan": "Growth" }
+  {
+    "id": "acct_horizon",
+    "name": "Horizon Electric",
+    "plan": "Starter"
+  },
+  {
+    "id": "acct_northstar",
+    "name": "Northstar Field Services",
+    "plan": "Growth"
+  },
+  {
+    "id": "acct_riverstone",
+    "name": "Riverstone Mechanical",
+    "plan": "Growth"
+  },
+  {
+    "id": "acct_brightspark",
+    "name": "BrightSpark Electric",
+    "plan": "Growth"
+  },
+  {
+    "id": "acct_clearview",
+    "name": "ClearView Cleaning Co.",
+    "plan": "Starter"
+  },
+  {
+    "id": "acct_coastal",
+    "name": "Coastal Plumbing & Rooter",
+    "plan": "Pro"
+  },
+  {
+    "id": "acct_ironclad",
+    "name": "Ironclad Roofing",
+    "plan": "Growth"
+  },
+  {
+    "id": "acct_greenscape",
+    "name": "GreenScape Landscaping",
+    "plan": "Starter"
+  },
+  {
+    "id": "acct_summitpaint",
+    "name": "Summit Painting Co.",
+    "plan": "Starter"
+  },
+  {
+    "id": "acct_truenorth",
+    "name": "True North HVAC",
+    "plan": "Pro"
+  }
 ]
