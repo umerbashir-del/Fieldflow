@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FieldFlow — Internal Operations</title>
+  <link rel="stylesheet" href="internal-dashboard.css">
+</head>
+<body>
+<main>
+  <header class="topbar">
+    <div>
+      <p class="eyebrow">FieldFlow · Internal Operations</p>
+      <h1>Operations dashboard</h1>
+      <p class="muted">Account, client, and field activity at a glance.</p>
+    </div>
+    <div class="actions"><button class="theme-toggle" id="themeBtn">Dark mode</button></div>
+  </header>
+
+  <nav class="tabs">
+    <button class="tab active" data-view="overview">Overview</button>
+    <button class="tab" data-view="accounts">Accounts</button>
+    <button class="tab" data-view="activity">Recent activity</button>
+  </nav>
+
+  <section id="overview">
+    <div class="grid">
+      <div class="card"><div class="muted">Accounts</div><div class="metric" id="accountCount">0</div><div class="muted">customer accounts</div></div>
+      <div class="card"><div class="muted">Clients</div><div class="metric" id="clientCount">0</div><div class="muted">service locations</div></div>
+      <div class="card"><div class="muted">Total jobs</div><div class="metric" id="jobCount">0</div><div class="muted">all statuses</div></div>
+      <div class="card"><div class="muted">In progress</div><div class="metric" id="progressCount">0</div><div class="muted">currently active</div></div>
+    </div>
+
+    <div class="section">
+      <div class="section-header"><h2>Account activity</h2></div>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Account</th><th>Plan</th><th>Clients</th><th>Jobs</th><th>Completed</th><th>Open</th><th>Status</th></tr></thead>
+        <tbody id="accountTable"></tbody>
+      </table></div>
+    </div>
+  </section>
+
+  <section id="accounts" class="hidden">
+    <div class="toolbar">
+      <h2>Accounts</h2>
+      <input class="search" id="accountSearch" placeholder="Search accounts or plans">
+    </div>
+    <div id="accountCards" class="grid"></div>
+  </section>
+
+  <section id="activity" class="hidden">
+    <div class="toolbar">
+      <h2>Recent activity</h2>
+      <select id="statusFilter">
+        <option value="all">All statuses</option>
+        <option value="scheduled">Scheduled</option>
+        <option value="in_progress">In progress</option>
+        <option value="completed">Completed</option>
+        <option value="cancelled">Cancelled</option>
+      </select>
+    </div>
+    <div id="activityList" class="jobs"></div>
+  </section>
+
+  <section id="detail" class="hidden">
+    <div class="back"><button class="theme-toggle" id="backBtn">← Back to accounts</button></div>
+    <div id="detailContent"></div>
+  </section>
+</main>
+
+  <script src="internal-dashboard.js"></script>
+</body>
+</html>
