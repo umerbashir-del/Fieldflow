@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FieldFlow — Internal Operations</title>
+<style>
+:root{
+  font-family:Inter,ui-sans-serif,system-ui,sans-serif;
+  color:#15231c;background:#f5f8f5;
+  --brand:#17613c;--brand-light:#e1f4e7;--border:#dbe6de;
+  --muted:#617168;--card:#fff;--shadow:0 3px 14px #1835240a;
+  --warning-bg:#fef1da;--warning:#92640c;--blue-bg:#e4eefc;--blue:#1c4f96;
+  --danger-bg:#fbe4e4;--danger:#9c2b2b;
+}
+[data-theme="dark"]{
+  color-scheme:dark;color:#e7f1ea;background:#0f1712;
+  --brand:#3fae74;--brand-light:#16321f;--border:#2a3a30;
+  --muted:#9db3a5;--card:#17231c;--shadow:none;
+  --warning-bg:#362a10;--warning:#e0ac4c;--blue-bg:#16263a;--blue:#6ea6f2;
+  --danger-bg:#3a1717;--danger:#e08a8a;
+}
+*{box-sizing:border-box}
+body{margin:0}
+main{max-width:1180px;margin:0 auto;padding:42px 24px 64px}
+.topbar{display:flex;justify-content:space-between;gap:20px;align-items:flex-start;margin-bottom:28px}
+.eyebrow{color:var(--brand);font-weight:750;letter-spacing:.08em;text-transform:uppercase;font-size:.75rem;margin:0 0 7px}
+h1{margin:0 0 6px;font-size:clamp(2rem,4vw,3rem)}
+h2{margin:0}.muted{color:var(--muted)}
+.actions{display:flex;gap:10px}
+button{border:0;border-radius:8px;background:var(--brand);color:white;padding:10px 14px;font:inherit;cursor:pointer}
+.theme-toggle{background:transparent;color:inherit;border:1px solid var(--border)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:16px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;box-shadow:var(--shadow)}
+.metric{font-size:2rem;font-weight:800;margin:7px 0 3px}
+.tabs{display:flex;gap:8px;margin:20px 0 24px;border-bottom:1px solid var(--border)}
+.tab{background:transparent;color:inherit;border-radius:0;border-bottom:2px solid transparent;padding:10px 5px;margin-right:18px;font-weight:650;opacity:.65}
+.tab.active{opacity:1;border-bottom-color:var(--brand)}
+.toolbar{display:flex;gap:12px;justify-content:space-between;align-items:center;margin:22px 0 12px;flex-wrap:wrap}
+.search{min-width:240px;flex:1;max-width:420px;padding:12px;border:1px solid var(--border);border-radius:8px;background:var(--card);color:inherit;font:inherit}
+select{padding:10px;border:1px solid var(--border);border-radius:8px;background:var(--card);color:inherit;font:inherit}
+.table-wrap{overflow:auto;border:1px solid var(--border);border-radius:16px;background:var(--card)}
+table{width:100%;border-collapse:collapse;min-width:760px}
+th,td{text-align:left;padding:14px 16px;border-bottom:1px solid var(--border)}
+th{font-size:.78rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+tr:last-child td{border-bottom:0}
+.account-name{font-weight:750}.plan{color:var(--muted);font-size:.85rem;margin-top:3px}
+.badge{display:inline-block;border-radius:999px;padding:5px 9px;font-size:.78rem;font-weight:700;text-transform:capitalize}
+.healthy{background:var(--brand-light);color:var(--brand)}
+.warning{background:var(--warning-bg);color:var(--warning)}
+.completed{background:var(--blue-bg);color:var(--blue)}
+.cancelled{background:var(--danger-bg);color:var(--danger)}
+.section{margin-top:28px}.section-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.jobs{display:flex;flex-direction:column;gap:10px}
+.job{display:flex;justify-content:space-between;gap:16px;align-items:center;padding:15px 16px;border:1px solid var(--border);border-radius:12px;background:var(--card)}
+.job-title{font-weight:700}.job-meta{font-size:.86rem;color:var(--muted);margin-top:4px}
+.empty{padding:28px;text-align:center;color:var(--muted);border:1px dashed var(--border);border-radius:12px}
+.hidden{display:none}
+.back{margin-bottom:18px}
+.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+@media(max-width:760px){.kpi-row{grid-template-columns:repeat(2,1fr)}.topbar{flex-direction:column}.job{align-items:flex-start;flex-direction:column}}
+</style>
+</head>
+<body>
+<main>
+  <header class="topbar">
+    <div>
+      <p class="eyebrow">FieldFlow · Internal Operations</p>
+      <h1>Operations dashboard</h1>
+      <p class="muted">Account, client, and field activity at a glance.</p>
+    </div>
+    <div class="actions"><button class="theme-toggle" id="themeBtn">Dark mode</button></div>
+  </header>
+
+  <nav class="tabs">
+    <button class="tab active" data-view="overview">Overview</button>
+    <button class="tab" data-view="accounts">Accounts</button>
+    <button class="tab" data-view="activity">Recent activity</button>
+  </nav>
+
+  <section id="overview">
+    <div class="grid">
+      <div class="card"><div class="muted">Accounts</div><div class="metric" id="accountCount">0</div><div class="muted">customer accounts</div></div>
+      <div class="card"><div class="muted">Clients</div><div class="metric" id="clientCount">0</div><div class="muted">service locations</div></div>
+      <div class="card"><div class="muted">Total jobs</div><div class="metric" id="jobCount">0</div><div class="muted">all statuses</div></div>
+      <div class="card"><div class="muted">In progress</div><div class="metric" id="progressCount">0</div><div class="muted">currently active</div></div>
+    </div>
+
+    <div class="section">
+      <div class="section-header"><h2>Account activity</h2></div>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Account</th><th>Plan</th><th>Clients</th><th>Jobs</th><th>Completed</th><th>Open</th><th>Status</th></tr></thead>
+        <tbody id="accountTable"></tbody>
+      </table></div>
+    </div>
+  </section>
+
+  <section id="accounts" class="hidden">
+    <div class="toolbar">
+      <h2>Accounts</h2>
+      <input class="search" id="accountSearch" placeholder="Search accounts or plans">
+    </div>
+    <div id="accountCards" class="grid"></div>
+  </section>
+
+  <section id="activity" class="hidden">
+    <div class="toolbar">
+      <h2>Recent activity</h2>
+      <select id="statusFilter">
+        <option value="all">All statuses</option>
+        <option value="scheduled">Scheduled</option>
+        <option value="in_progress">In progress</option>
+        <option value="completed">Completed</option>
+        <option value="cancelled">Cancelled</option>
+      </select>
+    </div>
+    <div id="activityList" class="jobs"></div>
+  </section>
+
+  <section id="detail" class="hidden">
+    <div class="back"><button class="theme-toggle" id="backBtn">← Back to accounts</button></div>
+    <div id="detailContent"></div>
+  </section>
+</main>
+
+<script>
+const accounts = [{"id":"acct_horizon","name":"Horizon Electric","plan":"Starter"},{"id":"acct_northstar","name":"Northstar Field Services","plan":"Growth"},{"id":"acct_riverstone","name":"Riverstone Mechanical","plan":"Growth"}];
+const clients = [{"id":"client_arcade","account_id":"acct_horizon","name":"Arcade Market","city":"Raleigh"},{"id":"client_beacon","account_id":"acct_horizon","name":"Beacon Apartments","city":"Durham"},{"id":"client_grove","account_id":"acct_horizon","name":"Grove Coffee","city":"Cary"},{"id":"client_apex","account_id":"acct_northstar","name":"Apex Fitness","city":"Raleigh"},{"id":"client_brightline","account_id":"acct_northstar","name":"Brightline Office Park","city":"Durham"},{"id":"client_cedar","account_id":"acct_northstar","name":"Cedar Point Studios","city":"Cary"},{"id":"client_evergreen","account_id":"acct_northstar","name":"Evergreen Properties","city":"Raleigh"},{"id":"client_harbor","account_id":"acct_northstar","name":"Harbor Dental Group","city":"Durham"},{"id":"client_lakeside","account_id":"acct_northstar","name":"Lakeside Senior Living","city":"Raleigh"},{"id":"client_meadow","account_id":"acct_northstar","name":"Meadow Montessori","city":"Cary"},{"id":"client_northline","account_id":"acct_northstar","name":"Northline Warehousing","city":"Durham"},{"id":"client_oak","account_id":"acct_northstar","name":"Oak & Ivy Restaurant","city":"Raleigh"},{"id":"client_pine","account_id":"acct_northstar","name":"Pinecrest Medical","city":"Cary"},{"id":"client_ridge","account_id":"acct_northstar","name":"Ridgeview Condos","city":"Durham"},{"id":"client_riverbend","account_id":"acct_northstar","name":"Riverbend Hotel","city":"Raleigh"},{"id":"client_summit","account_id":"acct_northstar","name":"Summit Retail","city":"Cary"},{"id":"client_foundry","account_id":"acct_riverstone","name":"Foundry Lofts","city":"Durham"},{"id":"client_maple","account_id":"acct_riverstone","name":"Maple Ridge School","city":"Cary"},{"id":"client_slate","account_id":"acct_riverstone","name":"Slateworks Brewery","city":"Raleigh"}];
+const jobs = [{"id":"job_071","account_id":"acct_northstar","client_id":"client_evergreen","title":"Summer system inspection","scheduled_for":"2026-06-29","status":"completed","assignee":"Maya Chen"},{"id":"job_072","account_id":"acct_northstar","client_id":"client_harbor","title":"Air quality check","scheduled_for":"2026-06-30","status":"completed","assignee":"Jordan Lee"},{"id":"job_073","account_id":"acct_northstar","client_id":"client_summit","title":"Cooling unit maintenance","scheduled_for":"2026-07-01","status":"completed","assignee":"Maya Chen"},{"id":"job_074","account_id":"acct_northstar","client_id":"client_pine","title":"Duct inspection","scheduled_for":"2026-07-02","status":"completed","assignee":"Jordan Lee"},{"id":"job_075","account_id":"acct_northstar","client_id":"client_ridge","title":"Boiler pressure check","scheduled_for":"2026-07-03","status":"completed","assignee":"Maya Chen"},{"id":"job_076","account_id":"acct_northstar","client_id":"client_oak","title":"Kitchen exhaust service","scheduled_for":"2026-07-04","status":"completed","assignee":"Jordan Lee"},{"id":"job_077","account_id":"acct_northstar","client_id":"client_evergreen","title":"Filter replacement","scheduled_for":"2026-07-06","status":"completed","assignee":"Maya Chen"},{"id":"job_078","account_id":"acct_northstar","client_id":"client_cedar","title":"Ventilation inspection","scheduled_for":"2026-07-07","status":"completed","assignee":"Jordan Lee"},{"id":"job_079","account_id":"acct_northstar","client_id":"client_harbor","title":"Equipment calibration","scheduled_for":"2026-07-08","status":"completed","assignee":"Maya Chen"},{"id":"job_080","account_id":"acct_northstar","client_id":"client_lakeside","title":"Comfort system check","scheduled_for":"2026-07-09","status":"completed","assignee":"Jordan Lee"},{"id":"job_081","account_id":"acct_northstar","client_id":"client_summit","title":"Display case tune-up","scheduled_for":"2026-07-10","status":"completed","assignee":"Maya Chen"},{"id":"job_082","account_id":"acct_northstar","client_id":"client_pine","title":"Heat pump inspection","scheduled_for":"2026-07-11","status":"completed","assignee":"Jordan Lee"},{"id":"job_083","account_id":"acct_northstar","client_id":"client_ridge","title":"Water heater service","scheduled_for":"2026-07-12","status":"completed","assignee":"Maya Chen"},{"id":"job_084","account_id":"acct_northstar","client_id":"client_oak","title":"Freezer inspection","scheduled_for":"2026-07-13","status":"completed","assignee":"Jordan Lee"},{"id":"job_085","account_id":"acct_northstar","client_id":"client_evergreen","title":"Rooftop unit service","scheduled_for":"2026-07-14","status":"completed","assignee":"Maya Chen"},{"id":"job_086","account_id":"acct_northstar","client_id":"client_harbor","title":"Temperature sensor test","scheduled_for":"2026-07-15","status":"completed","assignee":"Jordan Lee"},{"id":"job_087","account_id":"acct_northstar","client_id":"client_summit","title":"Refrigeration repair","scheduled_for":"2026-07-16","status":"completed","assignee":"Maya Chen"},{"id":"job_088","account_id":"acct_northstar","client_id":"client_pine","title":"Air handler tune-up","scheduled_for":"2026-07-17","status":"completed","assignee":"Jordan Lee"},{"id":"job_089","account_id":"acct_northstar","client_id":"client_cedar","title":"Ventilation repair","scheduled_for":"2026-07-18","status":"completed","assignee":"Maya Chen"},{"id":"job_090","account_id":"acct_northstar","client_id":"client_lakeside","title":"Thermostat adjustment","scheduled_for":"2026-07-19","status":"completed","assignee":"Jordan Lee"},{"id":"job_091","account_id":"acct_northstar","client_id":"client_ridge","title":"Pipe insulation repair","scheduled_for":"2026-07-19","status":"completed","assignee":"Maya Chen"},{"id":"job_092","account_id":"acct_northstar","client_id":"client_evergreen","title":"Seasonal tune-up","scheduled_for":"2026-07-20","status":"completed","assignee":"Jordan Lee"},{"id":"job_093","account_id":"acct_northstar","client_id":"client_harbor","title":"Filter replacement","scheduled_for":"2026-07-20","status":"completed","assignee":"Maya Chen"},{"id":"job_094","account_id":"acct_northstar","client_id":"client_summit","title":"Walk-in cooler service","scheduled_for":"2026-07-21","status":"completed","assignee":"Jordan Lee"},{"id":"job_095","account_id":"acct_northstar","client_id":"client_pine","title":"Duct cleaning","scheduled_for":"2026-07-21","status":"completed","assignee":"Maya Chen"},{"id":"job_096","account_id":"acct_northstar","client_id":"client_ridge","title":"Boiler maintenance","scheduled_for":"2026-07-22","status":"completed","assignee":"Jordan Lee"},{"id":"job_097","account_id":"acct_northstar","client_id":"client_oak","title":"Exhaust fan repair","scheduled_for":"2026-07-23","status":"completed","assignee":"Maya Chen"},{"id":"job_098","account_id":"acct_northstar","client_id":"client_cedar","title":"Rooftop unit inspection","scheduled_for":"2026-07-24","status":"completed","assignee":"Jordan Lee"},{"id":"job_099","account_id":"acct_northstar","client_id":"client_lakeside","title":"Airflow balancing","scheduled_for":"2026-07-25","status":"completed","assignee":"Maya Chen"},{"id":"job_100","account_id":"acct_northstar","client_id":"client_evergreen","title":"Drain line service","scheduled_for":"2026-07-26","status":"completed","assignee":"Jordan Lee"},{"id":"job_101","account_id":"acct_northstar","client_id":"client_evergreen","title":"HVAC inspection","scheduled_for":"2026-07-27","status":"completed","assignee":"Maya Chen"},{"id":"job_102","account_id":"acct_northstar","client_id":"client_harbor","title":"Equipment calibration","scheduled_for":"2026-07-28","status":"completed","assignee":"Jordan Lee"},{"id":"job_103","account_id":"acct_northstar","client_id":"client_summit","title":"Safety follow-up","scheduled_for":"2026-07-29","status":"completed","assignee":"Maya Chen"},{"id":"job_104","account_id":"acct_northstar","client_id":"client_pine","title":"Filter replacement","scheduled_for":"2026-07-30","status":"completed","assignee":"Jordan Lee"},{"id":"job_105","account_id":"acct_northstar","client_id":"client_ridge","title":"Boiler maintenance","scheduled_for":"2026-07-31","status":"completed","assignee":"Maya Chen"},{"id":"job_106","account_id":"acct_northstar","client_id":"client_evergreen","title":"Thermostat replacement","scheduled_for":"2026-08-01","status":"completed","assignee":"Jordan Lee"},{"id":"job_107","account_id":"acct_northstar","client_id":"client_oak","title":"Kitchen ventilation check","scheduled_for":"2026-08-01","status":"completed","assignee":"Maya Chen"},{"id":"job_108","account_id":"acct_northstar","client_id":"client_harbor","title":"Air quality test","scheduled_for":"2026-08-02","status":"completed","assignee":"Jordan Lee"},{"id":"job_109","account_id":"acct_northstar","client_id":"client_cedar","title":"Ventilation repair","scheduled_for":"2026-08-03","status":"completed","assignee":"Maya Chen"},{"id":"job_110","account_id":"acct_northstar","client_id":"client_evergreen","title":"Seasonal tune-up","scheduled_for":"2026-08-04","status":"completed","assignee":"Jordan Lee"},{"id":"job_111","account_id":"acct_northstar","client_id":"client_summit","title":"Refrigeration check","scheduled_for":"2026-08-04","status":"completed","assignee":"Maya Chen"},{"id":"job_112","account_id":"acct_northstar","client_id":"client_pine","title":"Duct cleaning","scheduled_for":"2026-08-05","status":"completed","assignee":"Jordan Lee"},{"id":"job_113","account_id":"acct_northstar","client_id":"client_ridge","title":"Water heater inspection","scheduled_for":"2026-08-06","status":"completed","assignee":"Maya Chen"},{"id":"job_114","account_id":"acct_northstar","client_id":"client_oak","title":"Exhaust fan repair","scheduled_for":"2026-08-07","status":"completed","assignee":"Jordan Lee"},{"id":"job_115","account_id":"acct_northstar","client_id":"client_harbor","title":"Temperature sensor setup","scheduled_for":"2026-08-08","status":"completed","assignee":"Maya Chen"},{"id":"job_116","account_id":"acct_northstar","client_id":"client_lakeside","title":"New client inspection","scheduled_for":"2026-08-08","status":"completed","assignee":"Jordan Lee"},{"id":"job_117","account_id":"acct_northstar","client_id":"client_evergreen","title":"Drain line service","scheduled_for":"2026-08-09","status":"completed","assignee":"Maya Chen"},{"id":"job_118","account_id":"acct_northstar","client_id":"client_cedar","title":"Filter replacement","scheduled_for":"2026-08-09","status":"completed","assignee":"Jordan Lee"},{"id":"job_119","account_id":"acct_northstar","client_id":"client_evergreen","title":"Cooling system repair","scheduled_for":"2026-08-10","status":"completed","assignee":"Maya Chen"},{"id":"job_120","account_id":"acct_northstar","client_id":"client_summit","title":"Walk-in cooler service","scheduled_for":"2026-08-10","status":"completed","assignee":"Jordan Lee"},{"id":"job_201","account_id":"acct_horizon","client_id":"client_arcade","title":"Panel inspection","scheduled_for":"2026-08-10","status":"completed","assignee":"Riley Park"},{"id":"job_121","account_id":"acct_northstar","client_id":"client_harbor","title":"Equipment calibration","scheduled_for":"2026-08-11","status":"completed","assignee":"Maya Chen"},{"id":"job_301","account_id":"acct_riverstone","client_id":"client_foundry","title":"Boiler inspection","scheduled_for":"2026-08-11","status":"completed","assignee":"Casey Morgan"},{"id":"job_122","account_id":"acct_northstar","client_id":"client_pine","title":"Air handler inspection","scheduled_for":"2026-08-12","status":"completed","assignee":"Jordan Lee"},{"id":"job_123","account_id":"acct_northstar","client_id":"client_ridge","title":"Pipe insulation repair","scheduled_for":"2026-08-12","status":"completed","assignee":"Maya Chen"},{"id":"job_202","account_id":"acct_horizon","client_id":"client_beacon","title":"Lighting repair","scheduled_for":"2026-08-12","status":"completed","assignee":"Riley Park"},{"id":"job_124","account_id":"acct_northstar","client_id":"client_oak","title":"Freezer maintenance","scheduled_for":"2026-08-13","status":"completed","assignee":"Jordan Lee"},{"id":"job_125","account_id":"acct_northstar","client_id":"client_lakeside","title":"Comfort check","scheduled_for":"2026-08-14","status":"completed","assignee":"Maya Chen"},{"id":"job_126","account_id":"acct_northstar","client_id":"client_cedar","title":"Rooftop unit service","scheduled_for":"2026-08-14","status":"completed","assignee":"Jordan Lee"},{"id":"job_302","account_id":"acct_riverstone","client_id":"client_maple","title":"Pump repair","scheduled_for":"2026-08-14","status":"completed","assignee":"Casey Morgan"},{"id":"job_127","account_id":"acct_northstar","client_id":"client_evergreen","title":"Preventive maintenance","scheduled_for":"2026-08-15","status":"completed","assignee":"Maya Chen"},{"id":"job_128","account_id":"acct_northstar","client_id":"client_summit","title":"Display case repair","scheduled_for":"2026-08-16","status":"completed","assignee":"Jordan Lee"},{"id":"job_129","account_id":"acct_northstar","client_id":"client_harbor","title":"Filter replacement","scheduled_for":"2026-08-16","status":"cancelled","assignee":"Maya Chen"},{"id":"job_130","account_id":"acct_northstar","client_id":"client_evergreen","title":"AC performance check","scheduled_for":"2026-08-17","status":"completed","assignee":"Jordan Lee"},{"id":"job_131","account_id":"acct_northstar","client_id":"client_harbor","title":"Air quality test","scheduled_for":"2026-08-17","status":"completed","assignee":"Maya Chen"},{"id":"job_132","account_id":"acct_northstar","client_id":"client_summit","title":"Refrigeration inspection","scheduled_for":"2026-08-18","status":"completed","assignee":"Jordan Lee"},{"id":"job_133","account_id":"acct_northstar","client_id":"client_pine","title":"Heat pump service","scheduled_for":"2026-08-18","status":"completed","assignee":"Maya Chen"},{"id":"job_203","account_id":"acct_horizon","client_id":"client_grove","title":"Outlet installation","scheduled_for":"2026-08-18","status":"completed","assignee":"Riley Park"},{"id":"job_134","account_id":"acct_northstar","client_id":"client_evergreen","title":"Rooftop unit diagnosis","scheduled_for":"2026-08-19","status":"in_progress","assignee":"Jordan Lee"},{"id":"job_135","account_id":"acct_northstar","client_id":"client_northline","title":"Warehouse HVAC estimate","scheduled_for":"2026-08-19","status":"scheduled","assignee":"Maya Chen"},{"id":"job_303","account_id":"acct_riverstone","client_id":"client_slate","title":"Cooling system check","scheduled_for":"2026-08-19","status":"in_progress","assignee":"Casey Morgan"},{"id":"job_136","account_id":"acct_northstar","client_id":"client_meadow","title":"Classroom airflow check","scheduled_for":"2026-08-20","status":"scheduled","assignee":"Jordan Lee"},{"id":"job_137","account_id":"acct_northstar","client_id":"client_apex","title":"Locker room ventilation","scheduled_for":"2026-08-20","status":"scheduled","assignee":"Maya Chen"},{"id":"job_138","account_id":"acct_northstar","client_id":"client_riverbend","title":"Guest room cooling repair","scheduled_for":"2026-08-20","status":"scheduled","assignee":"Jordan Lee"},{"id":"job_139","account_id":"acct_northstar","client_id":"client_brightline","title":"Office temperature survey","scheduled_for":"2026-08-21","status":"scheduled","assignee":"Maya Chen"},{"id":"job_140","account_id":"acct_northstar","client_id":"client_harbor","title":"Equipment calibration","scheduled_for":"2026-08-21","status":"scheduled","assignee":"Jordan Lee"},{"id":"job_204","account_id":"acct_horizon","client_id":"client_arcade","title":"Emergency lighting test","scheduled_for":"2026-08-21","status":"scheduled","assignee":"Riley Park"},{"id":"job_141","account_id":"acct_northstar","client_id":"client_northline","title":"Loading bay ventilation","scheduled_for":"2026-08-22","status":"scheduled","assignee":"Maya Chen"},{"id":"job_142","account_id":"acct_northstar","client_id":"client_meadow","title":"Thermostat installation","scheduled_for":"2026-08-22","status":"scheduled","assignee":"Jordan Lee"},{"id":"job_304","account_id":"acct_riverstone","client_id":"client_foundry","title":"Radiator maintenance","scheduled_for":"2026-08-22","status":"scheduled","assignee":"Casey Morgan"},{"id":"job_143","account_id":"acct_northstar","client_id":"client_summit","title":"Storefront comfort check","scheduled_for":"2026-08-23","status":"scheduled","assignee":"Maya Chen"}];
+
+const accountById = Object.fromEntries(accounts.map(a => [a.id,a]));
+const clientById = Object.fromEntries(clients.map(c => [c.id,c]));
+
+function jobsForAccount(id){return jobs.filter(j=>j.account_id===id)}
+function clientsForAccount(id){return clients.filter(c=>c.account_id===id)}
+function statusClass(status){
+  if(status==='completed') return 'completed';
+  if(status==='cancelled') return 'cancelled';
+  if(status==='in_progress') return 'warning';
+  return 'healthy';
+}
+function healthForAccount(id){
+  const js=jobsForAccount(id);
+  const cancelled=js.filter(j=>j.status==='cancelled').length;
+  const active=js.filter(j=>j.status==='scheduled'||j.status==='in_progress').length;
+  // Conservative display rule: this is an activity indicator, not a business-risk judgment.
+  if(cancelled>0) return 'Needs attention';
+  if(active>0) return 'Active';
+  return 'Healthy';
+}
+function healthClass(label){return label==='Needs attention'?'warning':'healthy'}
+function fmtStatus(s){return s.replace('_',' ')}
+
+function renderOverview(){
+  accountCount.textContent=accounts.length;
+  clientCount.textContent=clients.length;
+  jobCount.textContent=jobs.length;
+  progressCount.textContent=jobs.filter(j=>j.status==='in_progress').length;
+
+  accountTable.innerHTML=accounts.map(a=>{
+    const js=jobsForAccount(a.id), cs=clientsForAccount(a.id);
+    const completed=js.filter(j=>j.status==='completed').length;
+    const open=js.filter(j=>j.status==='scheduled'||j.status==='in_progress').length;
+    const h=healthForAccount(a.id);
+    return `<tr><td><div class="account-name">${a.name}</div></td><td>${a.plan}</td><td>${cs.length}</td><td>${js.length}</td><td>${completed}</td><td>${open}</td><td><span class="badge ${healthClass(h)}">${h}</span></td></tr>`;
+  }).join('');
+}
+function renderAccounts(){
+  const q=accountSearch.value.toLowerCase();
+  accountCards.innerHTML=accounts.filter(a=>(a.name+' '+a.plan).toLowerCase().includes(q)).map(a=>{
+    const js=jobsForAccount(a.id), cs=clientsForAccount(a.id), h=healthForAccount(a.id);
+    return `<div class="card" style="cursor:pointer" data-account="${a.id}">
+      <div class="eyebrow">${a.plan}</div><h2>${a.name}</h2>
+      <p class="muted">${cs.length} clients · ${js.length} jobs</p>
+      <div class="kpi-row">
+        <div><div class="metric">${js.filter(j=>j.status==='completed').length}</div><div class="muted">completed</div></div>
+        <div><div class="metric">${js.filter(j=>j.status==='scheduled').length}</div><div class="muted">scheduled</div></div>
+        <div><div class="metric">${js.filter(j=>j.status==='in_progress').length}</div><div class="muted">active</div></div>
+        <div><div class="metric">${js.filter(j=>j.status==='cancelled').length}</div><div class="muted">cancelled</div></div>
+      </div><p><span class="badge ${healthClass(h)}">${h}</span></p>
+    </div>`;
+  }).join('') || '<div class="empty">No accounts found.</div>';
+  document.querySelectorAll('[data-account]').forEach(el=>el.onclick=()=>showDetail(el.dataset.account));
+}
+function renderActivity(){
+  const filter=statusFilter.value;
+  const list=jobs.filter(j=>filter==='all'||j.status===filter).slice().sort((a,b)=>b.scheduled_for.localeCompare(a.scheduled_for));
+  activityList.innerHTML=list.map(j=>{
+    const c=clientById[j.client_id], a=accountById[j.account_id];
+    return `<div class="job"><div><div class="job-title">${j.title}</div><div class="job-meta">${a?.name||'Unknown account'} · ${c?.name||'Unknown client'} · ${c?.city||''} · ${j.assignee}</div></div><div><div class="muted">${j.scheduled_for}</div><span class="badge ${statusClass(j.status)}">${fmtStatus(j.status)}</span></div></div>`;
+  }).join('') || '<div class="empty">No jobs match this filter.</div>';
+}
+function showDetail(id){
+  document.querySelectorAll('main>section').forEach(s=>s.classList.add('hidden'));
+  detail.classList.remove('hidden');
+  const a=accountById[id], cs=clientsForAccount(id), js=jobsForAccount(id);
+  const h=healthForAccount(id);
+  detailContent.innerHTML=`<div class="card"><p class="eyebrow">${a.plan}</p><h1>${a.name}</h1><p class="muted">${cs.length} clients · ${js.length} jobs</p><p><span class="badge ${healthClass(h)}">${h}</span></p></div>
+  <div class="section"><div class="section-header"><h2>Clients</h2></div><div class="grid">${cs.map(c=>{
+    const cjobs=js.filter(j=>j.client_id===c.id);
+    return `<div class="card"><h3>${c.name}</h3><p class="muted">${c.city}</p><strong>${cjobs.length}</strong> jobs</div>`;
+  }).join('')}</div></div>
+  <div class="section"><div class="section-header"><h2>Jobs</h2></div><div class="jobs">${js.slice().sort((x,y)=>y.scheduled_for.localeCompare(x.scheduled_for)).map(j=>`<div class="job"><div><div class="job-title">${j.title}</div><div class="job-meta">${clientById[j.client_id]?.name||''} · ${j.assignee}</div></div><div><div class="muted">${j.scheduled_for}</div><span class="badge ${statusClass(j.status)}">${fmtStatus(j.status)}</span></div></div>`).join('')}</div></div>`;
+}
+function setView(view){
+  if(view==='detail') return;
+  detail.classList.add('hidden');
+  document.querySelectorAll('main>section[id]').forEach(s=>s.classList.toggle('hidden',s.id!==view));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.view===view));
+  if(view==='overview') renderOverview();
+  if(view==='accounts') renderAccounts();
+  if(view==='activity') renderActivity();
+}
+document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>setView(t.dataset.view));
+accountSearch.oninput=renderAccounts;
+statusFilter.onchange=renderActivity;
+backBtn.onclick=()=>setView('accounts');
+themeBtn.onclick=()=>{
+  const dark=document.documentElement.dataset.theme==='dark';
+  document.documentElement.dataset.theme=dark?'':'dark';
+  themeBtn.textContent=dark?'Dark mode':'Light mode';
+};
+renderOverview();
+renderAccounts();
+renderActivity();
+</script>
+</body>
+</html>
