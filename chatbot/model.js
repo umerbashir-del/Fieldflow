@@ -21,6 +21,25 @@ function findClientMention(lowerQuery) {
   return partial;
 }
 
+function weekBounds(date = new Date()) {
+  const today = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+  const mondayOffset = (today.getUTCDay() + 6) % 7;
+  const start = new Date(today);
+  start.setUTCDate(today.getUTCDate() - mondayOffset);
+  const end = new Date(start);
+  end.setUTCDate(start.getUTCDate() + 6);
+  return {
+    start: start.toISOString().slice(0, 10),
+    end: end.toISOString().slice(0, 10),
+  };
+}
+
+function isWeeklyScheduleQuestion(query) {
+  return /\b(?:this|the|current|coming|next)\s+week\b/.test(query)
+    || /\bweek\b.*\b(?:job|jobs|schedule|work)\b/.test(query)
+    || /\b(?:job|jobs|schedule|work)\b.*\bweek\b/.test(query);
+}
+
 export function getAnswer(rawQuery, accountId) {
   const query = rawQuery.trim();
   const account = accounts.find((a) => a.id === accountId);
@@ -40,7 +59,7 @@ export function getAnswer(rawQuery, accountId) {
   }
 
   if (/\bplan\b|\bsubscription\b|which account|what account|my account\b/.test(lower)) {
-    return { text: `You're on the ${account.name} account, ${account.plan} plan.` };
+    return { text: `You’re using the ${account.plan} plan for ${account.name}.` };
   }
 
   if (/how many client|client count|number of client/.test(lower)) {
@@ -58,7 +77,30 @@ export function getAnswer(rawQuery, accountId) {
     return { text: `${client.name} is in ${client.city}. They have ${clientJobs.length} job${clientJobs.length === 1 ? '' : 's'} on file, ${open.length} still open.` };
   }
 
-  if (/\btoday\b|\bupcoming\b|this week|next job|my schedule/.test(lower)) {
+  if (isWeeklyScheduleQuestion(lower)) {
+    const { start, end } = weekBounds();
+    const weeklyJobs = jobs
+      .filter((j) => j.account_id === accountId
+        && j.status !== 'completed'
+        && j.status !== 'cancelled'
+        && j.scheduled_for >= start
+        && j.scheduled_for <= end)
+      .sort((a, b) => a.scheduled_for.localeCompare(b.scheduled_for));
+    const weekLabel = `${formatDate(start)} through ${formatDate(end)}`;
+    if (!weeklyJobs.length) return { text: `You don't have any jobs scheduled this week (${weekLabel}).` };
+    return {
+      text: `You have ${weeklyJobs.length} job${weeklyJobs.length === 1 ? '' : 's'} scheduled this week (${weekLabel}):`,
+      jobs: weeklyJobs.map((j) => ({
+        title: j.title,
+        client: clientName(j.client_id, clients),
+        iso: j.scheduled_for,
+        status: j.status,
+        assignee: j.assignee,
+      })),
+    };
+  }
+
+  if (/\btoday\b|\bupcoming\b|next job|my schedule/.test(lower)) {
     const upcoming = jobs
       .filter((j) => j.account_id === accountId && j.status !== 'completed' && j.status !== 'cancelled')
       .sort((a, b) => a.scheduled_for.localeCompare(b.scheduled_for))
@@ -80,7 +122,12 @@ export function getAnswer(rawQuery, accountId) {
   if (faqMatch) return { text: faqMatch.answer, source: faqMatch.source };
 
   const [docHit] = searchDocs(lower);
-  if (docHit) return { text: docHit.body, source: `${docHit.docTitle} — ${docHit.heading}` };
+  if (docHit) {
+    return {
+      text: 'I can help with your schedule, jobs, clients, job status, and account questions. Try asking “What jobs do I have this week?” or “How do I add a client?”',
+      source: 'FieldFlow help',
+    };
+  }
 
   return { text: "I don't have documentation on that yet. Try asking how to create a job, what job statuses mean, how account scoping works, or what your plan is." };
 }
