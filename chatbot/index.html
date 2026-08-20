@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FieldFlow — Chat Box</title>
+  <link rel="stylesheet" href="../shared-data/styles.css" />
+  <link rel="stylesheet" href="chatbot.css" />
+</head>
+<body>
+  <main>
+    <div class="topbar">
+      <div>
+        <p class="eyebrow">FieldFlow · Chat Box</p>
+        <h1>Support chat</h1>
+        <p class="muted">Ask setup and how-to questions, or look up your account.</p>
+      </div>
+      <label class="account-picker">
+        <span class="muted">Account</span>
+        <select id="accountSelect"></select>
+      </label>
+    </div>
+
+    <div class="card chat-card">
+      <div class="chips" id="suggestionChips"></div>
+      <div class="messages" id="messageList"></div>
+      <form class="form-row" id="chatForm">
+        <input id="chatInput" type="text" placeholder="Ask e.g. &ldquo;How do I create a job?&rdquo;" autocomplete="off" />
+        <button type="submit">Send</button>
+      </form>
+    </div>
+  </main>
+
+  <script type="module" src="chatbot.js"></script>
+</body>
+</html>

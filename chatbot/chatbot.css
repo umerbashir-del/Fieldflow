@@ -1,0 +1,22 @@
+/* Chat Box-only additions on top of shared-data/styles.css. */
+
+.account-picker { display: flex; flex-direction: column; gap: 4px; font-size: .8rem; }
+.account-picker select { width: auto; min-width: 230px; }
+
+.chat-card { display: flex; flex-direction: column; gap: 14px; }
+
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip {
+  background: #edf4ef; color: #17613c; border-radius: 999px;
+  padding: 7px 14px; font-size: .82rem; font-weight: 600;
+}
+.chip:hover { background: #dcefe3; }
+
+.messages { max-height: 60vh; overflow-y: auto; padding-right: 4px; }
+.message { white-space: pre-line; }
+
+.message .meta {
+  display: block; margin-top: 6px; font-size: .72rem; font-weight: 700;
+  letter-spacing: .03em; text-transform: uppercase; opacity: .55;
+}
+.message.me .meta { opacity: .75; }
