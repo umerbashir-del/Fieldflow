@@ -1,5 +1,21 @@
 [
-  { "id": "client_evergreen", "account_id": "acct_northstar", "name": "Evergreen Properties", "city": "Raleigh" },
-  { "id": "client_harbor", "account_id": "acct_northstar", "name": "Harbor Dental Group", "city": "Durham" },
-  { "id": "client_summit", "account_id": "acct_northstar", "name": "Summit Retail", "city": "Cary" }
+  { "id": "client_arcade", "account_id": "acct_horizon", "name": "Arcade Market", "building_number": "214", "street_name": "Fayetteville St", "city": "Raleigh", "state": "NC", "zip_code": "27601", "client_phone": "(919) 555-0101" },
+  { "id": "client_beacon", "account_id": "acct_horizon", "name": "Beacon Apartments", "building_number": "500", "street_name": "W Main St", "city": "Durham", "state": "NC", "zip_code": "27701", "client_phone": "(919) 555-0102" },
+  { "id": "client_grove", "account_id": "acct_horizon", "name": "Grove Coffee", "building_number": "118", "street_name": "S Academy St", "city": "Cary", "state": "NC", "zip_code": "27511", "client_phone": "(919) 555-0103" },
+  { "id": "client_apex", "account_id": "acct_northstar", "name": "Apex Fitness", "building_number": "3200", "street_name": "Glenwood Ave", "city": "Raleigh", "state": "NC", "zip_code": "27603", "client_phone": "(919) 555-0104" },
+  { "id": "client_brightline", "account_id": "acct_northstar", "name": "Brightline Office Park", "building_number": "800", "street_name": "Corporate Center Dr", "city": "Durham", "state": "NC", "zip_code": "27703", "client_phone": "(919) 555-0105" },
+  { "id": "client_cedar", "account_id": "acct_northstar", "name": "Cedar Point Studios", "building_number": "445", "street_name": "Cedar Fork Rd", "city": "Cary", "state": "NC", "zip_code": "27513", "client_phone": "(919) 555-0106" },
+  { "id": "client_evergreen", "account_id": "acct_northstar", "name": "Evergreen Properties", "building_number": "900", "street_name": "Evergreen Ln", "city": "Raleigh", "state": "NC", "zip_code": "27605", "client_phone": "(919) 555-0107" },
+  { "id": "client_harbor", "account_id": "acct_northstar", "name": "Harbor Dental Group", "building_number": "275", "street_name": "Broad St", "city": "Durham", "state": "NC", "zip_code": "27705", "client_phone": "(919) 555-0108" },
+  { "id": "client_lakeside", "account_id": "acct_northstar", "name": "Lakeside Senior Living", "building_number": "1500", "street_name": "Lake Wheeler Rd", "city": "Raleigh", "state": "NC", "zip_code": "27609", "client_phone": "(919) 555-0109" },
+  { "id": "client_meadow", "account_id": "acct_northstar", "name": "Meadow Montessori", "building_number": "620", "street_name": "Meadowview Rd", "city": "Cary", "state": "NC", "zip_code": "27518", "client_phone": "(919) 555-0110" },
+  { "id": "client_northline", "account_id": "acct_northstar", "name": "Northline Warehousing", "building_number": "4100", "street_name": "Guess Rd", "city": "Durham", "state": "NC", "zip_code": "27707", "client_phone": "(919) 555-0111" },
+  { "id": "client_oak", "account_id": "acct_northstar", "name": "Oak & Ivy Restaurant", "building_number": "128", "street_name": "Oakwood Ave", "city": "Raleigh", "state": "NC", "zip_code": "27612", "client_phone": "(919) 555-0112" },
+  { "id": "client_pine", "account_id": "acct_northstar", "name": "Pinecrest Medical", "building_number": "750", "street_name": "High House Rd", "city": "Cary", "state": "NC", "zip_code": "27519", "client_phone": "(919) 555-0113" },
+  { "id": "client_ridge", "account_id": "acct_northstar", "name": "Ridgeview Condos", "building_number": "220", "street_name": "Ridge Rd", "city": "Durham", "state": "NC", "zip_code": "27709", "client_phone": "(919) 555-0114" },
+  { "id": "client_riverbend", "account_id": "acct_northstar", "name": "Riverbend Hotel", "building_number": "100", "street_name": "Riverbend Dr", "city": "Raleigh", "state": "NC", "zip_code": "27615", "client_phone": "(919) 555-0115" },
+  { "id": "client_summit", "account_id": "acct_northstar", "name": "Summit Retail", "building_number": "900", "street_name": "Summit Dr", "city": "Cary", "state": "NC", "zip_code": "27511", "client_phone": "(919) 555-0116" },
+  { "id": "client_foundry", "account_id": "acct_riverstone", "name": "Foundry Lofts", "building_number": "315", "street_name": "Foster St", "city": "Durham", "state": "NC", "zip_code": "27713", "client_phone": "(919) 555-0117" },
+  { "id": "client_maple", "account_id": "acct_riverstone", "name": "Maple Ridge School", "building_number": "410", "street_name": "Maple Ridge Rd", "city": "Cary", "state": "NC", "zip_code": "27513", "client_phone": "(919) 555-0118" },
+  { "id": "client_slate", "account_id": "acct_riverstone", "name": "Slateworks Brewery", "building_number": "619", "street_name": "Hillsborough St", "city": "Raleigh", "state": "NC", "zip_code": "27604", "client_phone": "(919) 555-0119" }
 ]
