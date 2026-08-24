@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FieldFlow — Chat Box</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="chatbot.css" />
+</head>
+<body>
+  <div class="ff-shell">
+    <div class="ff-card">
+      <header class="ff-header">
+        <div class="ff-header-left">
+          <div class="ff-avatar">
+            <img src="robot.png" alt="FieldFlow bot" />
+            <span class="ff-status-dot"></span>
+          </div>
+          <div class="ff-header-text">
+            <p class="ff-eyebrow">FieldFlow · Support</p>
+            <h1 class="ff-title">Support Assistant</h1>
+            <p class="ff-subtitle">Online · answers scoped to your account</p>
+          </div>
+        </div>
+        <label class="ff-account-picker">
+          <span>Account</span>
+          <div class="ff-select-wrap">
+            <select id="accountSelect"></select>
+            <span class="ff-select-caret">▾</span>
+          </div>
+        </label>
+      </header>
+
+      <div class="ff-messages" id="messageList"></div>
+
+      <footer class="ff-footer">
+        <div class="ff-chips" id="suggestionChips"></div>
+        <form class="ff-input-row" id="chatForm">
+          <input id="chatInput" type="text" placeholder="Ask e.g. &ldquo;How do I create a job?&rdquo;" autocomplete="off" />
+          <button type="submit">Send <span class="ff-send-arrow">→</span></button>
+        </form>
+      </footer>
+    </div>
+  </div>
+
+  <script type="module" src="chatbot.js"></script>
+</body>
+</html>

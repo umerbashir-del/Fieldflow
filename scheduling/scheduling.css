@@ -14,6 +14,9 @@ h1 { margin: 0 0 6px; font-size: clamp(2rem, 4vw, 3rem); }
 h2 { margin-top: 0; }
 .eyebrow { color: #28754d; font-weight: 750; letter-spacing: .08em; text-transform: uppercase; font-size: .75rem; }
 .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 16px; }
+.analytics-link-row { margin-bottom: 14px; }
+.analytics-link { display: inline-block; padding: 10px 14px; border-radius: 8px; background: #17613c; color: #fff; font: inherit; font-weight: 700; text-decoration: none; }
+[data-theme="dark"] .analytics-link { background: var(--sched-brand-dark-mode); color: #0f1712; }
 .card { background: #fff; border: 1px solid #dbe6de; border-radius: 16px; padding: 20px; box-shadow: 0 3px 14px #1835240a; }
 .metric { font-size: 2rem; font-weight: 800; margin: 8px 0; }
 .job { display: flex; justify-content: space-between; gap: 16px; align-items: center; margin-top: 12px; padding: 16px; border-radius: 12px; background: #fff; border: 1px solid #dbe6de; cursor: pointer; }
