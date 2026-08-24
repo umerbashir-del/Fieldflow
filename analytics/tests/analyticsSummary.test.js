@@ -4,8 +4,23 @@ import { readFile } from 'node:fs/promises';
 import { buildAnalyticsSummary, buildSchedulingLink, chatSummaryText } from '../src/analyticsSummary.js';
 
 const jobs = JSON.parse(await readFile(new URL('../../shared-data/jobs.json', import.meta.url), 'utf8'));
+const accounts = JSON.parse(await readFile(new URL('../../shared-data/accounts.json', import.meta.url), 'utf8'));
+const clients = JSON.parse(await readFile(new URL('../../shared-data/clients.json', import.meta.url), 'utf8'));
 const ACCOUNT_ID = 'acct_northstar';
 const REFERENCE_DATE = new Date('2026-08-19T12:00:00Z');
+
+test('gives every demo account valid canonical job activity', () => {
+  const clientKeys = new Set(clients.map((client) => `${client.account_id}:${client.id}`));
+  const allowedStatuses = new Set(['scheduled', 'in_progress', 'completed', 'cancelled']);
+  assert.deepEqual([...new Set(jobs.map((job) => job.id))].length, jobs.length);
+  for (const account of accounts) {
+    assert.ok(jobs.some((job) => job.account_id === account.id), `${account.id} should have demo jobs`);
+  }
+  for (const job of jobs) {
+    assert.ok(clientKeys.has(`${job.account_id}:${job.client_id}`), `${job.id} should reference a client in its account`);
+    assert.ok(allowedStatuses.has(job.status), `${job.id} should use a canonical status`);
+  }
+});
 
 test('calculates the current weekly MVP summary from shared job data', () => {
   const summary = buildAnalyticsSummary(jobs, ACCOUNT_ID, 'this_week', REFERENCE_DATE);

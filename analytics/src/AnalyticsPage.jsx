@@ -7,12 +7,12 @@ import { buildMockDataLink, loadMockAccountData } from '../../shared-data/mockDa
 import { buildAnalyticsSummary, buildSchedulingLink, chatSummaryText } from './analyticsSummary.js';
 import SignInPage from './SignInPage.jsx';
 import { APP_URLS } from '../../shared-data/appConfig.js';
+import { formatReportingDate, reportingDateFromAccount, toggleReportingDateInCurrentUrl, withReportingDate } from '../../shared-data/reportingDate.js';
 
 const DEMO_ACCOUNT_ID = 'acct_northstar';
 const SCHEDULING_URL = APP_URLS.scheduling;
 const OPERATIONS_URL = APP_URLS.operations;
 const CHATBOT_URL = APP_URLS.chatbot;
-const DEMO_REFERENCE_DATE = new Date('2026-08-19T12:00:00Z');
 
 export default function AnalyticsPage() {
   const [timeframe, setTimeframe] = useState('this_week');
@@ -70,7 +70,10 @@ export default function AnalyticsPage() {
   const account = isSupabaseConfigured ? sessionState.account : demoAccounts.find((item) => item.id === demoAccountId) ?? { id: demoAccountId, name: mockUser.company_name ?? 'Your new business', plan: 'Starter' };
   const accountJobs = isSupabaseConfigured ? sessionState.jobs : loadMockAccountData(demoAccountId, { clients: [], jobs: demoJobs }).jobs;
   const accountId = account?.id ?? (isSupabaseConfigured ? DEMO_ACCOUNT_ID : demoAccountId);
-  const referenceDate = isSupabaseConfigured ? new Date() : DEMO_REFERENCE_DATE;
+  const reporting = isSupabaseConfigured
+    ? reportingDateFromAccount(account, window.location.search)
+    : reportingDateFromAccount({ demo_reporting_date: '2026-08-19' }, window.location.search);
+  const referenceDate = reporting.date;
   const summary = buildAnalyticsSummary(accountJobs, accountId, timeframe, referenceDate);
   const { selectedPeriod, selectedEnd, selectedRangeLabel, comparisonRangeLabel, selectedJobs, comparisonJobs, change, hasCompleteComparison, newClients, repeatClients, trend } = summary;
   const displayedChange = hasCompleteComparison ? change : null;
@@ -84,10 +87,12 @@ export default function AnalyticsPage() {
     const mockSchedulingLink = new URL(buildMockAppLink(schedulingLinkUrl.toString(), mockUser));
     schedulingLinkUrl.search = mockSchedulingLink.search;
   }
-  const schedulingLink = !isSupabaseConfigured && !isDemoOps ? buildMockDataLink(schedulingLinkUrl.toString()) : schedulingLinkUrl.toString();
-  const returnLink = isOperationsView ? `${OPERATIONS_URL}${isDemoOps ? '?demo_user=ops' : ''}&account_id=${encodeURIComponent(accountId)}`.replace('?&', '?') : schedulingLink;
+  const schedulingLinkBase = withReportingDate(schedulingLinkUrl.toString(), reporting);
+  const schedulingLink = !isSupabaseConfigured && !isDemoOps ? buildMockDataLink(schedulingLinkBase) : schedulingLinkBase;
+  const operationsReturnBase = `${OPERATIONS_URL}${isDemoOps ? '?demo_user=ops' : ''}&account_id=${encodeURIComponent(accountId)}`.replace('?&', '?');
+  const returnLink = isOperationsView ? withReportingDate(operationsReturnBase, reporting) : schedulingLink;
   const returnLabel = isOperationsView ? 'Back to Operations' : 'Back to Scheduling';
-  const chatLink = !isSupabaseConfigured && !isDemoOps ? buildMockDataLink(buildMockAppLink(CHATBOT_URL, mockUser)) : null;
+  const chatLink = isOperationsView ? null : withReportingDate(!isSupabaseConfigured ? buildMockDataLink(buildMockAppLink(CHATBOT_URL, mockUser)) : CHATBOT_URL, reporting);
   const copyChatSummary = async () => {
     await navigator.clipboard.writeText(chatSummaryText(account?.name ?? 'Your business', summary));
     setCopyStatus('Copied — paste this into FieldFlow Chat.');
@@ -120,7 +125,7 @@ export default function AnalyticsPage() {
         <p className="eyebrow">FieldFlow</p>
         <h1>{account?.name ?? 'Your business'} — Analytics</h1>
         <div className="header-row">
-          <p className="subtitle">{isOperationsView ? 'Read-only Operations view. ' : ''}A quick look at how your business is doing.{isSupabaseConfigured ? '' : ' Demo date: August 19, 2026.'}{!isSupabaseConfigured && !isDemoOps ? ' Demo edits stay in this browser tab until sign-out.' : ''}</p>
+          <p className="subtitle">{isOperationsView ? 'Read-only Operations view. ' : ''}A quick look at how your business is doing.{!isSupabaseConfigured && !isDemoOps ? ' Demo edits stay in this browser tab until sign-out.' : ''}</p>
           <label className="timeframe-control">Timeframe
             <select title="Updates every card and chart to the selected date range." value={timeframe} onChange={(event) => setTimeframe(event.target.value)}>
               <option value="this_week">This week</option>
@@ -133,6 +138,11 @@ export default function AnalyticsPage() {
         </div>
         {isSupabaseConfigured && <button className="sign-out-button" type="button" onClick={async () => { await signOut(); await loadLiveData(); }}>Sign out</button>}
       </header>
+
+      {reporting.storedDate && <p className="demo-notice" role="status">
+        {reporting.isDemoDate ? `Demo data — reporting as of ${formatReportingDate(reporting.isoDate)}.` : `Live-date preview — reporting as of ${formatReportingDate(reporting.isoDate)}.`}
+        {' '}<button type="button" className="date-mode-button" onClick={() => toggleReportingDateInCurrentUrl(reporting)}>{reporting.isDemoDate ? 'Use today' : 'Return to demo date'}</button>
+      </p>}
 
       <div className="scheduler-action">
         <a className="action-link" href={returnLink} title={isDemoOps ? 'Returns to this account in Operations.' : 'Opens Scheduling with this account and selected date range.'}>{returnLabel}</a>

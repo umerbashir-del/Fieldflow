@@ -3,6 +3,8 @@ import test from 'node:test';
 import { authenticateMockUser, buildMockAppLink, createMockAccount, isMockContractor, mockUserFromSearch } from '../../shared-data/mockSession.js';
 import { friendlyAuthError, passwordResetConfirmation } from '../../shared-data/authMessages.js';
 import { buildMockDataLink, loadMockAccountData, saveMockAccountData } from '../../shared-data/mockDataSession.js';
+import { reportingDateFromAccount, withReportingDate } from '../../shared-data/reportingDate.js';
+import { assigneeLabel } from '../../shared-data/jobPresentation.js';
 
 test('maps John and Sarah to separate demo accounts', () => {
   assert.equal(authenticateMockUser('john@fieldflow.demo', 'john-demo-password').account_id, 'acct_northstar');
@@ -75,4 +77,30 @@ test('carries account-scoped demo edits across different local app origins', () 
   } finally {
     globalThis.window = originalWindow;
   }
+});
+
+test('uses an account demo date unless the user explicitly previews today', () => {
+  const account = { id: 'acct_demo', demo_reporting_date: '2026-08-19' };
+  const demo = reportingDateFromAccount(account, '');
+  assert.equal(demo.isoDate, '2026-08-19');
+  assert.equal(demo.isDemoDate, true);
+
+  const livePreview = reportingDateFromAccount(account, '?reporting_date=today');
+  assert.equal(livePreview.isDemoDate, false);
+  assert.equal(livePreview.storedDate, '2026-08-19');
+});
+
+test('carries the live-date preview between FieldFlow products', () => {
+  const url = withReportingDate('http://127.0.0.1:5174/?account_id=acct_demo', {
+    storedDate: '2026-08-19',
+    isDemoDate: false,
+  });
+  assert.equal(new URL(url).searchParams.get('reporting_date'), 'today');
+});
+
+test('uses a safe user-facing label for unassigned jobs', () => {
+  assert.equal(assigneeLabel(null), 'Unassigned');
+  assert.equal(assigneeLabel(undefined), 'Unassigned');
+  assert.equal(assigneeLabel('   '), 'Unassigned');
+  assert.equal(assigneeLabel(' Maya Chen '), 'Maya Chen');
 });

@@ -20,7 +20,6 @@ if (isSupabaseConfigured) {
   document.getElementById('contractorSignUpDescription').textContent = 'Create your company and its first owner account. You may need to confirm your email before signing in.';
   document.getElementById('contractorResetDescription').textContent = 'Enter your registered FieldFlow email and we will send a password-reset link.';
   document.getElementById('contractorDemoAccounts').hidden = true;
-  document.getElementById('schedulingDemoNotice').hidden = true;
 } else if (isDemoModeAvailable) {
   const demoAccounts = document.getElementById('contractorDemoAccounts');
   const heading = document.createElement('strong');

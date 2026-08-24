@@ -13,6 +13,7 @@
     "dev:chatbot": "npm run dev --workspace=@fieldflow/chatbot",
     "dev:analytics": "npm run dev --workspace=@fieldflow/analytics",
     "seed:supabase": "node scripts/seed-supabase.mjs",
+    "prepare:demo-data": "node scripts/expand-canonical-demo-jobs.mjs",
     "verify:supabase": "node scripts/verify-supabase.mjs",
     "provision:test-sarah": "node scripts/provision-sarah-test-user.mjs",
     "verify:test-sarah": "node scripts/verify-sarah-login.mjs",

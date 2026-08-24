@@ -229,7 +229,7 @@ function getAnswer(rawQuery, accountId) {
     const job = JOBS.find((j) => j.id === jobIdMatch[0]);
     if (!job) return { text: `I can't find a job with id ${jobIdMatch[0]}.` };
     if (job.account_id !== accountId) return { text: `That job belongs to a different company, so I can't show it here — FieldFlow keeps every company's jobs separate.` };
-    return { text: `${job.title} for ${clientName(job.client_id)} is ${job.status.replace('_', ' ')}, scheduled for ${formatDate(job.scheduled_for)} with ${job.assignee}.` };
+    return { text: `${job.title} for ${clientName(job.client_id)} is ${job.status.replace('_', ' ')}, scheduled for ${formatDate(job.scheduled_for)} with ${job.assignee || 'Unassigned'}.` };
   }
   if (/\bplan\b|\bsubscription\b|which account|what account|my account\b/.test(lower)) {
     return { text: `You're on the ${account.name} account, ${account.plan} plan.` };
@@ -302,7 +302,7 @@ class Component extends DCLogic {
         const d = new Date(`${j.iso}T00:00:00Z`);
         return {
           title: j.title,
-          meta: `${j.client} · ${j.assignee}`,
+          meta: `${j.client} · ${j.assignee || 'Unassigned'}`,
           month: new Intl.DateTimeFormat('en-US', { month: 'short', timeZone: 'UTC' }).format(d),
           day: new Intl.DateTimeFormat('en-US', { day: 'numeric', timeZone: 'UTC' }).format(d),
           statusLabel: st.label,

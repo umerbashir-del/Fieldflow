@@ -3,6 +3,7 @@ import sharedClients from '../shared-data/clients.json';
 import sharedJobs from '../shared-data/jobs.json';
 import { isMockContractor, mockUserFromSearch } from '../shared-data/mockSession.js';
 import { getAccountData, getSignedInAccount, isSupabaseConfigured } from '../shared-data/supabase.js';
+import { reportingDateFromAccount } from '../shared-data/reportingDate.js';
 
 const mockUser = mockUserFromSearch(window.location.search);
 let liveContext = null;
@@ -16,6 +17,10 @@ if (isSupabaseConfigured) {
 export const LIVE_MODE = isSupabaseConfigured;
 export const IS_CONTRACTOR_SESSION = isSupabaseConfigured ? Boolean(liveContext?.account) : isMockContractor(mockUser);
 export const ACCOUNT_ID = isSupabaseConfigured ? liveContext?.account?.id ?? null : (IS_CONTRACTOR_SESSION ? mockUser.account_id : null);
+export const ACTIVE_ACCOUNT = isSupabaseConfigured ? liveContext?.account ?? null : sharedAccounts.find((account) => account.id === ACCOUNT_ID) ?? null;
+export const REPORTING = isSupabaseConfigured
+  ? reportingDateFromAccount(ACTIVE_ACCOUNT, window.location.search)
+  : reportingDateFromAccount({ demo_reporting_date: '2026-08-19' }, window.location.search);
 
 export const accounts = isSupabaseConfigured
   ? (liveContext?.account ? [liveContext.account] : [])
