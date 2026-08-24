@@ -43,4 +43,13 @@ h2 { font-size: 1.25rem; margin: 6px 0 0; }
 .action-link, .copy-button { background: #173c71; border: 1px solid #173c71; border-radius: 8px; color: #fff; cursor: pointer; display: inline-block; font: inherit; font-weight: 700; padding: 11px 15px; text-decoration: none; }
 .copy-button { background: #fff; color: #173c71; }
 .copy-status { color: #16794c; font-size: .82rem; margin: 6px 0 0; }
+.sign-out-button { background: transparent; border: 0; color: #173c71; cursor: pointer; font: inherit; font-size: .85rem; font-weight: 700; margin-top: 16px; padding: 0; text-decoration: underline; }
+.sign-in-page { align-items: center; display: flex; min-height: 100vh; }
+.sign-in-card { background: #fff; border: 1px solid #e5e9f0; border-radius: 16px; box-shadow: 0 8px 20px rgb(16 24 40 / 6%); margin: 0 auto; max-width: 460px; padding: 32px; width: 100%; }
+.sign-in-card form { display: grid; gap: 16px; margin-top: 28px; }
+.sign-in-card label { color: #4c5968; display: grid; font-size: .84rem; font-weight: 700; gap: 7px; }
+.sign-in-card input { border: 1px solid #cfd7e3; border-radius: 8px; font: inherit; padding: 11px; }
+.sign-in-card .copy-button { background: #173c71; color: #fff; }
+.sign-in-card .copy-button:disabled { cursor: wait; opacity: .7; }
+.sign-in-message { color: #b42318; font-size: .86rem; margin: 0; }
 @media (max-width: 640px) { .analytics-page { padding: 32px 16px 48px; } .header-row, .integration-actions { align-items: start; flex-direction: column; } .summary-grid { grid-template-columns: 1fr; } .client-card { align-items: start; flex-direction: column; } }

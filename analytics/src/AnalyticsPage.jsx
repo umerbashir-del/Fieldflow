@@ -1,9 +1,11 @@
-import { useState } from 'react';
-import accounts from '../../shared-data/accounts.json';
-import jobs from '../../shared-data/jobs.json';
+import { useEffect, useState } from 'react';
+import demoAccounts from '../../shared-data/accounts.json';
+import demoJobs from '../../shared-data/jobs.json';
+import { getJobsForAccount, getSignedInAccount, isSupabaseConfigured, signOut } from '../../shared-data/supabase.js';
 import { buildAnalyticsSummary, buildSchedulingLink, chatSummaryText } from './analyticsSummary.js';
+import SignInPage from './SignInPage.jsx';
 
-const ACCOUNT_ID = 'acct_northstar';
+const DEMO_ACCOUNT_ID = 'acct_northstar';
 const SCHEDULING_URL = 'http://127.0.0.1:5174/';
 const DEMO_REFERENCE_DATE = new Date('2026-08-19T12:00:00Z');
 
@@ -11,8 +13,39 @@ export default function AnalyticsPage() {
   const [timeframe, setTimeframe] = useState('this_week');
   const [copyStatus, setCopyStatus] = useState('');
   const [hoveredPoint, setHoveredPoint] = useState(null);
-  const account = accounts.find((item) => item.id === ACCOUNT_ID);
-  const summary = buildAnalyticsSummary(jobs, ACCOUNT_ID, timeframe, DEMO_REFERENCE_DATE);
+  const [sessionState, setSessionState] = useState({ loading: isSupabaseConfigured, account: null, jobs: [], user: null, error: '' });
+
+  const loadLiveData = async () => {
+    setSessionState((current) => ({ ...current, loading: true, error: '' }));
+    try {
+      const context = await getSignedInAccount();
+      if (!context?.user) {
+        setSessionState({ loading: false, account: null, jobs: [], user: null, error: '' });
+        return;
+      }
+      if (!context.account) {
+        setSessionState({ loading: false, account: null, jobs: [], user: context.user, error: 'This login is not assigned to a FieldFlow company yet.' });
+        return;
+      }
+      const liveJobs = await getJobsForAccount(context.account.id);
+      setSessionState({ loading: false, account: context.account, jobs: liveJobs, user: context.user, error: '' });
+    } catch (error) {
+      setSessionState({ loading: false, account: null, jobs: [], user: null, error: error.message || 'Unable to load your FieldFlow data.' });
+    }
+  };
+
+  useEffect(() => {
+    if (isSupabaseConfigured) loadLiveData();
+  }, []);
+
+  if (isSupabaseConfigured && sessionState.loading) return <main className="analytics-page"><p className="subtitle">Loading your FieldFlow account…</p></main>;
+  if (isSupabaseConfigured && !sessionState.user) return <SignInPage onSignedIn={loadLiveData} />;
+  if (isSupabaseConfigured && sessionState.error) return <main className="analytics-page"><p className="eyebrow">FieldFlow</p><h1>Account setup needed</h1><p className="subtitle">{sessionState.error}</p></main>;
+
+  const account = isSupabaseConfigured ? sessionState.account : demoAccounts.find((item) => item.id === DEMO_ACCOUNT_ID);
+  const accountJobs = isSupabaseConfigured ? sessionState.jobs : demoJobs;
+  const accountId = account?.id ?? DEMO_ACCOUNT_ID;
+  const summary = buildAnalyticsSummary(accountJobs, accountId, timeframe, DEMO_REFERENCE_DATE);
   const { selectedPeriod, selectedEnd, selectedRangeLabel, comparisonRangeLabel, selectedJobs, comparisonJobs, change, hasCompleteComparison, newClients, repeatClients, trend } = summary;
   const displayedChange = hasCompleteComparison ? change : null;
   const changeDescription = displayedChange === null ? null : `${displayedChange > 0 ? 'More' : displayedChange < 0 ? 'Fewer' : 'The same number of'} jobs than ${comparisonRangeLabel}`;
@@ -20,7 +53,7 @@ export default function AnalyticsPage() {
   const newClientShare = totalClients === 0 ? 0 : (newClients / totalClients) * 100;
   const newClientPercent = Math.round(newClientShare);
   const repeatClientPercent = totalClients === 0 ? 0 : 100 - newClientPercent;
-  const schedulingLink = buildSchedulingLink(SCHEDULING_URL, ACCOUNT_ID, selectedPeriod.start, selectedEnd);
+  const schedulingLink = buildSchedulingLink(SCHEDULING_URL, accountId, selectedPeriod.start, selectedEnd);
   const copyChatSummary = async () => {
     await navigator.clipboard.writeText(chatSummaryText(account?.name ?? 'Your business', summary));
     setCopyStatus('Copied — paste this into FieldFlow Chat.');
@@ -53,7 +86,7 @@ export default function AnalyticsPage() {
         <p className="eyebrow">FieldFlow</p>
         <h1>{account?.name ?? 'Your business'} — Analytics</h1>
         <div className="header-row">
-          <p className="subtitle">A quick look at how your business is doing. Demo date: August 19, 2026.</p>
+          <p className="subtitle">A quick look at how your business is doing.{isSupabaseConfigured ? '' : ' Demo date: August 19, 2026.'}</p>
           <label className="timeframe-control">Timeframe
             <select title="Updates every card and chart to the selected date range." value={timeframe} onChange={(event) => setTimeframe(event.target.value)}>
               <option value="this_week">This week</option>
@@ -64,6 +97,7 @@ export default function AnalyticsPage() {
             </select>
           </label>
         </div>
+        {isSupabaseConfigured && <button className="sign-out-button" type="button" onClick={async () => { await signOut(); await loadLiveData(); }}>Sign out</button>}
       </header>
 
       <div className="scheduler-action">
