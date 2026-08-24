@@ -134,6 +134,8 @@
   const jobAssigneeSel = el('jobAssignee');
   const jobStatusSel = el('jobStatus');
   const jobConflictWarning = el('jobConflictWarning');
+  const jobNoClientNotice = el('jobNoClientNotice');
+  const jobNoClientAddBtn = el('jobNoClientAddBtn');
   const deleteJobBtn = el('deleteJobBtn');
   const cancelJobBtn = el('cancelJobBtn');
   const saveJobBtn = el('saveJobBtn');
@@ -143,7 +145,12 @@
   const clientModalCard = el('clientModalCard');
   const clientModalTitle = el('clientModalTitle');
   const clientNameInput = el('clientName');
+  const clientBuildingNumberInput = el('clientBuildingNumber');
+  const clientStreetNameInput = el('clientStreetName');
   const clientCityInput = el('clientCity');
+  const clientStateInput = el('clientState');
+  const clientZipInput = el('clientZip');
+  const clientPhoneInput = el('clientPhone');
   const clientNoticeEl = el('clientNotice');
   const deleteClientBtn = el('deleteClientBtn');
   const cancelClientBtn = el('cancelClientBtn');
@@ -215,6 +222,15 @@
   // input — a job title, a client name — has to be escaped before it
   // goes into innerHTML, or a value like `<script>` typed into a field
   // would actually run as HTML/JS.
+  // Builds "482 Glenwood Ave, Raleigh, NC 27603" from the split address
+  // fields, skipping anything blank rather than printing stray commas.
+  function clientAddressLine(c) {
+    const streetPart = [c.building_number, c.street_name].filter(Boolean).join(' ');
+    const cityStatePart = [c.city, c.state].filter(Boolean).join(', ');
+    const cityStateZip = [cityStatePart, c.zip_code].filter(Boolean).join(' ');
+    return [streetPart, cityStateZip].filter(Boolean).join(', ') || 'No address on file';
+  }
+
   function escapeHtml(str) {
     return String(str).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   }
@@ -409,7 +425,7 @@
       const jobCount = aJobs.filter((j) => j.client_id === c.id).length;
       return (
         '<div class="client-row" data-client-id="' + c.id + '">' +
-          '<div><strong>' + escapeHtml(c.name) + '</strong><div class="muted">' + escapeHtml(c.city || 'No city on file') + '</div></div>' +
+          '<div><strong>' + escapeHtml(c.name) + '</strong><div class="muted">' + escapeHtml(clientAddressLine(c)) + '</div></div>' +
           '<div style="display:flex;align-items:center;gap:12px">' +
             '<span class="muted">' + jobCount + ' job' + (jobCount === 1 ? '' : 's') + '</span>' +
             '<button type="button" class="btn-ghost edit-client" data-client-id="' + c.id + '">Edit</button>' +
@@ -457,7 +473,10 @@
   // the array to update (or delete) when Save/Delete is clicked, even
   // though the draft's own `id` field isn't shown/edited in the form.
   function openEditJob(job) {
-    jobModal = { mode: 'edit', originalId: job.id, draft: Object.assign({}, job) };
+    // deleteArmed tracks a two-click "are you sure" confirmation for the
+    // Delete button (see deleteJob below) — starts disarmed every time the
+    // modal opens.
+    jobModal = { mode: 'edit', originalId: job.id, draft: Object.assign({}, job), deleteArmed: false, deleteArmTimer: null };
     renderAll();
   }
 
@@ -473,8 +492,17 @@
     const { mode, draft } = jobModal;
     jobModalTitle.textContent = mode === 'new' ? 'New job' : 'Edit job';
 
-    jobClientSel.innerHTML = accountClients().map((c) => '<option value="' + c.id + '">' + escapeHtml(c.name) + '</option>').join('');
+    const clientsForAccount = accountClients();
+    jobClientSel.innerHTML = clientsForAccount.map((c) => '<option value="' + c.id + '">' + escapeHtml(c.name) + '</option>').join('');
     jobClientSel.value = draft.client_id;
+
+    // With zero clients, the select above renders empty and there's no
+    // way to fill in a required field — Save would just stay disabled
+    // forever with no explanation. Surface that directly instead of
+    // leaving it a silent dead end, with a way out right there.
+    const hasNoClients = clientsForAccount.length === 0;
+    jobNoClientNotice.hidden = !hasNoClients;
+    jobClientSel.hidden = hasNoClients;
 
     jobTitleInput.value = draft.title;
     jobDateInput.value = draft.scheduled_for;
@@ -486,6 +514,8 @@
     jobStatusSel.value = draft.status;
 
     deleteJobBtn.hidden = mode !== 'edit';
+    deleteJobBtn.textContent = jobModal.deleteArmed ? 'Click again to delete' : 'Delete';
+    deleteJobBtn.classList.toggle('is-armed', !!jobModal.deleteArmed);
 
     // Live conflict check: would saving this draft as-is create a
     // same-assignee/same-date collision with some *other* job? We
@@ -512,6 +542,9 @@
   function updateJobDraft(patch) {
     if (!jobModal) return;
     jobModal.draft = Object.assign({}, jobModal.draft, patch);
+    // Editing a field after arming Delete cancels the pending confirm —
+    // you're clearly not about to delete if you're still typing.
+    if (jobModal.deleteArmed) { jobModal.deleteArmed = false; clearTimeout(jobModal.deleteArmTimer); }
     renderJobModal();
   }
 
@@ -535,9 +568,31 @@
   // Removes the job being edited from the `jobs` array entirely. Only
   // available in 'edit' mode (there's nothing to delete for a job that
   // hasn't been saved yet).
+  //
+  // Deleting is permanent (no undo), so this is a two-click confirm rather
+  // than deleting on the first click: the first click just "arms" the
+  // button (label flips to "Click again to delete"); the second click
+  // within a few seconds actually deletes. If you don't click again, it
+  // auto-disarms so the button doesn't stay stuck on "confirm" forever.
+  // (Same reasoning as the inline notices elsewhere in this file: a native
+  // confirm() dialog blocks the page and isn't reliable in sandboxed/
+  // embedded previews, so this stays inline instead.)
   function deleteJob() {
     if (!jobModal || !jobModal.originalId) return;
-    const id = jobModal.originalId;
+    const modalRef = jobModal;
+    if (!modalRef.deleteArmed) {
+      modalRef.deleteArmed = true;
+      renderJobModal();
+      clearTimeout(modalRef.deleteArmTimer);
+      modalRef.deleteArmTimer = window.setTimeout(() => {
+        // Only disarm if this is still the open modal — the user could
+        // have closed it and opened a different job's modal by now.
+        if (jobModal === modalRef) { modalRef.deleteArmed = false; renderJobModal(); }
+      }, 3500);
+      return;
+    }
+    clearTimeout(modalRef.deleteArmTimer);
+    const id = modalRef.originalId;
     jobs = jobs.filter((j) => j.id !== id);
     persist();
     closeJobModal();
@@ -549,14 +604,16 @@
   // Mirrors the job modal's new/edit/draft pattern above, just for the
   // (much simpler) client record: name + city.
 
+  const EMPTY_CLIENT_DRAFT = { name: '', building_number: '', street_name: '', city: '', state: '', zip_code: '', client_phone: '' };
+
   function openNewClient() {
-    clientModal = { mode: 'new', draft: { name: '', city: '' } };
+    clientModal = { mode: 'new', draft: Object.assign({}, EMPTY_CLIENT_DRAFT) };
     clientNotice = '';
     renderAll();
   }
 
   function openEditClient(client) {
-    clientModal = { mode: 'edit', originalId: client.id, draft: { name: client.name, city: client.city } };
+    clientModal = { mode: 'edit', originalId: client.id, draft: Object.assign({}, EMPTY_CLIENT_DRAFT, client), deleteArmed: false, deleteArmTimer: null };
     clientNotice = '';
     renderAll();
   }
@@ -569,8 +626,15 @@
     const { mode, draft } = clientModal;
     clientModalTitle.textContent = mode === 'new' ? 'New client' : 'Edit client';
     clientNameInput.value = draft.name;
+    clientBuildingNumberInput.value = draft.building_number;
+    clientStreetNameInput.value = draft.street_name;
     clientCityInput.value = draft.city;
+    clientStateInput.value = draft.state;
+    clientZipInput.value = draft.zip_code;
+    clientPhoneInput.value = draft.client_phone;
     deleteClientBtn.hidden = mode !== 'edit';
+    deleteClientBtn.textContent = clientModal.deleteArmed ? 'Click again to delete' : 'Delete';
+    deleteClientBtn.classList.toggle('is-armed', !!clientModal.deleteArmed);
     clientNoticeEl.hidden = !clientNotice;
     clientNoticeEl.textContent = clientNotice;
     saveClientBtn.disabled = !draft.name.trim();
@@ -579,6 +643,7 @@
   function updateClientDraft(patch) {
     if (!clientModal) return;
     clientModal.draft = Object.assign({}, clientModal.draft, patch);
+    if (clientModal.deleteArmed) { clientModal.deleteArmed = false; clearTimeout(clientModal.deleteArmTimer); }
     renderClientModal();
   }
 
@@ -586,30 +651,55 @@
     if (!clientModal) return;
     const { draft, mode, originalId } = clientModal;
     if (!draft.name.trim()) return;
+    const cleaned = {
+      name: draft.name.trim(),
+      building_number: draft.building_number.trim(),
+      street_name: draft.street_name.trim(),
+      city: draft.city.trim(),
+      state: draft.state.trim().toUpperCase(),
+      zip_code: draft.zip_code.trim(),
+      client_phone: draft.client_phone.trim(),
+    };
     if (mode === 'new') {
-      clients.push({ id: makeId('client'), account_id: ACCOUNT_ID, name: draft.name.trim(), city: draft.city.trim() });
+      clients.push(Object.assign({ id: makeId('client'), account_id: ACCOUNT_ID }, cleaned));
     } else {
-      clients = clients.map((c) => (c.id === originalId ? Object.assign({}, c, { name: draft.name.trim(), city: draft.city.trim() }) : c));
+      clients = clients.map((c) => (c.id === originalId ? Object.assign({}, c, cleaned) : c));
     }
     persist();
     closeClientModal();
   }
 
-  // Deleting a client is guarded: if they still have jobs on the
-  // schedule, we refuse and show an inline warning instead of silently
-  // leaving those jobs pointing at a client_id that no longer exists.
-  // (We use an inline message here rather than a browser confirm()/alert()
-  // dialog, since those block the page and aren't reliable inside
-  // embedded/sandboxed previews.)
+  // Deleting a client is guarded two ways:
+  //  1. If they still have jobs on the schedule, we refuse outright and
+  //     show an inline warning instead of silently leaving those jobs
+  //     pointing at a client_id that no longer exists.
+  //  2. Otherwise, deleting is a two-click confirm — same pattern as
+  //     deleteJob() above — since it's permanent and there's no undo.
+  // (We use inline messages/button states here rather than a browser
+  // confirm()/alert() dialog, since those block the page and aren't
+  // reliable inside embedded/sandboxed previews.)
   function deleteClientFn() {
     if (!clientModal || !clientModal.originalId) return;
-    const id = clientModal.originalId;
+    const modalRef = clientModal;
+    const id = modalRef.originalId;
     const hasJobs = accountJobs().some((j) => j.client_id === id);
     if (hasJobs) {
       clientNotice = 'This client has jobs on the schedule — reassign or delete those jobs first.';
+      modalRef.deleteArmed = false;
+      clearTimeout(modalRef.deleteArmTimer);
       renderClientModal();
       return;
     }
+    if (!modalRef.deleteArmed) {
+      modalRef.deleteArmed = true;
+      renderClientModal();
+      clearTimeout(modalRef.deleteArmTimer);
+      modalRef.deleteArmTimer = window.setTimeout(() => {
+        if (clientModal === modalRef) { modalRef.deleteArmed = false; renderClientModal(); }
+      }, 3500);
+      return;
+    }
+    clearTimeout(modalRef.deleteArmTimer);
     clients = clients.filter((c) => c.id !== id);
     persist();
     closeClientModal();
@@ -662,6 +752,15 @@
   saveJobBtn.addEventListener('click', saveJob);
   deleteJobBtn.addEventListener('click', deleteJob);
   cancelJobBtn.addEventListener('click', closeJobModal);
+  // "Add a client" inside the no-clients notice: closes New Job and opens
+  // New Client instead. Not trying to keep New Job open underneath and
+  // return to it automatically — that'd mean stacking two modals, not
+  // worth the complexity here. User just reopens New Job afterward and
+  // the client they added is there.
+  jobNoClientAddBtn.addEventListener('click', () => {
+    closeJobModal();
+    openNewClient();
+  });
   // Clicking the dimmed backdrop (but not the card itself) closes the
   // modal, like clicking "outside" a dialog normally does.
   jobModalBackdrop.addEventListener('click', (e) => { if (e.target === jobModalBackdrop) closeJobModal(); });
@@ -672,7 +771,12 @@
 
   // Client modal field bindings
   clientNameInput.addEventListener('input', (e) => updateClientDraft({ name: e.target.value }));
+  clientBuildingNumberInput.addEventListener('input', (e) => updateClientDraft({ building_number: e.target.value }));
+  clientStreetNameInput.addEventListener('input', (e) => updateClientDraft({ street_name: e.target.value }));
   clientCityInput.addEventListener('input', (e) => updateClientDraft({ city: e.target.value }));
+  clientStateInput.addEventListener('input', (e) => updateClientDraft({ state: e.target.value }));
+  clientZipInput.addEventListener('input', (e) => updateClientDraft({ zip_code: e.target.value }));
+  clientPhoneInput.addEventListener('input', (e) => updateClientDraft({ client_phone: e.target.value }));
   saveClientBtn.addEventListener('click', saveClientFn);
   deleteClientBtn.addEventListener('click', deleteClientFn);
   cancelClientBtn.addEventListener('click', closeClientModal);

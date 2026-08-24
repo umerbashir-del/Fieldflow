@@ -6,7 +6,8 @@
    ================================================================ */
 :root { font-family: Inter, ui-sans-serif, system-ui, sans-serif; color: #15231c; background: #f5f8f5; }
 * { box-sizing: border-box; }
-body { margin: 0; }
+html, body { height: 100%; }
+body { margin: 0; position: relative; }
 main { max-width: 1040px; margin: 0 auto; padding: 48px 24px; }
 header, .topbar { display: flex; justify-content: space-between; gap: 20px; align-items: start; margin-bottom: 32px; }
 h1 { margin: 0 0 6px; font-size: clamp(2rem, 4vw, 3rem); }
@@ -79,6 +80,7 @@ input, select { width: 100%; padding: 12px; border: 1px solid #bfcfc4; border-ra
 [data-theme="dark"] .badge-cancelled { background: #3a1717; color: #e08a8a; }
 
 .conflict-flag { display: inline-flex; align-items: center; gap: 6px; background: #fbe4e4; color: #9c2b2b; border-radius: 999px; padding: 4px 10px; font-size: .75rem; font-weight: 700; margin-top: 6px; }
+.conflict-flag[hidden] { display: none; }
 [data-theme="dark"] .conflict-flag { background: #3a1717; color: #e08a8a; }
 .job.is-conflict { border-color: #e08a8a; }
 
@@ -115,10 +117,15 @@ input, select { width: 100%; padding: 12px; border: 1px solid #bfcfc4; border-ra
 .month-job-dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #17613c; margin: 6px 2px 0 0; }
 .month-job-dot.is-conflict { background: #c23b3b; }
 
-.modal-backdrop { position: fixed; inset: 0; background: #0003; display: flex; align-items: center; justify-content: center; padding: 20px; z-index: 50; }
+/* position: absolute (not fixed) relative to body — position: fixed loses
+   click-coordinate accuracy in scaled/sandboxed preview iframes, which is
+   exactly where this app tends to get clicked around in. */
+.modal-backdrop { position: absolute; inset: 0; min-height: 100%; background: #0003; display: flex; align-items: center; justify-content: center; padding: 20px; z-index: 50; }
 .modal-backdrop[hidden] { display: none; }
 .modal-card { background: #fff; border-radius: 16px; padding: 24px; width: 100%; max-width: 420px; display: flex; flex-direction: column; gap: 12px; }
 .modal-card h2 { margin: 0; }
+.field-row { display: flex; gap: 10px; }
+.field-row .field { margin: 0; }
 .field label { display: block; font-size: .8rem; font-weight: 700; margin-bottom: 4px; color: #617168; }
 [data-theme="dark"] .field label { color: #9db3a5; }
 .modal-actions { display: flex; justify-content: space-between; gap: 10px; margin-top: 8px; }
@@ -127,6 +134,10 @@ button.btn-ghost { background: transparent; color: #17613c; border: 1px solid #1
 [data-theme="dark"] button.btn-ghost { color: var(--sched-brand-dark-mode); border-color: var(--sched-brand-dark-mode); }
 button.btn-danger[hidden] { display: none; }
 button.btn-danger { background: #c23b3b; }
+/* Second-click "are you sure?" state for delete buttons — darker + a ring
+   so it visibly reads as "armed", not just different button text. */
+button.btn-danger.is-armed { background: #8a1f1f; box-shadow: 0 0 0 2px #f3caca; }
+[data-theme="dark"] button.btn-danger.is-armed { box-shadow: 0 0 0 2px #5a2a2a; }
 
 .client-list { display: flex; flex-direction: column; gap: 10px; }
 .client-row { display: flex; justify-content: space-between; align-items: center; padding: 14px 16px; border-radius: 12px; background: #fff; border: 1px solid #dbe6de; }

@@ -18,11 +18,15 @@ const accounts = [
   { id: 'acct_northstar', name: 'Northstar Field Services', plan: 'Growth' },
 ];
 
+// Shape matches docs/data-model.md as of the synthetic-dataset merge:
+// address is split into building_number/street_name/city/state/zip_code
+// (not one free-text field) so scheduling/dispatch can sort/validate on
+// it, plus client_phone for appointment communication.
 const seedClients = [
-  { id: 'client_evergreen', account_id: 'acct_northstar', name: 'Evergreen Properties', city: 'Raleigh' },
-  { id: 'client_harbor', account_id: 'acct_northstar', name: 'Harbor Dental Group', city: 'Durham' },
-  { id: 'client_summit', account_id: 'acct_northstar', name: 'Summit Retail', city: 'Cary' },
-  { id: 'client_pinecrest', account_id: 'acct_northstar', name: 'Pinecrest Apartments', city: 'Chapel Hill' },
+  { id: 'client_evergreen', account_id: 'acct_northstar', name: 'Evergreen Properties', building_number: '482', street_name: 'Glenwood Ave', city: 'Raleigh', state: 'NC', zip_code: '27603', client_phone: '(919) 555-0142' },
+  { id: 'client_harbor', account_id: 'acct_northstar', name: 'Harbor Dental Group', building_number: '117', street_name: 'W Main St', city: 'Durham', state: 'NC', zip_code: '27701', client_phone: '(919) 555-0187' },
+  { id: 'client_summit', account_id: 'acct_northstar', name: 'Summit Retail', building_number: '305', street_name: 'S Academy St', city: 'Cary', state: 'NC', zip_code: '27511', client_phone: '(919) 555-0163' },
+  { id: 'client_pinecrest', account_id: 'acct_northstar', name: 'Pinecrest Apartments', building_number: '920', street_name: 'Franklin St', city: 'Chapel Hill', state: 'NC', zip_code: '27514', client_phone: '(919) 555-0129' },
 ];
 
 const seedJobs = [

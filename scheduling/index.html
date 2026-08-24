@@ -113,9 +113,33 @@
         <label for="clientName">Name</label>
         <input id="clientName" placeholder="e.g. Evergreen Properties" />
       </div>
+      <div class="field-row">
+        <div class="field" style="flex:1">
+          <label for="clientBuildingNumber">Bldg #</label>
+          <input id="clientBuildingNumber" placeholder="482" />
+        </div>
+        <div class="field" style="flex:3">
+          <label for="clientStreetName">Street</label>
+          <input id="clientStreetName" placeholder="Glenwood Ave" />
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field" style="flex:2">
+          <label for="clientCity">City</label>
+          <input id="clientCity" placeholder="Raleigh" />
+        </div>
+        <div class="field" style="flex:1">
+          <label for="clientState">State</label>
+          <input id="clientState" placeholder="NC" maxlength="2" style="text-transform:uppercase" />
+        </div>
+        <div class="field" style="flex:1.5">
+          <label for="clientZip">Zip</label>
+          <input id="clientZip" placeholder="27603" />
+        </div>
+      </div>
       <div class="field">
-        <label for="clientCity">City</label>
-        <input id="clientCity" placeholder="e.g. Raleigh" />
+        <label for="clientPhone">Phone</label>
+        <input id="clientPhone" placeholder="(919) 555-0142" />
       </div>
       <div class="conflict-flag" id="clientNotice" hidden style="margin-top:0"></div>
       <div class="modal-actions">
