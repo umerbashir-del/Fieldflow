@@ -1,12 +1,18 @@
 {
   "name": "fieldflow",
   "private": true,
-  "workspaces": ["scheduling", "ops-dashboard", "chatbot", "analytics"],
+  "workspaces": [
+    "scheduling",
+    "ops-dashboard",
+    "chatbot",
+    "analytics"
+  ],
   "scripts": {
     "dev:scheduling": "npm run dev --workspace=@fieldflow/scheduling",
     "dev:ops": "npm run dev --workspace=@fieldflow/ops-dashboard",
     "dev:chatbot": "npm run dev --workspace=@fieldflow/chatbot",
     "dev:analytics": "npm run dev --workspace=@fieldflow/analytics",
+    "seed:supabase": "node scripts/seed-supabase.mjs",
     "build": "npm run build --workspaces"
   },
   "devDependencies": {
@@ -14,6 +20,7 @@
     "vite": "latest"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.112.3",
     "react": "latest",
     "react-dom": "latest"
   }

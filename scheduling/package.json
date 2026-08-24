@@ -1,1 +1,1 @@
-{ "name": "@fieldflow/scheduling", "private": true, "scripts": { "dev": "vite", "build": "vite build" } }
+{ "name": "@fieldflow/scheduling", "private": true, "type": "module", "scripts": { "dev": "vite", "build": "vite build" } }
