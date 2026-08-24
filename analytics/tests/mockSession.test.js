@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { authenticateMockUser, buildMockAppLink, createMockAccount, isMockContractor, mockUserFromSearch } from '../../shared-data/mockSession.js';
+import { friendlyAuthError, passwordResetConfirmation } from '../../shared-data/authMessages.js';
 
 test('maps John and Sarah to separate demo accounts', () => {
   assert.equal(authenticateMockUser('john@fieldflow.demo', 'john-demo-password').account_id, 'acct_northstar');
@@ -41,4 +42,17 @@ test('creates an owner and a new empty demo company context', () => {
 
 test('rejects malformed new-account input with the intended message', () => {
   assert.throws(() => createMockAccount({ ownerName: undefined, companyName: 'Example Co', email: 'owner@example.com' }), /Enter your name/);
+});
+
+test('turns Supabase authentication errors into useful sign-in guidance', () => {
+  assert.equal(
+    friendlyAuthError(new Error('Invalid login credentials')),
+    'Email or password is incorrect. Try again or reset your password.',
+  );
+  assert.match(friendlyAuthError(new Error('Failed to fetch')), /could not reach the sign-in service/);
+});
+
+test('uses distinct live and local-demo password-reset confirmations', () => {
+  assert.match(passwordResetConfirmation('john@example.com', true), /If john@example.com is registered/);
+  assert.match(passwordResetConfirmation('john@example.com', false), /Demo only/);
 });

@@ -1,6 +1,7 @@
 import { clearMockDataSession } from '../shared-data/mockDataSession.js';
 import { authenticateMockUser, buildMockAppLink, createMockAccount, isDemoModeAvailable, isMockContractor, mockUserFromSearch } from '../shared-data/mockSession.js';
 import { getSignedInAccount, isSupabaseConfigured, sendPasswordReset, signIn, signOut, signUpBusiness } from '../shared-data/supabase.js';
+import { friendlyAuthError, passwordResetConfirmation } from '../shared-data/authMessages.js';
 
 const gate = document.getElementById('mockLoginGate');
 const app = document.getElementById('schedulingApp');
@@ -15,6 +16,9 @@ const resetMessage = document.getElementById('mockResetMessage');
 
 if (isSupabaseConfigured) {
   document.getElementById('contractorLoginEyebrow').textContent = 'FieldFlow';
+  document.getElementById('contractorLoginDescription').textContent = 'Use your registered FieldFlow email and password. Your company access is assigned securely after sign-in.';
+  document.getElementById('contractorSignUpDescription').textContent = 'Create your company and its first owner account. You may need to confirm your email before signing in.';
+  document.getElementById('contractorResetDescription').textContent = 'Enter your registered FieldFlow email and we will send a password-reset link.';
   document.getElementById('contractorDemoAccounts').hidden = true;
   document.getElementById('schedulingDemoNotice').hidden = true;
 } else if (isDemoModeAvailable) {
@@ -65,7 +69,7 @@ if (isSupabaseConfigured && liveContext?.account) {
         window.location.assign(buildMockAppLink(window.location.href, user));
       }
     } catch (signInError) {
-      error.textContent = signInError.message;
+      error.textContent = friendlyAuthError(signInError);
     }
   });
   document.querySelectorAll('[data-auth-mode]').forEach((button) => button.addEventListener('click', () => showForm(button.dataset.authMode)));
@@ -96,12 +100,10 @@ if (isSupabaseConfigured && liveContext?.account) {
     try {
       if (isSupabaseConfigured) {
         await sendPasswordReset(resetEmail, window.location.origin);
-        resetMessage.textContent = `A password-reset email was sent to ${resetEmail}.`;
-      } else {
-        resetMessage.textContent = `Demo only: a reset email would be sent to ${resetEmail}.`;
       }
+      resetMessage.textContent = passwordResetConfirmation(resetEmail, isSupabaseConfigured);
     } catch (resetError) {
-      resetMessage.textContent = resetError.message;
+      resetMessage.textContent = friendlyAuthError(resetError);
     }
   });
 }

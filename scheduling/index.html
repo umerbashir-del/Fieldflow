@@ -10,8 +10,8 @@
   <section class="mock-login-page" id="mockLoginGate">
     <div class="mock-login-card">
       <p class="eyebrow" id="contractorLoginEyebrow">FieldFlow demo</p>
-      <h1>Sign in to your business</h1>
-      <p class="muted">Start in Scheduling. Your selected company follows you to connected FieldFlow areas.</p>
+      <h1>FieldFlow Sign In</h1>
+      <p class="muted" id="contractorLoginDescription">Start in Scheduling. Your selected company follows you to connected FieldFlow areas.</p>
       <div class="mock-login-details" id="contractorDemoAccounts"></div>
       <form id="mockLoginForm" class="mock-login-form">
         <label>Email<input id="mockEmail" type="email" autocomplete="email" required /></label>
@@ -23,7 +23,7 @@
       </form>
       <form id="mockSignUpForm" class="mock-login-form" hidden>
         <h2>Create your business account</h2>
-        <p class="muted">Demo flow: this creates a new company, owner, and empty schedule for this browser session.</p>
+        <p class="muted" id="contractorSignUpDescription">Demo flow: this creates a new company, owner, and empty schedule for this browser session.</p>
         <label>Your name<input name="ownerName" autocomplete="name" required /></label>
         <label>Business name<input name="companyName" autocomplete="organization" required /></label>
         <label>Email<input name="email" type="email" autocomplete="email" required /></label>
@@ -34,7 +34,7 @@
       </form>
       <form id="mockResetForm" class="mock-login-form" hidden>
         <h2>Reset your password</h2>
-        <p class="muted">Enter your email. In the deployed version, Supabase sends the password-reset email.</p>
+        <p class="muted" id="contractorResetDescription">Enter your email to request a password-reset link.</p>
         <label>Email<input name="email" type="email" autocomplete="email" required /></label>
         <button type="submit">Send reset link</button>
         <p id="mockResetMessage" class="mock-reset-message" role="status"></p>
