@@ -20,6 +20,8 @@
     "verify:test-users": "node scripts/verify-live-test-users.mjs",
     "verify:live-flow": "node scripts/verify-live-data-flow.mjs",
     "verify:deployment": "node scripts/verify-deployment.mjs",
+    "verify:business-signup": "node scripts/verify-business-signup.mjs",
+    "verify:bundle": "node scripts/verify-production-bundle.mjs",
     "build:deploy": "npm run build && node scripts/assemble-deployment.mjs",
     "test:e2e": "playwright test",
     "build": "npm run build --workspaces"

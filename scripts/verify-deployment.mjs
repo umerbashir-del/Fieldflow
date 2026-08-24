@@ -13,6 +13,13 @@ const env = Object.fromEntries(
 const baseUrl = (process.env.FIELDFLOW_DEPLOYMENT_URL ?? '').replace(/\/$/, '');
 if (!baseUrl) throw new Error('Set FIELDFLOW_DEPLOYMENT_URL to the deployed site URL.');
 
+for (const appPath of ['/scheduling/', '/analytics/', '/support/', '/operations/']) {
+  const response = await fetch(`${baseUrl}${appPath}`);
+  if (!response.ok) throw new Error(`${appPath} returned HTTP ${response.status}.`);
+  const html = await response.text();
+  if (!/<html/i.test(html)) throw new Error(`${appPath} did not return an HTML application.`);
+}
+
 const browser = await chromium.launch({ headless: true });
 const page = await browser.newPage();
 const browserProblems = [];
@@ -21,6 +28,10 @@ page.on('requestfailed', (request) => browserProblems.push(`request failed: ${re
 
 async function contractorFlow(email, password, expectedCompany, forbiddenCompany) {
   await page.goto(`${baseUrl}/scheduling/`);
+  const signInForm = page.locator('#mockLoginForm');
+  if (await signInForm.getByLabel('Email', { exact: true }).count() !== 1 || await signInForm.getByLabel('Password', { exact: true }).count() !== 1) {
+    throw new Error('Scheduling sign-in fields are missing accessible labels.');
+  }
   await page.locator('#mockEmail').fill(email);
   await page.locator('#mockPassword').fill(password);
   await page.locator('#mockLoginForm button[type="submit"]').click();
@@ -51,11 +62,19 @@ async function contractorFlow(email, password, expectedCompany, forbiddenCompany
     const pageText = (await page.locator('body').innerText()).replace(/\s+/g, ' ').slice(0, 500);
     throw new Error(`Analytics handoff failed at ${page.url()}: ${pageText || browserProblems.join('; ') || 'blank page'}`);
   }
+  if (await page.locator('svg[role="img"]').count() < 1) throw new Error('Analytics chart is missing its screen-reader description role.');
   await page.goto(`${baseUrl}/support/`);
   await page.locator('#chatApp').waitFor({ state: 'visible' });
   const selectedAccount = await page.locator('#accountSelect').textContent();
   if (!selectedAccount?.includes(expectedCompany) || selectedAccount.includes(forbiddenCompany)) {
     throw new Error(`${expectedCompany} Chatbot context was not isolated correctly.`);
+  }
+  if (expectedCompany === 'Northstar Field Services') {
+    await page.goto(`${baseUrl}/operations/`);
+    await page.locator('#opsLoginGate').waitFor({ state: 'visible' });
+    if (await page.locator('#opsDashboard').isVisible()) throw new Error('Contractor session opened Operations.');
+    await page.goto(`${baseUrl}/support/`);
+    await page.locator('#chatApp').waitFor({ state: 'visible' });
   }
   await page.locator('#chatSignOutBtn').click();
   await page.waitForURL(/\/scheduling\//);
@@ -63,6 +82,13 @@ async function contractorFlow(email, password, expectedCompany, forbiddenCompany
 }
 
 try {
+  await page.goto(`${baseUrl}/scheduling/`);
+  await page.locator('#mockEmail').fill(env.JOHN_TEST_EMAIL);
+  await page.locator('#mockPassword').fill(`wrong-${Date.now()}`);
+  await page.locator('#mockLoginForm button[type="submit"]').click();
+  await page.waitForFunction(() => Boolean(document.querySelector('#mockLoginError')?.textContent?.trim()));
+  if (await page.locator('#schedulingApp').isVisible()) throw new Error('Wrong password opened Scheduling.');
+
   await contractorFlow(env.JOHN_TEST_EMAIL, env.JOHN_TEST_PASSWORD, 'Northstar Field Services', 'Horizon Electric');
   await contractorFlow(env.SARAH_TEST_EMAIL, env.SARAH_TEST_PASSWORD, 'Horizon Electric', 'Northstar Field Services');
 
@@ -79,8 +105,11 @@ try {
   if (!dashboardText?.includes('Northstar Field Services') || !dashboardText.includes('Horizon Electric')) {
     throw new Error('Operations did not receive the expected cross-account view.');
   }
+  await page.goto(`${baseUrl}/scheduling/`);
+  await page.locator('#mockLoginGate').waitFor({ state: 'visible' });
+  if (await page.locator('#schedulingApp').isVisible()) throw new Error('Operations session opened contractor Scheduling.');
 
-  console.log('Deployment verified: John, Sarah, Analytics, Chatbot, and Operations use isolated live Supabase sessions.');
+  console.log('Deployment verified: smoke checks, invalid login, accessibility landmarks, isolated contractor flows, and Operations access.');
 } finally {
   await browser.close();
 }
