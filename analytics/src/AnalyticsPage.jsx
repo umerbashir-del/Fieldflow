@@ -1,40 +1,50 @@
 import { useEffect, useState } from 'react';
 import demoAccounts from '../../shared-data/accounts.json';
 import demoJobs from '../../shared-data/jobs.json';
-import { getJobsForAccount, getSignedInAccount, isSupabaseConfigured, signOut } from '../../shared-data/supabase.js';
+import { getAccountById, getJobsForAccount, getOperationsSession, getSignedInAccount, isSupabaseConfigured, signOut } from '../../shared-data/supabase.js';
 import { buildMockAppLink, isMockContractor, mockUserFromSearch } from '../../shared-data/mockSession.js';
 import { loadMockAccountData } from '../../shared-data/mockDataSession.js';
 import { buildAnalyticsSummary, buildSchedulingLink, chatSummaryText } from './analyticsSummary.js';
 import SignInPage from './SignInPage.jsx';
+import { APP_URLS } from '../../shared-data/appConfig.js';
 
 const DEMO_ACCOUNT_ID = 'acct_northstar';
-const SCHEDULING_URL = 'http://127.0.0.1:5174/';
-const OPERATIONS_URL = 'http://127.0.0.1:5176/';
-const CHATBOT_URL = 'http://127.0.0.1:5175/';
+const SCHEDULING_URL = APP_URLS.scheduling;
+const OPERATIONS_URL = APP_URLS.operations;
+const CHATBOT_URL = APP_URLS.chatbot;
 const DEMO_REFERENCE_DATE = new Date('2026-08-19T12:00:00Z');
 
 export default function AnalyticsPage() {
   const [timeframe, setTimeframe] = useState('this_week');
   const [copyStatus, setCopyStatus] = useState('');
   const [hoveredPoint, setHoveredPoint] = useState(null);
-  const [sessionState, setSessionState] = useState({ loading: isSupabaseConfigured, account: null, jobs: [], user: null, error: '' });
+  const [sessionState, setSessionState] = useState({ loading: isSupabaseConfigured, account: null, jobs: [], user: null, isOps: false, error: '' });
 
   const loadLiveData = async () => {
     setSessionState((current) => ({ ...current, loading: true, error: '' }));
     try {
       const context = await getSignedInAccount();
       if (!context?.user) {
-        setSessionState({ loading: false, account: null, jobs: [], user: null, error: '' });
+        setSessionState({ loading: false, account: null, jobs: [], user: null, isOps: false, error: '' });
         return;
       }
       if (!context.account) {
-        setSessionState({ loading: false, account: null, jobs: [], user: context.user, error: 'This login is not assigned to a FieldFlow company yet.' });
+        const operations = await getOperationsSession();
+        const requested = new URLSearchParams(window.location.search).get('account_id');
+        if (operations?.staff && requested) {
+          const operationsAccount = await getAccountById(requested);
+          if (!operationsAccount) throw new Error('The requested company could not be found.');
+          const operationsJobs = await getJobsForAccount(operationsAccount.id);
+          setSessionState({ loading: false, account: operationsAccount, jobs: operationsJobs, user: context.user, isOps: true, error: '' });
+          return;
+        }
+        setSessionState({ loading: false, account: null, jobs: [], user: context.user, isOps: false, error: 'This login is not assigned to a FieldFlow company yet.' });
         return;
       }
       const liveJobs = await getJobsForAccount(context.account.id);
-      setSessionState({ loading: false, account: context.account, jobs: liveJobs, user: context.user, error: '' });
+      setSessionState({ loading: false, account: context.account, jobs: liveJobs, user: context.user, isOps: false, error: '' });
     } catch (error) {
-      setSessionState({ loading: false, account: null, jobs: [], user: null, error: error.message || 'Unable to load your FieldFlow data.' });
+      setSessionState({ loading: false, account: null, jobs: [], user: null, isOps: false, error: error.message || 'Unable to load your FieldFlow data.' });
     }
   };
 
@@ -45,19 +55,23 @@ export default function AnalyticsPage() {
   const mockUser = mockUserFromSearch(window.location.search);
   const requestedAccountId = new URLSearchParams(window.location.search).get('account_id');
   const isDemoOps = !isSupabaseConfigured && mockUser?.role === 'ops';
+  const isOperationsView = isDemoOps || sessionState.isOps;
 
   if (isSupabaseConfigured && sessionState.loading) return <main className="analytics-page"><p className="subtitle">Loading your FieldFlow account…</p></main>;
   if (isSupabaseConfigured && !sessionState.user) return <SignInPage onSignedIn={loadLiveData} />;
   if (isSupabaseConfigured && sessionState.error) return <main className="analytics-page"><p className="eyebrow">FieldFlow</p><h1>Account setup needed</h1><p className="subtitle">{sessionState.error}</p></main>;
   if (!isSupabaseConfigured && (!mockUser || (!isDemoOps && !isMockContractor(mockUser)))) return <main className="analytics-page"><p className="eyebrow">FieldFlow demo</p><h1>Start in Scheduling</h1><p className="subtitle">Sign in through Scheduling first so FieldFlow can show the right company data.</p><p className="scheduler-action"><a className="action-link" href={SCHEDULING_URL}>Open Scheduling</a></p></main>;
 
-  const demoAccountId = isDemoOps
-    ? (demoAccounts.some((item) => item.id === requestedAccountId) ? requestedAccountId : DEMO_ACCOUNT_ID)
-    : mockUser.account_id;
+  const demoAccountId = isSupabaseConfigured
+    ? null
+    : isDemoOps
+      ? (demoAccounts.some((item) => item.id === requestedAccountId) ? requestedAccountId : DEMO_ACCOUNT_ID)
+      : mockUser.account_id;
   const account = isSupabaseConfigured ? sessionState.account : demoAccounts.find((item) => item.id === demoAccountId) ?? { id: demoAccountId, name: mockUser.company_name ?? 'Your new business', plan: 'Starter' };
   const accountJobs = isSupabaseConfigured ? sessionState.jobs : loadMockAccountData(demoAccountId, { clients: [], jobs: demoJobs }).jobs;
   const accountId = account?.id ?? (isSupabaseConfigured ? DEMO_ACCOUNT_ID : demoAccountId);
-  const summary = buildAnalyticsSummary(accountJobs, accountId, timeframe, DEMO_REFERENCE_DATE);
+  const referenceDate = isSupabaseConfigured ? new Date() : DEMO_REFERENCE_DATE;
+  const summary = buildAnalyticsSummary(accountJobs, accountId, timeframe, referenceDate);
   const { selectedPeriod, selectedEnd, selectedRangeLabel, comparisonRangeLabel, selectedJobs, comparisonJobs, change, hasCompleteComparison, newClients, repeatClients, trend } = summary;
   const displayedChange = hasCompleteComparison ? change : null;
   const changeDescription = displayedChange === null ? null : `${displayedChange > 0 ? 'More' : displayedChange < 0 ? 'Fewer' : 'The same number of'} jobs than ${comparisonRangeLabel}`;
@@ -71,8 +85,8 @@ export default function AnalyticsPage() {
     schedulingLinkUrl.search = mockSchedulingLink.search;
   }
   const schedulingLink = schedulingLinkUrl.toString();
-  const returnLink = isDemoOps ? `${OPERATIONS_URL}?demo_user=ops&account_id=${encodeURIComponent(accountId)}` : schedulingLink;
-  const returnLabel = isDemoOps ? 'Back to Operations' : 'Back to Scheduling';
+  const returnLink = isOperationsView ? `${OPERATIONS_URL}${isDemoOps ? '?demo_user=ops' : ''}&account_id=${encodeURIComponent(accountId)}`.replace('?&', '?') : schedulingLink;
+  const returnLabel = isOperationsView ? 'Back to Operations' : 'Back to Scheduling';
   const chatLink = !isSupabaseConfigured && !isDemoOps ? buildMockAppLink(CHATBOT_URL, mockUser) : null;
   const copyChatSummary = async () => {
     await navigator.clipboard.writeText(chatSummaryText(account?.name ?? 'Your business', summary));
@@ -106,7 +120,7 @@ export default function AnalyticsPage() {
         <p className="eyebrow">FieldFlow</p>
         <h1>{account?.name ?? 'Your business'} — Analytics</h1>
         <div className="header-row">
-          <p className="subtitle">{isDemoOps ? 'Read-only Operations view. ' : ''}A quick look at how your business is doing.{isSupabaseConfigured ? '' : ' Demo date: August 19, 2026.'}{!isSupabaseConfigured && !isDemoOps ? ' Demo edits stay in this browser tab until sign-out.' : ''}</p>
+          <p className="subtitle">{isOperationsView ? 'Read-only Operations view. ' : ''}A quick look at how your business is doing.{isSupabaseConfigured ? '' : ' Demo date: August 19, 2026.'}{!isSupabaseConfigured && !isDemoOps ? ' Demo edits stay in this browser tab until sign-out.' : ''}</p>
           <label className="timeframe-control">Timeframe
             <select title="Updates every card and chart to the selected date range." value={timeframe} onChange={(event) => setTimeframe(event.target.value)}>
               <option value="this_week">This week</option>

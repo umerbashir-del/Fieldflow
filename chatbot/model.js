@@ -55,6 +55,7 @@ export function getAnswer(rawQuery, accountContext) {
   const accountId = account?.id;
   const scopedClients = accountContext?.clients ?? clients;
   const scopedJobs = accountContext?.jobs ?? jobs;
+  const referenceDate = accountContext?.referenceDate ?? DEMO_REFERENCE_DATE;
   if (!query) {
     return { text: 'Ask me something like “How do I create a job?” or “What’s my plan?”' };
   }
@@ -64,7 +65,7 @@ export function getAnswer(rawQuery, accountContext) {
   const lower = query.toLowerCase();
 
   if (isBusinessSummaryQuestion(lower)) {
-    const summary = buildAnalyticsSummary(scopedJobs, accountId, 'this_week', DEMO_REFERENCE_DATE);
+    const summary = buildAnalyticsSummary(scopedJobs, accountId, 'this_week', referenceDate);
     const changeText = summary.change === null ? 'There is no earlier period to compare.' : `${summary.change > 0 ? '+' : ''}${summary.change}% compared with the previous week.`;
     return { text: `${account.name} this week: ${summary.selectedJobs.length} jobs, ${summary.newClients} new clients, and ${summary.repeatClients} repeat clients. ${changeText}`, source: 'Analytics summary' };
   }

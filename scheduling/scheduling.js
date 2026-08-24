@@ -1,7 +1,9 @@
-import { ACCOUNT_ID, accounts, IS_CONTRACTOR_SESSION, seedClients, seedJobs, STATUS_LABELS, STATUS_VALUES, TEAM_MEMBERS } from './data.js';
+import { ACCOUNT_ID, accounts, IS_CONTRACTOR_SESSION, LIVE_MODE, seedClients, seedJobs, STATUS_LABELS, STATUS_VALUES, TEAM_MEMBERS } from './data.js';
 import { clientName, formatDate } from './formatters.js';
 import { addDaysISO, addMonthsISO, isSameMonth, monthDay, monthYearLabel, startOfMonthISO, startOfWeekISO, todayISO, weekdayShort } from './date-utils.js';
 import { loadMockAccountData, saveMockAccountData } from '../shared-data/mockDataSession.js';
+import { APP_URLS } from '../shared-data/appConfig.js';
+import { createFieldflowClient, createJob, deleteClient, deleteJob as deleteLiveJob, updateClient, updateJob } from '../shared-data/supabase.js';
 
 (function () {
   'use strict';
@@ -38,6 +40,7 @@ import { loadMockAccountData, saveMockAccountData } from '../shared-data/mockDat
   // falls back to the seed data from data.js so the app always has
   // something to show.
   function loadInitialState() {
+    if (LIVE_MODE) return { clients: seedClients, jobs: seedJobs };
     try {
     } catch (e) { /* fall back to the scoped demo seed */ }
     return loadMockAccountData(ACCOUNT_ID, { clients: seedClients, jobs: seedJobs });
@@ -57,7 +60,7 @@ import { loadMockAccountData, saveMockAccountData } from '../shared-data/mockDat
   // Saves the current clients/jobs arrays to localStorage. Called after
   // every add/edit/delete so changes aren't lost on refresh.
   function persist() {
-    saveMockAccountData(ACCOUNT_ID, { clients, jobs });
+    if (!LIVE_MODE) saveMockAccountData(ACCOUNT_ID, { clients, jobs });
   }
 
   // Generates a short unique id like "job_a1b2c3d4" for new records. The
@@ -127,10 +130,10 @@ import { loadMockAccountData, saveMockAccountData } from '../shared-data/mockDat
   const monthGrid = el('monthGrid');
   const newClientBtn = el('newClientBtn');
   const clientList = el('clientList');
-  const analyticsLink = document.querySelector('.analytics-link');
+  const analyticsLink = el('analyticsLink');
 
   if (analyticsLink) {
-    const link = new URL(analyticsLink.href);
+    const link = new URL(APP_URLS.analytics);
     const query = new URLSearchParams(window.location.search);
     link.searchParams.set('account_id', ACCOUNT_ID);
     ['demo_user', 'demo_name', 'demo_email', 'demo_company'].forEach((name) => {
@@ -140,7 +143,7 @@ import { loadMockAccountData, saveMockAccountData } from '../shared-data/mockDat
   }
   const chatLink = el('chatLink');
   if (chatLink) {
-    const link = new URL(chatLink.href);
+    const link = new URL(APP_URLS.chatbot);
     const query = new URLSearchParams(window.location.search);
     link.searchParams.set('account_id', ACCOUNT_ID);
     ['demo_user', 'demo_name', 'demo_email', 'demo_company'].forEach((name) => {
@@ -544,13 +547,15 @@ import { loadMockAccountData, saveMockAccountData } from '../shared-data/mockDat
   // (with a freshly generated id) in 'new' mode, or replaces the
   // matching job in place in 'edit' mode. Saves to localStorage and
   // closes the modal afterward.
-  function saveJob() {
+  async function saveJob() {
     if (!jobModal) return;
     const { draft, mode, originalId } = jobModal;
     if (!draft.title.trim() || !draft.client_id || !draft.scheduled_for) return;
     if (mode === 'new') {
-      jobs.push(Object.assign({ id: makeId('job'), account_id: ACCOUNT_ID }, draft, { title: draft.title.trim() }));
+      const nextJob = Object.assign({ id: makeId('job'), account_id: ACCOUNT_ID }, draft, { title: draft.title.trim() });
+      jobs.push(LIVE_MODE ? await createJob(nextJob) : nextJob);
     } else {
+      if (LIVE_MODE) await updateJob(originalId, Object.assign({}, draft, { title: draft.title.trim() }));
       jobs = jobs.map((j) => (j.id === originalId ? Object.assign({}, j, draft, { title: draft.title.trim() }) : j));
     }
     persist();
@@ -560,9 +565,10 @@ import { loadMockAccountData, saveMockAccountData } from '../shared-data/mockDat
   // Removes the job being edited from the `jobs` array entirely. Only
   // available in 'edit' mode (there's nothing to delete for a job that
   // hasn't been saved yet).
-  function deleteJob() {
+  async function deleteJob() {
     if (!jobModal || !jobModal.originalId) return;
     const id = jobModal.originalId;
+    if (LIVE_MODE) await deleteLiveJob(id);
     jobs = jobs.filter((j) => j.id !== id);
     persist();
     closeJobModal();
@@ -607,13 +613,15 @@ import { loadMockAccountData, saveMockAccountData } from '../shared-data/mockDat
     renderClientModal();
   }
 
-  function saveClientFn() {
+  async function saveClientFn() {
     if (!clientModal) return;
     const { draft, mode, originalId } = clientModal;
     if (!draft.name.trim()) return;
     if (mode === 'new') {
-      clients.push({ id: makeId('client'), account_id: ACCOUNT_ID, name: draft.name.trim(), city: draft.city.trim() });
+      const nextClient = { id: makeId('client'), account_id: ACCOUNT_ID, name: draft.name.trim(), city: draft.city.trim() };
+      clients.push(LIVE_MODE ? await createFieldflowClient(nextClient) : nextClient);
     } else {
+      if (LIVE_MODE) await updateClient(originalId, { name: draft.name.trim(), city: draft.city.trim() });
       clients = clients.map((c) => (c.id === originalId ? Object.assign({}, c, { name: draft.name.trim(), city: draft.city.trim() }) : c));
     }
     persist();
@@ -626,7 +634,7 @@ import { loadMockAccountData, saveMockAccountData } from '../shared-data/mockDat
   // (We use an inline message here rather than a browser confirm()/alert()
   // dialog, since those block the page and aren't reliable inside
   // embedded/sandboxed previews.)
-  function deleteClientFn() {
+  async function deleteClientFn() {
     if (!clientModal || !clientModal.originalId) return;
     const id = clientModal.originalId;
     const hasJobs = accountJobs().some((j) => j.client_id === id);
@@ -635,6 +643,7 @@ import { loadMockAccountData, saveMockAccountData } from '../shared-data/mockDat
       renderClientModal();
       return;
     }
+    if (LIVE_MODE) await deleteClient(id);
     clients = clients.filter((c) => c.id !== id);
     persist();
     closeClientModal();

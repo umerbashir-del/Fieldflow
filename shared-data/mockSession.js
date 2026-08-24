@@ -1,8 +1,12 @@
-export const mockUsers = [
+const DEMO_MODE_ENABLED = typeof __FIELDFLOW_DEMO__ === 'undefined' ? true : __FIELDFLOW_DEMO__;
+
+export const mockUsers = DEMO_MODE_ENABLED ? [
   { id: 'john', email: 'john@fieldflow.demo', password: 'john-demo-password', account_id: 'acct_northstar', name: 'John', role: 'owner' },
   { id: 'sarah', email: 'sarah@fieldflow.demo', password: 'sarah-demo-password', account_id: 'acct_horizon', name: 'Sarah', role: 'owner' },
   { id: 'ops', email: 'ops@fieldflow.demo', password: 'ops-demo-password', name: 'FieldFlow Operations', role: 'ops' },
-];
+] : [];
+
+export const isDemoModeAvailable = DEMO_MODE_ENABLED;
 
 export function authenticateMockUser(email, password) {
   const user = mockUsers.find((candidate) => candidate.email === email.trim().toLowerCase() && candidate.password === password);
