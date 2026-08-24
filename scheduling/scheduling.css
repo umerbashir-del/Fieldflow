@@ -56,6 +56,7 @@ input, select { width: 100%; padding: 12px; border: 1px solid var(--ff-color-bor
   background: var(--sched-bg-dark);
   color: var(--sched-ink-dark);
 }
+[data-theme="dark"] body { background: var(--sched-bg-dark); color: var(--sched-ink-dark); }
 [data-theme="dark"] .card,
 [data-theme="dark"] .job,
 [data-theme="dark"] .modal-card,
@@ -70,10 +71,12 @@ input, select { width: 100%; padding: 12px; border: 1px solid var(--ff-color-bor
 [data-theme="dark"] .muted { color: #9db3a5; }
 [data-theme="dark"] .eyebrow { color: var(--sched-brand-dark-mode); }
 [data-theme="dark"] button { background: var(--sched-brand-dark-mode); color: #0f1712; }
+[data-theme="dark"] .tab-btn { background: transparent; color: var(--sched-ink-dark); }
 [data-theme="dark"] button.btn-ghost { background: transparent; color: var(--sched-ink-dark); border: 1px solid var(--sched-border-dark); }
 [data-theme="dark"] input,
 [data-theme="dark"] select { background: #0f1712; color: var(--sched-ink-dark); border-color: var(--sched-border-dark); }
 [data-theme="dark"] .badge { background: #16321f; color: var(--sched-brand-dark-mode); }
+[data-theme="dark"] .empty-state { background: var(--sched-card-dark); border-color: var(--sched-border-dark); color: #b8cbbf; }
 [data-theme="dark"] .modal-backdrop { background: #000c; }
 
 .topbar-actions { display: flex; align-items: center; gap: 10px; }

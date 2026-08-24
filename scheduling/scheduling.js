@@ -617,6 +617,15 @@ import { createFieldflowClient, createJob, deleteClient, deleteJob as deleteLive
     if (!clientModal) return;
     const { draft, mode, originalId } = clientModal;
     if (!draft.name.trim()) return;
+    const normalizedName = draft.name.trim().toLocaleLowerCase();
+    const duplicate = accountClients().some((client) =>
+      client.id !== originalId && client.name.trim().toLocaleLowerCase() === normalizedName
+    );
+    if (duplicate) {
+      clientNotice = 'A client with this name already exists for this company.';
+      renderClientModal();
+      return;
+    }
     if (mode === 'new') {
       const nextClient = { id: makeId('client'), account_id: ACCOUNT_ID, name: draft.name.trim(), city: draft.city.trim() };
       clients.push(LIVE_MODE ? await createFieldflowClient(nextClient) : nextClient);

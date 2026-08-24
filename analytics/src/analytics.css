@@ -17,6 +17,7 @@ h2 { font-size: 1.25rem; margin: 6px 0 0; }
 .card { background: var(--ff-color-surface); border: 1px solid var(--ff-color-border); border-radius: 16px; box-shadow: var(--ff-shadow-card); padding: 24px; }
 .primary-card { background: var(--ff-color-brand-700); border-color: var(--ff-color-brand-700); color: #fff; }
 .primary-card .card-label { color: #d8e2e6; }
+.primary-card .helper { color: #d8e2e6; }
 .metric { font-size: 2.75rem; font-weight: 750; letter-spacing: -.06em; line-height: 1; margin: 14px 0 0; }
 .positive { color: var(--ff-color-success); }
 .negative { color: var(--ff-color-danger); }

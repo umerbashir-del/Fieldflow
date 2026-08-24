@@ -152,3 +152,19 @@ test('reports a zero-job selected period against a populated comparison period',
   assert.equal(summary.comparisonJobs.length, 1);
   assert.equal(summary.change, -100);
 });
+
+test('calculates a large account dataset within the performance budget', () => {
+  const largeJobs = Array.from({ length: 10_000 }, (_, index) => ({
+    id: `load-${index}`,
+    account_id: ACCOUNT_ID,
+    client_id: `client-${index % 500}`,
+    scheduled_for: `2026-08-${String((index % 28) + 1).padStart(2, '0')}`,
+    status: index % 4 === 0 ? 'cancelled' : 'scheduled',
+  }));
+  const started = performance.now();
+  const summary = buildAnalyticsSummary(largeJobs, ACCOUNT_ID, 'last_four_weeks', REFERENCE_DATE);
+
+  assert.equal(summary.selectedJobs.length + summary.comparisonJobs.length > 0, true);
+  assert.equal(summary.trend.length, 4);
+  assert.ok(performance.now() - started < 500, '10,000-job summary exceeded 500 ms');
+});
