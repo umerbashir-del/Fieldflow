@@ -1,10 +1,12 @@
+@import '../shared-data/styles.css';
+
 :root{
   font-family:Inter,ui-sans-serif,system-ui,sans-serif;
-  color:#15231c;background:#f5f8f5;
-  --brand:#17613c;--brand-light:#e1f4e7;--border:#dbe6de;
-  --muted:#617168;--card:#fff;--shadow:0 3px 14px #1835240a;
-  --warning-bg:#fef1da;--warning:#92640c;--blue-bg:#e4eefc;--blue:#1c4f96;
-  --danger-bg:#fbe4e4;--danger:#9c2b2b;
+  color:var(--ff-color-text);background:var(--ff-color-page);
+  --brand:var(--ff-color-brand-700);--brand-light:var(--ff-color-brand-100);--border:var(--ff-color-border);
+  --muted:var(--ff-color-muted);--card:var(--ff-color-surface);--shadow:var(--ff-shadow-card);
+  --warning-bg:#f7efd9;--warning:var(--ff-color-warning);--blue-bg:#e5ebea;--blue:var(--ff-color-brand-600);
+  --danger-bg:#f7ecec;--danger:var(--ff-color-danger);
 }
 [data-theme="dark"]{
   color-scheme:dark;color:#e7f1ea;background:#0f1712;
@@ -15,15 +17,15 @@
 }
 *{box-sizing:border-box}
 body{margin:0}
-.ops-login-page{align-items:center;background:#f5f7fb;display:flex;justify-content:center;min-height:100vh;padding:24px}
-.ops-login-card{background:#fff;border:1px solid #e5e9f0;border-radius:16px;box-shadow:0 8px 20px rgb(16 24 40 / 8%);max-width:480px;padding:32px;width:100%}
+.ops-login-page{align-items:center;background:var(--ff-color-page);display:flex;justify-content:center;min-height:100vh;padding:24px}
+.ops-login-card{background:var(--ff-color-surface);border:1px solid var(--ff-color-border);border-radius:16px;box-shadow:var(--ff-shadow-card);max-width:480px;padding:32px;width:100%}
 .ops-login-card h1{margin:8px 0 12px}
-.ops-login-details{background:#edf4ff;border:1px solid #c7daf6;border-radius:8px;color:#284564;display:grid;font-size:.84rem;gap:5px;margin-top:20px;padding:12px}
-.ops-login-details code{background:#fff;border-radius:3px;color:#173c71;padding:1px 4px}
+.ops-login-details{background:var(--ff-color-accent-100);border:1px solid var(--ff-color-taupe-400);border-radius:8px;color:var(--ff-color-accent-600);display:grid;font-size:.84rem;gap:5px;margin-top:20px;padding:12px}
+.ops-login-details code{background:var(--ff-color-surface);border-radius:3px;color:var(--ff-color-brand-700);padding:1px 4px}
 .ops-login-form{display:grid;gap:15px;margin-top:22px}
 .ops-login-form label{color:#4c5968;display:grid;font-size:.85rem;font-weight:700;gap:7px}
 .ops-login-form input{border:1px solid #bfcfc4;border-radius:8px;font:inherit;padding:11px}
-.ops-login-error{color:#b42318;font-size:.86rem;margin:0;min-height:1.2em}
+.ops-login-error{color:var(--ff-color-danger);font-size:.86rem;margin:0;min-height:1.2em}
 .ops-reset-message{color:var(--brand);font-size:.86rem;margin:0;min-height:1.2em}
 .ops-auth-link{background:transparent;color:var(--brand);font-size:.86rem;padding:2px 0;text-align:left;text-decoration:underline}
 .ops-login-form h2{font-size:1.25rem;margin:0}
