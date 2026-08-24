@@ -1,7 +1,7 @@
 import { accounts, clients, jobs } from './data.js';
 import { getAnswer } from './model.js';
 import { buildMockAppLink, isMockContractor, mockUserFromSearch } from '../shared-data/mockSession.js';
-import { clearMockDataSession, loadMockAccountData } from '../shared-data/mockDataSession.js';
+import { buildMockDataLink, clearMockDataSession, loadMockAccountData } from '../shared-data/mockDataSession.js';
 import { APP_URLS } from '../shared-data/appConfig.js';
 import { getAccountData, getSignedInAccount, isSupabaseConfigured, signOut } from '../shared-data/supabase.js';
 
@@ -74,8 +74,8 @@ function renderAccountOptions() {
 }
 
 function renderAppLinks() {
-  schedulingLink.href = isSupabaseConfigured ? APP_URLS.scheduling : buildMockAppLink(APP_URLS.scheduling, mockUser);
-  analyticsLink.href = isSupabaseConfigured ? APP_URLS.analytics : buildMockAppLink(APP_URLS.analytics, mockUser);
+  schedulingLink.href = isSupabaseConfigured ? APP_URLS.scheduling : buildMockDataLink(buildMockAppLink(APP_URLS.scheduling, mockUser));
+  analyticsLink.href = isSupabaseConfigured ? APP_URLS.analytics : buildMockDataLink(buildMockAppLink(APP_URLS.analytics, mockUser));
 }
 
 function renderChips() {

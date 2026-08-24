@@ -157,3 +157,13 @@ button.btn-danger { background: #c23b3b; }
 [data-theme="dark"] .empty-state { border-color: var(--sched-border-dark); color: #9db3a5; }
 
 section[hidden] { display: none; }
+
+@media (max-width: 600px) {
+  main { padding: 32px 16px; }
+  header, .topbar { align-items: stretch; flex-direction: column; }
+  .topbar-actions { flex-wrap: wrap; width: 100%; }
+  .topbar-actions button { flex: 1 1 auto; }
+  .tabs { max-width: 100%; overflow-x: auto; }
+  .job, .agenda-item, .client-row { align-items: flex-start; flex-direction: column; }
+  .cal-nav { flex-wrap: wrap; }
+}

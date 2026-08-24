@@ -1,7 +1,7 @@
 import { ACCOUNT_ID, accounts, IS_CONTRACTOR_SESSION, LIVE_MODE, seedClients, seedJobs, STATUS_LABELS, STATUS_VALUES, TEAM_MEMBERS } from './data.js';
 import { clientName, formatDate } from './formatters.js';
 import { addDaysISO, addMonthsISO, isSameMonth, monthDay, monthYearLabel, startOfMonthISO, startOfWeekISO, todayISO, weekdayShort } from './date-utils.js';
-import { loadMockAccountData, saveMockAccountData } from '../shared-data/mockDataSession.js';
+import { buildMockDataLink, loadMockAccountData, saveMockAccountData } from '../shared-data/mockDataSession.js';
 import { APP_URLS } from '../shared-data/appConfig.js';
 import { createFieldflowClient, createJob, deleteClient, deleteJob as deleteLiveJob, updateClient, updateJob } from '../shared-data/supabase.js';
 
@@ -60,7 +60,10 @@ import { createFieldflowClient, createJob, deleteClient, deleteJob as deleteLive
   // Saves the current clients/jobs arrays to localStorage. Called after
   // every add/edit/delete so changes aren't lost on refresh.
   function persist() {
-    if (!LIVE_MODE) saveMockAccountData(ACCOUNT_ID, { clients, jobs });
+    if (!LIVE_MODE) {
+      saveMockAccountData(ACCOUNT_ID, { clients, jobs }, { clients: seedClients, jobs: seedJobs });
+      refreshMockDataLinks();
+    }
   }
 
   // Generates a short unique id like "job_a1b2c3d4" for new records. The
@@ -140,6 +143,9 @@ import { createFieldflowClient, createJob, deleteClient, deleteJob as deleteLive
       if (query.get(name)) link.searchParams.set(name, query.get(name));
     });
     analyticsLink.href = link.toString();
+    analyticsLink.addEventListener('click', () => {
+      analyticsLink.href = buildMockDataLink(analyticsLink.href);
+    });
   }
   const chatLink = el('chatLink');
   if (chatLink) {
@@ -150,6 +156,15 @@ import { createFieldflowClient, createJob, deleteClient, deleteJob as deleteLive
       if (query.get(name)) link.searchParams.set(name, query.get(name));
     });
     chatLink.href = link.toString();
+    chatLink.addEventListener('click', () => {
+      chatLink.href = buildMockDataLink(chatLink.href);
+    });
+  }
+
+  function refreshMockDataLinks() {
+    if (LIVE_MODE) return;
+    if (analyticsLink) analyticsLink.href = buildMockDataLink(analyticsLink.href);
+    if (chatLink) chatLink.href = buildMockDataLink(chatLink.href);
   }
 
   // Job modal elements — the popup used for both "New job" and "Edit job".

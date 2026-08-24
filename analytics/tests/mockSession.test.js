@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { authenticateMockUser, buildMockAppLink, createMockAccount, isMockContractor, mockUserFromSearch } from '../../shared-data/mockSession.js';
 import { friendlyAuthError, passwordResetConfirmation } from '../../shared-data/authMessages.js';
+import { buildMockDataLink, loadMockAccountData, saveMockAccountData } from '../../shared-data/mockDataSession.js';
 
 test('maps John and Sarah to separate demo accounts', () => {
   assert.equal(authenticateMockUser('john@fieldflow.demo', 'john-demo-password').account_id, 'acct_northstar');
@@ -55,4 +56,23 @@ test('turns Supabase authentication errors into useful sign-in guidance', () => 
 test('uses distinct live and local-demo password-reset confirmations', () => {
   assert.match(passwordResetConfirmation('john@example.com', true), /If john@example.com is registered/);
   assert.match(passwordResetConfirmation('john@example.com', false), /Demo only/);
+});
+
+test('carries account-scoped demo edits across different local app origins', () => {
+  const originalWindow = globalThis.window;
+  try {
+    globalThis.window = { name: '', location: { search: '' } };
+    const edited = {
+      clients: [{ id: 'client_one', account_id: 'acct_northstar', name: 'One Client' }],
+      jobs: [{ id: 'job_new', account_id: 'acct_northstar', client_id: 'client_one', scheduled_for: '2026-08-19' }],
+    };
+    saveMockAccountData('acct_northstar', edited);
+    const link = buildMockDataLink('http://127.0.0.1:5173/?demo_user=john&account_id=acct_northstar');
+
+    globalThis.window = { name: '', location: { search: new URL(link).search } };
+    assert.deepEqual(loadMockAccountData('acct_northstar', { clients: [], jobs: [] }), edited);
+    assert.ok(globalThis.window.name.includes('job_new'));
+  } finally {
+    globalThis.window = originalWindow;
+  }
 });

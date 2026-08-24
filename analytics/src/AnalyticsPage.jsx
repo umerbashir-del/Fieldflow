@@ -3,7 +3,7 @@ import demoAccounts from '../../shared-data/accounts.json';
 import demoJobs from '../../shared-data/jobs.json';
 import { getAccountById, getJobsForAccount, getOperationsSession, getSignedInAccount, isSupabaseConfigured, signOut } from '../../shared-data/supabase.js';
 import { buildMockAppLink, isMockContractor, mockUserFromSearch } from '../../shared-data/mockSession.js';
-import { loadMockAccountData } from '../../shared-data/mockDataSession.js';
+import { buildMockDataLink, loadMockAccountData } from '../../shared-data/mockDataSession.js';
 import { buildAnalyticsSummary, buildSchedulingLink, chatSummaryText } from './analyticsSummary.js';
 import SignInPage from './SignInPage.jsx';
 import { APP_URLS } from '../../shared-data/appConfig.js';
@@ -84,10 +84,10 @@ export default function AnalyticsPage() {
     const mockSchedulingLink = new URL(buildMockAppLink(schedulingLinkUrl.toString(), mockUser));
     schedulingLinkUrl.search = mockSchedulingLink.search;
   }
-  const schedulingLink = schedulingLinkUrl.toString();
+  const schedulingLink = !isSupabaseConfigured && !isDemoOps ? buildMockDataLink(schedulingLinkUrl.toString()) : schedulingLinkUrl.toString();
   const returnLink = isOperationsView ? `${OPERATIONS_URL}${isDemoOps ? '?demo_user=ops' : ''}&account_id=${encodeURIComponent(accountId)}`.replace('?&', '?') : schedulingLink;
   const returnLabel = isOperationsView ? 'Back to Operations' : 'Back to Scheduling';
-  const chatLink = !isSupabaseConfigured && !isDemoOps ? buildMockAppLink(CHATBOT_URL, mockUser) : null;
+  const chatLink = !isSupabaseConfigured && !isDemoOps ? buildMockDataLink(buildMockAppLink(CHATBOT_URL, mockUser)) : null;
   const copyChatSummary = async () => {
     await navigator.clipboard.writeText(chatSummaryText(account?.name ?? 'Your business', summary));
     setCopyStatus('Copied — paste this into FieldFlow Chat.');
