@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "scheduling",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev:scheduling"],
+      "port": 5173
+    },
+    {
+      "name": "chatbot",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev:chatbot"],
+      "port": 5175
+    }
+  ]
+}
