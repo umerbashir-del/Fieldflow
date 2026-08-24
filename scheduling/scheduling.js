@@ -7,7 +7,7 @@ import { addDaysISO, addMonthsISO, isSameMonth, monthDay, monthYearLabel, startO
 
   // Keys used to save app state in the browser's localStorage, so your
   // data and theme choice survive a page refresh.
-  const STORAGE_KEY = 'fieldflow_scheduling_local_v1';
+  const STORAGE_KEY = 'fieldflow_scheduling_local_v2_' + ACCOUNT_ID;
   const THEME_KEY = 'fieldflow_scheduling_theme';
 
   // ---------------------------------------------------------------
@@ -95,7 +95,7 @@ import { addDaysISO, addMonthsISO, isSameMonth, monthDay, monthYearLabel, startO
   // there's only ever one account (ACCOUNT_ID, from data.js), but filtering
   // through these helpers everywhere — instead of using `clients`/`jobs`
   // directly — means the rest of the code doesn't need to change when a
-  // second account shows up later.
+  // different company signs in.
   function accountJobs() { return jobs.filter((j) => j.account_id === ACCOUNT_ID); }
   function accountClients() { return clients.filter((c) => c.account_id === ACCOUNT_ID); }
 
@@ -127,6 +127,27 @@ import { addDaysISO, addMonthsISO, isSameMonth, monthDay, monthYearLabel, startO
   const monthGrid = el('monthGrid');
   const newClientBtn = el('newClientBtn');
   const clientList = el('clientList');
+  const analyticsLink = document.querySelector('.analytics-link');
+
+  if (analyticsLink) {
+    const link = new URL(analyticsLink.href);
+    const query = new URLSearchParams(window.location.search);
+    link.searchParams.set('account_id', ACCOUNT_ID);
+    ['demo_user', 'demo_name', 'demo_email', 'demo_company'].forEach((name) => {
+      if (query.get(name)) link.searchParams.set(name, query.get(name));
+    });
+    analyticsLink.href = link.toString();
+  }
+  const chatLink = el('chatLink');
+  if (chatLink) {
+    const link = new URL(chatLink.href);
+    const query = new URLSearchParams(window.location.search);
+    link.searchParams.set('account_id', ACCOUNT_ID);
+    ['demo_user', 'demo_name', 'demo_email', 'demo_company'].forEach((name) => {
+      if (query.get(name)) link.searchParams.set(name, query.get(name));
+    });
+    chatLink.href = link.toString();
+  }
 
   // Job modal elements — the popup used for both "New job" and "Edit job".
   const jobModalBackdrop = el('jobModalBackdrop');

@@ -15,6 +15,18 @@
 }
 *{box-sizing:border-box}
 body{margin:0}
+.ops-login-page{align-items:center;background:#f5f7fb;display:flex;justify-content:center;min-height:100vh;padding:24px}
+.ops-login-card{background:#fff;border:1px solid #e5e9f0;border-radius:16px;box-shadow:0 8px 20px rgb(16 24 40 / 8%);max-width:480px;padding:32px;width:100%}
+.ops-login-card h1{margin:8px 0 12px}
+.ops-login-details{background:#edf4ff;border:1px solid #c7daf6;border-radius:8px;color:#284564;display:grid;font-size:.84rem;gap:5px;margin-top:20px;padding:12px}
+.ops-login-details code{background:#fff;border-radius:3px;color:#173c71;padding:1px 4px}
+.ops-login-form{display:grid;gap:15px;margin-top:22px}
+.ops-login-form label{color:#4c5968;display:grid;font-size:.85rem;font-weight:700;gap:7px}
+.ops-login-form input{border:1px solid #bfcfc4;border-radius:8px;font:inherit;padding:11px}
+.ops-login-error{color:#b42318;font-size:.86rem;margin:0;min-height:1.2em}
+.ops-reset-message{color:var(--brand);font-size:.86rem;margin:0;min-height:1.2em}
+.ops-auth-link{background:transparent;color:var(--brand);font-size:.86rem;padding:2px 0;text-align:left;text-decoration:underline}
+.ops-login-form h2{font-size:1.25rem;margin:0}
 main{max-width:1180px;margin:0 auto;padding:42px 24px 64px}
 .topbar{display:flex;justify-content:space-between;gap:20px;align-items:flex-start;margin-bottom:28px}
 .eyebrow{color:var(--brand);font-weight:750;letter-spacing:.08em;text-transform:uppercase;font-size:.75rem;margin:0 0 7px}

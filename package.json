@@ -13,9 +13,11 @@
     "dev:chatbot": "npm run dev --workspace=@fieldflow/chatbot",
     "dev:analytics": "npm run dev --workspace=@fieldflow/analytics",
     "seed:supabase": "node scripts/seed-supabase.mjs",
+    "test:e2e": "playwright test",
     "build": "npm run build --workspaces"
   },
   "devDependencies": {
+    "@playwright/test": "^1.62.1",
     "@vitejs/plugin-react": "latest",
     "vite": "latest"
   },

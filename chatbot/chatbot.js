@@ -1,5 +1,6 @@
 import { accounts } from './data.js';
 import { getAnswer } from './model.js';
+import { mockUserFromSearch } from '../shared-data/mockSession.js';
 
 const STORAGE_KEY = 'fieldflow_chatbot_account_v1';
 
@@ -18,7 +19,9 @@ const STATUS_LABEL = {
   cancelled: 'Cancelled',
 };
 
-let accountId = loadAccount();
+const mockUser = mockUserFromSearch(window.location.search);
+const mockAccount = mockUser && (accounts.find((account) => account.id === mockUser.account_id) ?? { id: mockUser.account_id, name: mockUser.company_name ?? 'Your new business', plan: 'Starter' });
+let accountId = mockUser?.account_id ?? loadAccount();
 let typing = false;
 const messages = [
   { role: 'bot', text: "Hi, I'm the FieldFlow assistant. Ask me setup or how-to questions, or ask about your account." },
@@ -43,9 +46,12 @@ const chatInput = document.getElementById('chatInput');
 const chipsEl = document.getElementById('suggestionChips');
 
 function renderAccountOptions() {
-  accountSelect.innerHTML = accounts
+  const visibleAccounts = mockUser ? [mockAccount] : accounts;
+  accountSelect.innerHTML = visibleAccounts
     .map((a) => `<option value="${a.id}" ${a.id === accountId ? 'selected' : ''}>${a.name}</option>`)
     .join('');
+  accountSelect.disabled = Boolean(mockUser);
+  if (mockUser) accountSelect.title = `Demo mode: signed in as ${mockUser.name}.`;
 }
 
 function renderChips() {

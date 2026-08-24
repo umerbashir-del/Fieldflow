@@ -1,33 +1,20 @@
-// Local mock data for the Scheduling area.
-//
-// Shaped to match the team's real shared-data files field-for-field
-// (shared-data/accounts.json, clients.json, jobs.json), so wiring this
-// up to the real shared data later is a source swap, not a rewrite —
-// see the notes in scheduling.js at the top of the "DATA ACCESS" section.
-//
-// This module is served through Vite. That lets the production build include
-// its data and makes its dependencies explicit.
+import sharedAccounts from '../shared-data/accounts.json';
+import sharedClients from '../shared-data/clients.json';
+import sharedJobs from '../shared-data/jobs.json';
+import { mockUserFromSearch } from '../shared-data/mockSession.js';
 
-export const ACCOUNT_ID = 'acct_northstar';
+const requestedAccountId = new URLSearchParams(window.location.search).get('account_id');
+const mockUser = mockUserFromSearch(window.location.search);
 
-export const accounts = [
-  { id: 'acct_northstar', name: 'Northstar Field Services', plan: 'Growth' },
-];
+export const ACCOUNT_ID = mockUser?.account_id ?? (sharedAccounts.some((account) => account.id === requestedAccountId) ? requestedAccountId : 'acct_northstar');
 
-export const seedClients = [
-  { id: 'client_evergreen', account_id: 'acct_northstar', name: 'Evergreen Properties', city: 'Raleigh' },
-  { id: 'client_harbor', account_id: 'acct_northstar', name: 'Harbor Dental Group', city: 'Durham' },
-  { id: 'client_summit', account_id: 'acct_northstar', name: 'Summit Retail', city: 'Cary' },
-  { id: 'client_pinecrest', account_id: 'acct_northstar', name: 'Pinecrest Apartments', city: 'Chapel Hill' },
-];
+export const accounts = mockUser?.company_name && !sharedAccounts.some((account) => account.id === mockUser.account_id)
+  ? [...sharedAccounts, { id: mockUser.account_id, name: mockUser.company_name, plan: 'Starter' }]
+  : sharedAccounts;
 
-export const seedJobs = [
-  { id: 'job_101', account_id: 'acct_northstar', client_id: 'client_evergreen', title: 'HVAC inspection', scheduled_for: '2026-08-20', status: 'scheduled', assignee: 'Maya Chen' },
-  { id: 'job_102', account_id: 'acct_northstar', client_id: 'client_harbor', title: 'Equipment calibration', scheduled_for: '2026-08-20', status: 'in_progress', assignee: 'Jordan Lee' },
-  { id: 'job_103', account_id: 'acct_northstar', client_id: 'client_summit', title: 'Safety follow-up', scheduled_for: '2026-08-22', status: 'scheduled', assignee: 'Maya Chen' },
-  { id: 'job_104', account_id: 'acct_northstar', client_id: 'client_evergreen', title: 'Filter replacement', scheduled_for: '2026-08-17', status: 'completed', assignee: 'Jordan Lee' },
-  { id: 'job_105', account_id: 'acct_northstar', client_id: 'client_pinecrest', title: 'Water heater check', scheduled_for: '2026-08-20', status: 'scheduled', assignee: 'Maya Chen' },
-];
+export const seedClients = sharedClients;
+
+export const seedJobs = sharedJobs;
 
 // Not part of the real shared schema yet — local-only helper lists for
 // the UI's assignee/status pickers.

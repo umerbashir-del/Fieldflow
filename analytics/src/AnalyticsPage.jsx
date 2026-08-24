@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import demoAccounts from '../../shared-data/accounts.json';
 import demoJobs from '../../shared-data/jobs.json';
 import { getJobsForAccount, getSignedInAccount, isSupabaseConfigured, signOut } from '../../shared-data/supabase.js';
+import { mockUserFromSearch } from '../../shared-data/mockSession.js';
 import { buildAnalyticsSummary, buildSchedulingLink, chatSummaryText } from './analyticsSummary.js';
 import SignInPage from './SignInPage.jsx';
 
@@ -38,13 +39,16 @@ export default function AnalyticsPage() {
     if (isSupabaseConfigured) loadLiveData();
   }, []);
 
+  const mockUser = mockUserFromSearch(window.location.search);
+
   if (isSupabaseConfigured && sessionState.loading) return <main className="analytics-page"><p className="subtitle">Loading your FieldFlow account…</p></main>;
   if (isSupabaseConfigured && !sessionState.user) return <SignInPage onSignedIn={loadLiveData} />;
   if (isSupabaseConfigured && sessionState.error) return <main className="analytics-page"><p className="eyebrow">FieldFlow</p><h1>Account setup needed</h1><p className="subtitle">{sessionState.error}</p></main>;
+  if (!isSupabaseConfigured && !mockUser) return <main className="analytics-page"><p className="eyebrow">FieldFlow demo</p><h1>Start in Scheduling</h1><p className="subtitle">Sign in through Scheduling first so FieldFlow can show the right company data.</p><p className="scheduler-action"><a className="action-link" href={SCHEDULING_URL}>Open Scheduling</a></p></main>;
 
-  const account = isSupabaseConfigured ? sessionState.account : demoAccounts.find((item) => item.id === DEMO_ACCOUNT_ID);
-  const accountJobs = isSupabaseConfigured ? sessionState.jobs : demoJobs;
-  const accountId = account?.id ?? DEMO_ACCOUNT_ID;
+  const account = isSupabaseConfigured ? sessionState.account : demoAccounts.find((item) => item.id === mockUser.account_id) ?? { id: mockUser.account_id, name: mockUser.company_name ?? 'Your new business', plan: 'Starter' };
+  const accountJobs = isSupabaseConfigured ? sessionState.jobs : demoJobs.filter((job) => job.account_id === mockUser.account_id);
+  const accountId = account?.id ?? (isSupabaseConfigured ? DEMO_ACCOUNT_ID : mockUser.account_id);
   const summary = buildAnalyticsSummary(accountJobs, accountId, timeframe, DEMO_REFERENCE_DATE);
   const { selectedPeriod, selectedEnd, selectedRangeLabel, comparisonRangeLabel, selectedJobs, comparisonJobs, change, hasCompleteComparison, newClients, repeatClients, trend } = summary;
   const displayedChange = hasCompleteComparison ? change : null;
@@ -53,7 +57,9 @@ export default function AnalyticsPage() {
   const newClientShare = totalClients === 0 ? 0 : (newClients / totalClients) * 100;
   const newClientPercent = Math.round(newClientShare);
   const repeatClientPercent = totalClients === 0 ? 0 : 100 - newClientPercent;
-  const schedulingLink = buildSchedulingLink(SCHEDULING_URL, accountId, selectedPeriod.start, selectedEnd);
+  const schedulingLinkUrl = new URL(buildSchedulingLink(SCHEDULING_URL, accountId, selectedPeriod.start, selectedEnd));
+  if (!isSupabaseConfigured) schedulingLinkUrl.searchParams.set('demo_user', mockUser.id);
+  const schedulingLink = schedulingLinkUrl.toString();
   const copyChatSummary = async () => {
     await navigator.clipboard.writeText(chatSummaryText(account?.name ?? 'Your business', summary));
     setCopyStatus('Copied — paste this into FieldFlow Chat.');

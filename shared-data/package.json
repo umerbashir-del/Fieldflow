@@ -1,0 +1,5 @@
+{
+  "name": "@fieldflow/shared-data",
+  "private": true,
+  "type": "module"
+}
