@@ -1,0 +1,7 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "npm run build:deploy",
+  "outputDirectory": "deploy",
+  "cleanUrls": true,
+  "trailingSlash": true
+}

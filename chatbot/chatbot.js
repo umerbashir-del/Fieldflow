@@ -2,6 +2,8 @@ import { accounts, clients, jobs } from './data.js';
 import { getAnswer } from './model.js';
 import { buildMockAppLink, isMockContractor, mockUserFromSearch } from '../shared-data/mockSession.js';
 import { clearMockDataSession, loadMockAccountData } from '../shared-data/mockDataSession.js';
+import { APP_URLS } from '../shared-data/appConfig.js';
+import { getAccountData, getSignedInAccount, isSupabaseConfigured, signOut } from '../shared-data/supabase.js';
 
 const STORAGE_KEY = 'fieldflow_chatbot_account_v1';
 
@@ -21,11 +23,17 @@ const STATUS_LABEL = {
 };
 
 const mockUser = mockUserFromSearch(window.location.search);
-const mockAccount = mockUser && (accounts.find((account) => account.id === mockUser.account_id) ?? { id: mockUser.account_id, name: mockUser.company_name ?? 'Your new business', plan: 'Starter' });
+const liveContext = isSupabaseConfigured ? await getSignedInAccount() : null;
+const activeAccount = isSupabaseConfigured
+  ? liveContext?.account
+  : mockUser && (accounts.find((account) => account.id === mockUser.account_id) ?? { id: mockUser.account_id, name: mockUser.company_name ?? 'Your new business', plan: 'Starter' });
+const liveData = isSupabaseConfigured && activeAccount ? await getAccountData(activeAccount.id) : null;
 const chatGate = document.getElementById('chatLoginGate');
 const chatApp = document.getElementById('chatApp');
+document.getElementById('chatGateSchedulingLink').href = APP_URLS.scheduling;
+if (isSupabaseConfigured) document.getElementById('chatDemoNotice').hidden = true;
 
-if (!isMockContractor(mockUser)) {
+if (isSupabaseConfigured ? !activeAccount : !isMockContractor(mockUser)) {
   chatGate.hidden = false;
 } else {
   chatApp.hidden = false;
@@ -33,7 +41,7 @@ if (!isMockContractor(mockUser)) {
 }
 
 function startChat() {
-let accountId = mockUser.account_id;
+let accountId = activeAccount.id;
 let typing = false;
 const messages = [
   { role: 'bot', text: "Hi, I'm the FieldFlow assistant. Ask me setup or how-to questions, or ask about your account." },
@@ -53,7 +61,7 @@ const chatInput = document.getElementById('chatInput');
 const chipsEl = document.getElementById('suggestionChips');
 
 function renderAccountOptions() {
-  const visibleAccounts = mockUser ? [mockAccount] : accounts;
+  const visibleAccounts = [activeAccount];
   accountSelect.replaceChildren(...visibleAccounts.map((account) => {
     const option = document.createElement('option');
     option.value = account.id;
@@ -61,13 +69,13 @@ function renderAccountOptions() {
     option.textContent = account.name;
     return option;
   }));
-  accountSelect.disabled = Boolean(mockUser);
-  if (mockUser) accountSelect.title = `Demo mode: signed in as ${mockUser.name}.`;
+  accountSelect.disabled = true;
+  accountSelect.title = isSupabaseConfigured ? 'Account is determined by your secure sign-in.' : `Demo mode: signed in as ${mockUser.name}.`;
 }
 
 function renderAppLinks() {
-  schedulingLink.href = buildMockAppLink('http://127.0.0.1:5174/', mockUser);
-  analyticsLink.href = buildMockAppLink('http://127.0.0.1:5173/', mockUser);
+  schedulingLink.href = isSupabaseConfigured ? APP_URLS.scheduling : buildMockAppLink(APP_URLS.scheduling, mockUser);
+  analyticsLink.href = isSupabaseConfigured ? APP_URLS.analytics : buildMockAppLink(APP_URLS.analytics, mockUser);
 }
 
 function renderChips() {
@@ -143,8 +151,12 @@ function sendMessage(text) {
   renderMessages();
 
   window.setTimeout(() => {
-    const data = loadMockAccountData(mockAccount.id, { clients, jobs });
-    const result = getAnswer(trimmed, { account: mockAccount, ...data });
+    const data = isSupabaseConfigured ? liveData : loadMockAccountData(activeAccount.id, { clients, jobs });
+    const result = getAnswer(trimmed, {
+      account: activeAccount,
+      ...data,
+      referenceDate: isSupabaseConfigured ? new Date() : undefined,
+    });
     typing = false;
     messages.push({ role: 'bot', text: result.text, source: result.source, jobs: result.jobs });
     renderMessages();
@@ -164,9 +176,10 @@ accountSelect.addEventListener('change', () => {
   renderMessages();
 });
 
-signOutButton.addEventListener('click', () => {
+signOutButton.addEventListener('click', async () => {
+  if (isSupabaseConfigured) await signOut();
   clearMockDataSession();
-  window.location.assign('http://127.0.0.1:5174/');
+  window.location.assign(APP_URLS.scheduling);
 });
 
 renderAccountOptions();

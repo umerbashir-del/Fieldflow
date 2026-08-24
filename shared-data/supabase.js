@@ -21,13 +21,47 @@ export async function signIn(email, password) {
   if (error) throw error;
 }
 
+export async function signUpBusiness({ email, password, ownerName, companyName }) {
+  const { data, error } = await requireSupabase().auth.signUp({
+    email,
+    password,
+    options: {
+      data: {
+        signup_type: 'fieldflow_business',
+        owner_name: ownerName.trim(),
+        company_name: companyName.trim(),
+      },
+    },
+  });
+  if (error) throw error;
+  return data;
+}
+
 export async function signOut() {
   const { error } = await requireSupabase().auth.signOut();
   if (error) throw error;
 }
 
+export async function sendPasswordReset(email, redirectTo) {
+  const { error } = await requireSupabase().auth.resetPasswordForEmail(email, { redirectTo });
+  if (error) throw error;
+}
+
+export async function getSession() {
+  const { data, error } = await requireSupabase().auth.getSession();
+  if (error) throw error;
+  return data.session;
+}
+
+export function onAuthStateChange(callback) {
+  return requireSupabase().auth.onAuthStateChange(callback).data.subscription;
+}
+
 export async function getSignedInAccount() {
   const client = requireSupabase();
+  const { data: { session }, error: sessionError } = await client.auth.getSession();
+  if (sessionError) throw sessionError;
+  if (!session) return null;
   const { data: { user }, error: userError } = await client.auth.getUser();
   if (userError) throw userError;
   if (!user) return null;
@@ -44,12 +78,51 @@ export async function getSignedInAccount() {
   return { user, membership: data, account: data.accounts };
 }
 
+export async function getOperationsSession() {
+  const client = requireSupabase();
+  const { data: { session }, error: sessionError } = await client.auth.getSession();
+  if (sessionError) throw sessionError;
+  if (!session) return null;
+  const { data: { user }, error: userError } = await client.auth.getUser();
+  if (userError) throw userError;
+  if (!user) return null;
+  const { data, error } = await client
+    .from('operations_staff')
+    .select('user_id')
+    .eq('user_id', user.id)
+    .maybeSingle();
+  if (error) throw error;
+  return data ? { user, staff: data } : { user, staff: null };
+}
+
+export async function getOperationsData() {
+  const client = requireSupabase();
+  const [accountResult, clientResult, jobResult] = await Promise.all([
+    client.from('accounts').select('*').order('name'),
+    client.from('clients').select('*').order('name'),
+    client.from('jobs').select('*').order('scheduled_for', { ascending: false }),
+  ]);
+  const error = accountResult.error || clientResult.error || jobResult.error;
+  if (error) throw error;
+  return { accounts: accountResult.data, clients: clientResult.data, jobs: jobResult.data };
+}
+
 export async function getJobsForAccount(accountId) {
   const { data, error } = await requireSupabase()
     .from('jobs')
     .select('*')
     .eq('account_id', accountId)
     .order('scheduled_for', { ascending: true });
+  if (error) throw error;
+  return data;
+}
+
+export async function getAccountById(accountId) {
+  const { data, error } = await requireSupabase()
+    .from('accounts')
+    .select('*')
+    .eq('id', accountId)
+    .maybeSingle();
   if (error) throw error;
   return data;
 }
