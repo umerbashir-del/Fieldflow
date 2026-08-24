@@ -38,3 +38,7 @@ test('creates an owner and a new empty demo company context', () => {
   const restored = mockUserFromSearch(new URL(buildMockAppLink('http://127.0.0.1:5174/', owner)).search);
   assert.equal(restored.company_name, 'Avery Plumbing');
 });
+
+test('rejects malformed new-account input with the intended message', () => {
+  assert.throws(() => createMockAccount({ ownerName: undefined, companyName: 'Example Co', email: 'owner@example.com' }), /Enter your name/);
+});

@@ -39,6 +39,10 @@ Sign in as John. Only records with `account_id = acct_northstar` can be returned
 
 `VITE_SUPABASE_PUBLISHABLE_KEY` is safe for the browser because RLS limits what it can read. `SUPABASE_SECRET_KEY` bypasses RLS and must only be used by the local seed script or a trusted server—never in frontend code or a `VITE_` variable.
 
+## Application data layer
+
+[`shared-data/supabase.js`](../shared-data/supabase.js) now provides the account-scoped job and client reads plus create, update, and delete operations needed by Scheduling and Chatbot. The existing demo remains active until the VITE settings are present. When connecting those screens, use these helpers rather than importing all JSON data or passing an account identity in the URL.
+
 ## Quick verification
 
 1. Create John and Sarah as separate users and give each one membership in a different account.

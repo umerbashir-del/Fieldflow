@@ -80,6 +80,13 @@ test('Scheduling edits follow the same demo account into Analytics and Chatbot',
   await page.locator('#chatInput').fill('Tell me about Integration Client');
   await page.getByRole('button', { name: /^Send/ }).click();
   await expect(page.locator('#messageList')).toContainText('Integration Client is in Raleigh');
+  await page.locator('#chatInput').fill('How is my business doing this week?');
+  await page.getByRole('button', { name: /^Send/ }).click();
+  await expect(page.locator('#messageList')).toContainText('Northstar Field Services this week: 15 jobs');
+  await page.locator('#chatSignOutBtn').click();
+  await signIn(page, 'john@fieldflow.demo', 'john-demo-password');
+  await page.getByRole('link', { name: 'View Analytics' }).click();
+  await expect(page.locator('.primary-card .metric')).toHaveText('14');
 });
 
 test('Operations users cannot open contractor tools and Chat requires contractor context', async ({ page }) => {
@@ -92,6 +99,16 @@ test('Operations users cannot open contractor tools and Chat requires contractor
   await page.goto('http://127.0.0.1:5175/');
   await expect(page.locator('#chatLoginGate')).toBeVisible();
   await expect(page.locator('#chatApp')).toBeHidden();
+});
+
+test('Chatbot treats a new business name as text, not page markup', async ({ page }) => {
+  const query = new URLSearchParams({
+    demo_user: 'new', demo_name: 'Avery', demo_email: 'avery@example.com',
+    demo_company: '<img id="unsafe-company-name" src=x>', account_id: 'acct_demo_safe-test',
+  });
+  await page.goto(`http://127.0.0.1:5175/?${query}`);
+  await expect(page.locator('#accountSelect')).toContainText('<img id="unsafe-company-name" src=x>');
+  await expect(page.locator('#unsafe-company-name')).toHaveCount(0);
 });
 
 test('sign-in form is keyboard operable', async ({ page }) => {

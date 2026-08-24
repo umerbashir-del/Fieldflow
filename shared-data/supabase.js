@@ -63,3 +63,66 @@ export async function getClientsForAccount(accountId) {
   if (error) throw error;
   return data;
 }
+
+// Shared repository functions for Scheduling and Chatbot. They always use the
+// signed-in user's RLS-scoped Supabase client; the browser never chooses a
+// privileged account or secret key.
+export async function getAccountData(accountId) {
+  const [jobs, clients] = await Promise.all([
+    getJobsForAccount(accountId),
+    getClientsForAccount(accountId),
+  ]);
+  return { jobs, clients };
+}
+
+export async function createJob(job) {
+  const { data, error } = await requireSupabase()
+    .from('jobs')
+    .insert(job)
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
+}
+
+export async function updateJob(jobId, changes) {
+  const { data, error } = await requireSupabase()
+    .from('jobs')
+    .update(changes)
+    .eq('id', jobId)
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
+}
+
+export async function deleteJob(jobId) {
+  const { error } = await requireSupabase().from('jobs').delete().eq('id', jobId);
+  if (error) throw error;
+}
+
+export async function createFieldflowClient(client) {
+  const { data, error } = await requireSupabase()
+    .from('clients')
+    .insert(client)
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
+}
+
+export async function updateClient(clientId, changes) {
+  const { data, error } = await requireSupabase()
+    .from('clients')
+    .update(changes)
+    .eq('id', clientId)
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
+}
+
+export async function deleteClient(clientId) {
+  const { error } = await requireSupabase().from('clients').delete().eq('id', clientId);
+  if (error) throw error;
+}

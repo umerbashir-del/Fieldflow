@@ -30,9 +30,9 @@ export function isMockContractor(user) {
 }
 
 export function createMockAccount({ companyName, ownerName, email }) {
-  const name = ownerName.trim();
-  const company = companyName.trim();
-  const normalizedEmail = email.trim().toLowerCase();
+  const name = typeof ownerName === 'string' ? ownerName.trim() : '';
+  const company = typeof companyName === 'string' ? companyName.trim() : '';
+  const normalizedEmail = typeof email === 'string' ? email.trim().toLowerCase() : '';
   if (!name || !company || !normalizedEmail) throw new Error('Enter your name, business name, and email address.');
   const slug = `${company}-${normalizedEmail}`.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 48);
   return { id: 'new', email: normalizedEmail, account_id: `acct_demo_${slug}`, name, role: 'owner', company_name: company };

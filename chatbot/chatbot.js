@@ -1,8 +1,7 @@
 import { accounts, clients, jobs } from './data.js';
 import { getAnswer } from './model.js';
 import { buildMockAppLink, isMockContractor, mockUserFromSearch } from '../shared-data/mockSession.js';
-import { loadMockAccountData } from '../shared-data/mockDataSession.js';
-import { clearMockDataSession } from '../shared-data/mockDataSession.js';
+import { clearMockDataSession, loadMockAccountData } from '../shared-data/mockDataSession.js';
 
 const STORAGE_KEY = 'fieldflow_chatbot_account_v1';
 
@@ -55,9 +54,13 @@ const chipsEl = document.getElementById('suggestionChips');
 
 function renderAccountOptions() {
   const visibleAccounts = mockUser ? [mockAccount] : accounts;
-  accountSelect.innerHTML = visibleAccounts
-    .map((a) => `<option value="${a.id}" ${a.id === accountId ? 'selected' : ''}>${a.name}</option>`)
-    .join('');
+  accountSelect.replaceChildren(...visibleAccounts.map((account) => {
+    const option = document.createElement('option');
+    option.value = account.id;
+    option.selected = account.id === accountId;
+    option.textContent = account.name;
+    return option;
+  }));
   accountSelect.disabled = Boolean(mockUser);
   if (mockUser) accountSelect.title = `Demo mode: signed in as ${mockUser.name}.`;
 }
