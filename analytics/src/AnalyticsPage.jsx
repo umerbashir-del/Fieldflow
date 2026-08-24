@@ -2,12 +2,15 @@ import { useEffect, useState } from 'react';
 import demoAccounts from '../../shared-data/accounts.json';
 import demoJobs from '../../shared-data/jobs.json';
 import { getJobsForAccount, getSignedInAccount, isSupabaseConfigured, signOut } from '../../shared-data/supabase.js';
-import { mockUserFromSearch } from '../../shared-data/mockSession.js';
+import { buildMockAppLink, isMockContractor, mockUserFromSearch } from '../../shared-data/mockSession.js';
+import { loadMockAccountData } from '../../shared-data/mockDataSession.js';
 import { buildAnalyticsSummary, buildSchedulingLink, chatSummaryText } from './analyticsSummary.js';
 import SignInPage from './SignInPage.jsx';
 
 const DEMO_ACCOUNT_ID = 'acct_northstar';
 const SCHEDULING_URL = 'http://127.0.0.1:5174/';
+const OPERATIONS_URL = 'http://127.0.0.1:5176/';
+const CHATBOT_URL = 'http://127.0.0.1:5175/';
 const DEMO_REFERENCE_DATE = new Date('2026-08-19T12:00:00Z');
 
 export default function AnalyticsPage() {
@@ -40,15 +43,20 @@ export default function AnalyticsPage() {
   }, []);
 
   const mockUser = mockUserFromSearch(window.location.search);
+  const requestedAccountId = new URLSearchParams(window.location.search).get('account_id');
+  const isDemoOps = !isSupabaseConfigured && mockUser?.role === 'ops';
 
   if (isSupabaseConfigured && sessionState.loading) return <main className="analytics-page"><p className="subtitle">Loading your FieldFlow account…</p></main>;
   if (isSupabaseConfigured && !sessionState.user) return <SignInPage onSignedIn={loadLiveData} />;
   if (isSupabaseConfigured && sessionState.error) return <main className="analytics-page"><p className="eyebrow">FieldFlow</p><h1>Account setup needed</h1><p className="subtitle">{sessionState.error}</p></main>;
-  if (!isSupabaseConfigured && !mockUser) return <main className="analytics-page"><p className="eyebrow">FieldFlow demo</p><h1>Start in Scheduling</h1><p className="subtitle">Sign in through Scheduling first so FieldFlow can show the right company data.</p><p className="scheduler-action"><a className="action-link" href={SCHEDULING_URL}>Open Scheduling</a></p></main>;
+  if (!isSupabaseConfigured && (!mockUser || (!isDemoOps && !isMockContractor(mockUser)))) return <main className="analytics-page"><p className="eyebrow">FieldFlow demo</p><h1>Start in Scheduling</h1><p className="subtitle">Sign in through Scheduling first so FieldFlow can show the right company data.</p><p className="scheduler-action"><a className="action-link" href={SCHEDULING_URL}>Open Scheduling</a></p></main>;
 
-  const account = isSupabaseConfigured ? sessionState.account : demoAccounts.find((item) => item.id === mockUser.account_id) ?? { id: mockUser.account_id, name: mockUser.company_name ?? 'Your new business', plan: 'Starter' };
-  const accountJobs = isSupabaseConfigured ? sessionState.jobs : demoJobs.filter((job) => job.account_id === mockUser.account_id);
-  const accountId = account?.id ?? (isSupabaseConfigured ? DEMO_ACCOUNT_ID : mockUser.account_id);
+  const demoAccountId = isDemoOps
+    ? (demoAccounts.some((item) => item.id === requestedAccountId) ? requestedAccountId : DEMO_ACCOUNT_ID)
+    : mockUser.account_id;
+  const account = isSupabaseConfigured ? sessionState.account : demoAccounts.find((item) => item.id === demoAccountId) ?? { id: demoAccountId, name: mockUser.company_name ?? 'Your new business', plan: 'Starter' };
+  const accountJobs = isSupabaseConfigured ? sessionState.jobs : loadMockAccountData(demoAccountId, { clients: [], jobs: demoJobs }).jobs;
+  const accountId = account?.id ?? (isSupabaseConfigured ? DEMO_ACCOUNT_ID : demoAccountId);
   const summary = buildAnalyticsSummary(accountJobs, accountId, timeframe, DEMO_REFERENCE_DATE);
   const { selectedPeriod, selectedEnd, selectedRangeLabel, comparisonRangeLabel, selectedJobs, comparisonJobs, change, hasCompleteComparison, newClients, repeatClients, trend } = summary;
   const displayedChange = hasCompleteComparison ? change : null;
@@ -58,8 +66,14 @@ export default function AnalyticsPage() {
   const newClientPercent = Math.round(newClientShare);
   const repeatClientPercent = totalClients === 0 ? 0 : 100 - newClientPercent;
   const schedulingLinkUrl = new URL(buildSchedulingLink(SCHEDULING_URL, accountId, selectedPeriod.start, selectedEnd));
-  if (!isSupabaseConfigured) schedulingLinkUrl.searchParams.set('demo_user', mockUser.id);
+  if (!isSupabaseConfigured && !isDemoOps) {
+    const mockSchedulingLink = new URL(buildMockAppLink(schedulingLinkUrl.toString(), mockUser));
+    schedulingLinkUrl.search = mockSchedulingLink.search;
+  }
   const schedulingLink = schedulingLinkUrl.toString();
+  const returnLink = isDemoOps ? `${OPERATIONS_URL}?demo_user=ops&account_id=${encodeURIComponent(accountId)}` : schedulingLink;
+  const returnLabel = isDemoOps ? 'Back to Operations' : 'Back to Scheduling';
+  const chatLink = !isSupabaseConfigured && !isDemoOps ? buildMockAppLink(CHATBOT_URL, mockUser) : null;
   const copyChatSummary = async () => {
     await navigator.clipboard.writeText(chatSummaryText(account?.name ?? 'Your business', summary));
     setCopyStatus('Copied — paste this into FieldFlow Chat.');
@@ -92,7 +106,7 @@ export default function AnalyticsPage() {
         <p className="eyebrow">FieldFlow</p>
         <h1>{account?.name ?? 'Your business'} — Analytics</h1>
         <div className="header-row">
-          <p className="subtitle">A quick look at how your business is doing.{isSupabaseConfigured ? '' : ' Demo date: August 19, 2026.'}</p>
+          <p className="subtitle">{isDemoOps ? 'Read-only Operations view. ' : ''}A quick look at how your business is doing.{isSupabaseConfigured ? '' : ' Demo date: August 19, 2026.'}{!isSupabaseConfigured && !isDemoOps ? ' Demo edits stay in this browser tab until sign-out.' : ''}</p>
           <label className="timeframe-control">Timeframe
             <select title="Updates every card and chart to the selected date range." value={timeframe} onChange={(event) => setTimeframe(event.target.value)}>
               <option value="this_week">This week</option>
@@ -107,7 +121,8 @@ export default function AnalyticsPage() {
       </header>
 
       <div className="scheduler-action">
-        <a className="action-link" href={schedulingLink} title="Opens Scheduling with this account and selected date range.">Back to Scheduling</a>
+        <a className="action-link" href={returnLink} title={isDemoOps ? 'Returns to this account in Operations.' : 'Opens Scheduling with this account and selected date range.'}>{returnLabel}</a>
+        {chatLink && <a className="action-link" href={chatLink} title="Opens Support Chat for this company.">Support Chat</a>}
       </div>
 
       <section className="summary-grid" aria-label="Weekly job summary">
@@ -131,6 +146,7 @@ export default function AnalyticsPage() {
           {changeDescription && <p className="helper">{changeDescription}</p>}
         </article>
       </section>
+      {selectedJobs.length === 0 && <p className="empty-state">No jobs are scheduled in this period yet. Add one in Scheduling to update this view.</p>}
 
       <section className="card client-card" aria-labelledby="client-heading">
         <div>

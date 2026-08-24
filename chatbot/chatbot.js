@@ -1,6 +1,8 @@
-import { accounts } from './data.js';
+import { accounts, clients, jobs } from './data.js';
 import { getAnswer } from './model.js';
-import { mockUserFromSearch } from '../shared-data/mockSession.js';
+import { buildMockAppLink, isMockContractor, mockUserFromSearch } from '../shared-data/mockSession.js';
+import { loadMockAccountData } from '../shared-data/mockDataSession.js';
+import { clearMockDataSession } from '../shared-data/mockDataSession.js';
 
 const STORAGE_KEY = 'fieldflow_chatbot_account_v1';
 
@@ -21,25 +23,31 @@ const STATUS_LABEL = {
 
 const mockUser = mockUserFromSearch(window.location.search);
 const mockAccount = mockUser && (accounts.find((account) => account.id === mockUser.account_id) ?? { id: mockUser.account_id, name: mockUser.company_name ?? 'Your new business', plan: 'Starter' });
-let accountId = mockUser?.account_id ?? loadAccount();
+const chatGate = document.getElementById('chatLoginGate');
+const chatApp = document.getElementById('chatApp');
+
+if (!isMockContractor(mockUser)) {
+  chatGate.hidden = false;
+} else {
+  chatApp.hidden = false;
+  startChat();
+}
+
+function startChat() {
+let accountId = mockUser.account_id;
 let typing = false;
 const messages = [
   { role: 'bot', text: "Hi, I'm the FieldFlow assistant. Ask me setup or how-to questions, or ask about your account." },
 ];
-
-function loadAccount() {
-  try {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved && accounts.some((a) => a.id === saved)) return saved;
-  } catch (e) { /* ignore blocked storage */ }
-  return accounts.find((a) => a.id === 'acct_northstar')?.id ?? accounts[0].id;
-}
 
 function saveAccount() {
   try { localStorage.setItem(STORAGE_KEY, accountId); } catch (e) { /* ignore blocked storage */ }
 }
 
 const accountSelect = document.getElementById('accountSelect');
+const schedulingLink = document.getElementById('chatSchedulingLink');
+const analyticsLink = document.getElementById('chatAnalyticsLink');
+const signOutButton = document.getElementById('chatSignOutBtn');
 const messageList = document.getElementById('messageList');
 const chatForm = document.getElementById('chatForm');
 const chatInput = document.getElementById('chatInput');
@@ -52,6 +60,11 @@ function renderAccountOptions() {
     .join('');
   accountSelect.disabled = Boolean(mockUser);
   if (mockUser) accountSelect.title = `Demo mode: signed in as ${mockUser.name}.`;
+}
+
+function renderAppLinks() {
+  schedulingLink.href = buildMockAppLink('http://127.0.0.1:5174/', mockUser);
+  analyticsLink.href = buildMockAppLink('http://127.0.0.1:5173/', mockUser);
 }
 
 function renderChips() {
@@ -127,7 +140,8 @@ function sendMessage(text) {
   renderMessages();
 
   window.setTimeout(() => {
-    const result = getAnswer(trimmed, accountId);
+    const data = loadMockAccountData(mockAccount.id, { clients, jobs });
+    const result = getAnswer(trimmed, { account: mockAccount, ...data });
     typing = false;
     messages.push({ role: 'bot', text: result.text, source: result.source, jobs: result.jobs });
     renderMessages();
@@ -147,6 +161,13 @@ accountSelect.addEventListener('change', () => {
   renderMessages();
 });
 
+signOutButton.addEventListener('click', () => {
+  clearMockDataSession();
+  window.location.assign('http://127.0.0.1:5174/');
+});
+
 renderAccountOptions();
+renderAppLinks();
 renderChips();
 renderMessages();
+}

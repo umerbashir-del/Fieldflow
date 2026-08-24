@@ -75,6 +75,7 @@ input, select { width: 100%; padding: 12px; border: 1px solid #bfcfc4; border-ra
 [data-theme="dark"] .modal-backdrop { background: #000c; }
 
 .topbar-actions { display: flex; align-items: center; gap: 10px; }
+.demo-notice { margin: 12px 0 0; color: var(--muted); font-size: .85rem; }
 .theme-toggle { background: transparent; border: 1px solid #dbe6de; color: inherit; padding: 8px 12px; }
 [data-theme="dark"] .theme-toggle { border-color: var(--sched-border-dark); }
 

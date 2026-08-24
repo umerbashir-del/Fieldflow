@@ -5,6 +5,7 @@
 
 * { box-sizing: border-box; }
 body { margin: 0; }
+[hidden] { display: none !important; }
 
 @keyframes ff-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
 @keyframes ff-dot { 0%, 60%, 100% { transform: translateY(0); opacity: .4; } 30% { transform: translateY(-4px); opacity: 1; } }
@@ -32,6 +33,11 @@ body { margin: 0; }
   flex-direction: column;
   max-height: 92vh;
 }
+
+.ff-gate { max-width: 480px; padding: 32px; border: 1px solid #ecdccb; border-radius: 24px; background: #fff; box-shadow: 0 24px 60px -24px rgba(150, 70, 40, .28); }
+.ff-gate h1 { margin: 6px 0 12px; }
+.ff-gate p:not(.ff-eyebrow) { color: #6f6054; line-height: 1.5; }
+.ff-gate-link { display: inline-block; margin-top: 8px; padding: 10px 14px; border-radius: 10px; background: #2f6b4f; color: #fff; font-weight: 700; text-decoration: none; }
 
 /* --- Header --- */
 .ff-header {
@@ -64,6 +70,11 @@ body { margin: 0; }
 .ff-eyebrow { margin: 0; font-size: .68rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: #c1683f; }
 .ff-title { margin: 2px 0 0; font-size: 1.18rem; font-weight: 700; line-height: 1.1; }
 .ff-subtitle { margin: 3px 0 0; font-size: .78rem; color: #8a7a6c; }
+.ff-demo-notice { margin: 5px 0 0; font-size: .7rem; color: #9a8a7c; }
+.ff-sign-out { border: 1px solid #ddc9b5; background: #fff; border-radius: 9px; color: #735a49; cursor: pointer; font: inherit; font-size: .76rem; font-weight: 700; padding: 8px 10px; }
+.ff-app-links { margin: 6px 0 0; font-size: .75rem; font-weight: 700; color: #8a7a6c; }
+.ff-app-links a { color: #2f6b4f; text-decoration: none; }
+.ff-app-links a:hover { text-decoration: underline; }
 
 .ff-account-picker { display: flex; flex-direction: column; gap: 5px; flex-shrink: 0; }
 .ff-account-picker > span { font-size: .62rem; font-weight: 700; letter-spacing: .09em; text-transform: uppercase; color: #9a8a7c; }

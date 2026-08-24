@@ -1,9 +1,14 @@
-import { ACCOUNT_ID, accounts, seedClients, seedJobs, STATUS_LABELS, STATUS_VALUES, TEAM_MEMBERS } from './data.js';
+import { ACCOUNT_ID, accounts, IS_CONTRACTOR_SESSION, seedClients, seedJobs, STATUS_LABELS, STATUS_VALUES, TEAM_MEMBERS } from './data.js';
 import { clientName, formatDate } from './formatters.js';
 import { addDaysISO, addMonthsISO, isSameMonth, monthDay, monthYearLabel, startOfMonthISO, startOfWeekISO, todayISO, weekdayShort } from './date-utils.js';
+import { loadMockAccountData, saveMockAccountData } from '../shared-data/mockDataSession.js';
 
 (function () {
   'use strict';
+
+  // The sign-in screen loads this module too. Do not initialize or retain
+  // any company data unless a contractor demo session is present.
+  if (!IS_CONTRACTOR_SESSION) return;
 
   // Keys used to save app state in the browser's localStorage, so your
   // data and theme choice survive a page refresh.
@@ -34,13 +39,8 @@ import { addDaysISO, addMonthsISO, isSameMonth, monthDay, monthYearLabel, startO
   // something to show.
   function loadInitialState() {
     try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) {
-        const parsed = JSON.parse(raw);
-        if (Array.isArray(parsed.clients) && Array.isArray(parsed.jobs)) return parsed;
-      }
-    } catch (e) { /* ignore corrupt/blocked storage, fall back to seed data */ }
-    return { clients: seedClients.slice(), jobs: seedJobs.slice() };
+    } catch (e) { /* fall back to the scoped demo seed */ }
+    return loadMockAccountData(ACCOUNT_ID, { clients: seedClients, jobs: seedJobs });
   }
 
   // Figures out which theme to start in: whatever the user picked last
@@ -57,7 +57,7 @@ import { addDaysISO, addMonthsISO, isSameMonth, monthDay, monthYearLabel, startO
   // Saves the current clients/jobs arrays to localStorage. Called after
   // every add/edit/delete so changes aren't lost on refresh.
   function persist() {
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ clients, jobs })); } catch (e) { /* ignore */ }
+    saveMockAccountData(ACCOUNT_ID, { clients, jobs });
   }
 
   // Generates a short unique id like "job_a1b2c3d4" for new records. The

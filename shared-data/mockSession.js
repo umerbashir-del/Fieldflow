@@ -20,9 +20,13 @@ export function mockUserFromSearch(search) {
   const email = params.get('demo_email');
   const companyName = params.get('demo_company');
   const accountId = params.get('account_id');
-  return name && email && companyName && accountId
+  return name && email && companyName && /^acct_demo_[a-z0-9-]+$/.test(accountId ?? '')
     ? { id: 'new', email, account_id: accountId, name, role: 'owner', company_name: companyName }
     : null;
+}
+
+export function isMockContractor(user) {
+  return Boolean(user && user.role !== 'ops' && user.account_id);
 }
 
 export function createMockAccount({ companyName, ownerName, email }) {
@@ -35,6 +39,9 @@ export function createMockAccount({ companyName, ownerName, email }) {
 }
 
 export function buildMockAppLink(baseUrl, user) {
+  if (!isMockContractor(user)) {
+    throw new Error('Only contractor demo accounts can open contractor tools.');
+  }
   const url = new URL(baseUrl);
   url.searchParams.set('demo_user', user.id);
   url.searchParams.set('account_id', user.account_id);

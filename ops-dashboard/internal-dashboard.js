@@ -76,7 +76,10 @@ function renderDetail() {
   if (!account) return;
   const summary = accountSummary(account);
   const recentJobs = [...summary.jobs].sort((first, second) => second.scheduled_for.localeCompare(first.scheduled_for)).slice(0, 8);
-  els.detailContent.innerHTML = `<div class="detail-header"><p class="eyebrow">Account detail</p><h2>${escapeHtml(account.name)}</h2><p class="muted">${escapeHtml(account.plan)} plan · ${summary.status}</p></div><div class="grid detail-metrics"><div class="card"><div class="muted">Clients</div><div class="metric">${summary.clients.length}</div></div><div class="card"><div class="muted">Jobs</div><div class="metric">${summary.jobs.length}</div></div><div class="card"><div class="muted">Completed</div><div class="metric">${summary.completed}</div></div><div class="card"><div class="muted">Open work</div><div class="metric">${summary.open}</div></div></div><div class="section"><div class="section-header"><h2>Recent jobs</h2></div><div class="jobs">${recentJobs.length ? recentJobs.map((job) => jobHtml(job, false)).join('') : '<p class="empty">No jobs are available for this account.</p>'}</div></div>`;
+  const analyticsUrl = new URL('http://127.0.0.1:5173/');
+  analyticsUrl.searchParams.set('demo_user', 'ops');
+  analyticsUrl.searchParams.set('account_id', account.id);
+  els.detailContent.innerHTML = `<div class="detail-header"><p class="eyebrow">Account detail</p><h2>${escapeHtml(account.name)}</h2><p class="muted">${escapeHtml(account.plan)} plan · ${summary.status}</p><p><a class="account-analytics-link" href="${analyticsUrl.toString()}">View read-only Analytics</a></p></div><div class="grid detail-metrics"><div class="card"><div class="muted">Clients</div><div class="metric">${summary.clients.length}</div></div><div class="card"><div class="muted">Jobs</div><div class="metric">${summary.jobs.length}</div></div><div class="card"><div class="muted">Completed</div><div class="metric">${summary.completed}</div></div><div class="card"><div class="muted">Open work</div><div class="metric">${summary.open}</div></div></div><div class="section"><div class="section-header"><h2>Recent jobs</h2></div><div class="jobs">${recentJobs.length ? recentJobs.map((job) => jobHtml(job, false)).join('') : '<p class="empty">No jobs are available for this account.</p>'}</div></div>`;
 }
 
 function showView(view) {
@@ -98,4 +101,6 @@ els.statusFilter.addEventListener('change', (event) => { state.statusFilter = ev
 els.backBtn.addEventListener('click', () => showView('accounts'));
 els.themeBtn.addEventListener('click', () => { state.theme = state.theme === 'dark' ? 'light' : 'dark'; localStorage.setItem(THEME_KEY, state.theme); applyTheme(); });
 applyTheme();
-showView('overview');
+const requestedAccountId = new URLSearchParams(window.location.search).get('account_id');
+if (accounts.some((account) => account.id === requestedAccountId)) openAccount(requestedAccountId);
+else showView('overview');

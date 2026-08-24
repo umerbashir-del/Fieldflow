@@ -1,4 +1,5 @@
-import { authenticateMockUser, buildMockAppLink, createMockAccount, mockUserFromSearch } from '../shared-data/mockSession.js';
+import { clearMockDataSession } from '../shared-data/mockDataSession.js';
+import { authenticateMockUser, buildMockAppLink, createMockAccount, isMockContractor, mockUserFromSearch } from '../shared-data/mockSession.js';
 
 const gate = document.getElementById('mockLoginGate');
 const app = document.getElementById('schedulingApp');
@@ -17,21 +18,27 @@ function showForm(mode) {
   resetForm.hidden = mode !== 'reset';
 }
 
-if (mockUserFromSearch(window.location.search)) {
+const currentUser = mockUserFromSearch(window.location.search);
+
+if (isMockContractor(currentUser)) {
   gate.hidden = true;
   app.hidden = false;
 } else {
+  if (currentUser?.role === 'ops') {
+    error.textContent = 'Operations staff use the Operations Dashboard, not Scheduling.';
+  }
   form.addEventListener('submit', (event) => {
     event.preventDefault();
     error.textContent = '';
     try {
       const user = authenticateMockUser(email.value, password.value);
+      if (!isMockContractor(user)) throw new Error('Operations staff use the Operations Dashboard, not Scheduling.');
       window.location.assign(buildMockAppLink(window.location.href, user));
     } catch (signInError) {
       error.textContent = signInError.message;
     }
   });
-  document.querySelectorAll('[data-auth-mode]').forEach((button) => button.addEventListener('click', () => showForm(button.dataset.authMode)));
+document.querySelectorAll('[data-auth-mode]').forEach((button) => button.addEventListener('click', () => showForm(button.dataset.authMode)));
   signUpForm.addEventListener('submit', (event) => {
     event.preventDefault();
     const formData = new FormData(signUpForm);
@@ -53,3 +60,8 @@ if (mockUserFromSearch(window.location.search)) {
     resetMessage.textContent = `Demo only: a reset email would be sent to ${resetEmail}.`;
   });
 }
+
+document.getElementById('mockSignOutBtn').addEventListener('click', () => {
+  clearMockDataSession();
+  window.location.assign(`${window.location.origin}${window.location.pathname}`);
+});

@@ -36,12 +36,20 @@ test('John sees Northstar data and carries that identity to Analytics and Chatbo
   await expect(page).toHaveURL(/demo_user=john/);
   await expect(page.getByRole('heading', { name: /Northstar Field Services — Analytics/ })).toBeVisible();
   await expect(page.locator('.primary-card .metric')).toHaveText('14');
+  await expect(page.getByRole('link', { name: 'Support Chat' })).toHaveAttribute('href', /demo_user=john/);
 
   await page.goBack();
   await page.getByRole('link', { name: 'Support Chat' }).click();
   await expect(page).toHaveURL(/demo_user=john/);
   await expect(page.locator('#accountSelect')).toHaveValue('acct_northstar');
   await expect(page.locator('#accountSelect')).toBeDisabled();
+  await expect(page.locator('#chatSchedulingLink')).toHaveAttribute('href', /demo_user=john/);
+  await expect(page.locator('#chatAnalyticsLink')).toHaveAttribute('href', /account_id=acct_northstar/);
+  await page.locator('#chatInput').fill('How is my business doing this week?');
+  await page.getByRole('button', { name: /^Send/ }).click();
+  await expect(page.locator('#messageList')).toContainText('Northstar Field Services this week: 14 jobs');
+  await page.locator('#chatSignOutBtn').click();
+  await expect(page.locator('#mockLoginGate')).toBeVisible();
 });
 
 test('Sarah sees only Horizon data', async ({ page }) => {
@@ -50,6 +58,40 @@ test('Sarah sees only Horizon data', async ({ page }) => {
   await page.getByRole('button', { name: 'Clients' }).click();
   await expect(page.locator('#clientList')).toContainText('Arcade Market');
   await expect(page.locator('#clientList')).not.toContainText('Evergreen Properties');
+});
+
+test('Scheduling edits follow the same demo account into Analytics and Chatbot', async ({ page }) => {
+  await signIn(page, 'john@fieldflow.demo', 'john-demo-password');
+  await page.locator('#newJobBtn').click();
+  await page.locator('#jobTitle').fill('Integration inspection');
+  await page.locator('#jobDate').fill('2026-08-19');
+  await page.getByRole('button', { name: 'Save' }).click();
+  await page.getByRole('link', { name: 'View Analytics' }).click();
+  await expect(page.locator('.primary-card .metric')).toHaveText('15');
+
+  await page.getByRole('link', { name: 'Back to Scheduling' }).click();
+  await page.getByRole('button', { name: 'Clients' }).click();
+  await page.locator('#newClientBtn').click();
+  await page.locator('#clientName').fill('Integration Client');
+  await page.locator('#clientCity').fill('Raleigh');
+  await page.getByRole('button', { name: 'Save' }).click();
+  await page.getByRole('button', { name: 'Home' }).click();
+  await page.getByRole('link', { name: 'Support Chat' }).click();
+  await page.locator('#chatInput').fill('Tell me about Integration Client');
+  await page.getByRole('button', { name: /^Send/ }).click();
+  await expect(page.locator('#messageList')).toContainText('Integration Client is in Raleigh');
+});
+
+test('Operations users cannot open contractor tools and Chat requires contractor context', async ({ page }) => {
+  await page.goto(schedulingUrl);
+  await page.locator('#mockLoginForm').getByLabel('Email').fill('ops@fieldflow.demo');
+  await page.locator('#mockLoginForm').getByLabel('Password').fill('ops-demo-password');
+  await page.locator('#mockLoginForm').getByRole('button', { name: 'Sign in' }).click();
+  await expect(page.locator('#mockLoginError')).toContainText('Operations staff use the Operations Dashboard');
+
+  await page.goto('http://127.0.0.1:5175/');
+  await expect(page.locator('#chatLoginGate')).toBeVisible();
+  await expect(page.locator('#chatApp')).toBeHidden();
 });
 
 test('sign-in form is keyboard operable', async ({ page }) => {
@@ -82,6 +124,15 @@ test('new account creates an empty company context and supports keyboard navigat
   await page.getByRole('link', { name: 'View Analytics' }).click();
   await expect(page.getByRole('heading', { name: /Avery Plumbing — Analytics/ })).toBeVisible();
   await expect(page.locator('.primary-card .metric')).toHaveText('0');
+  await page.getByRole('link', { name: 'Back to Scheduling' }).click();
+  await expect(page.locator('#schedulingApp')).toBeVisible();
+  await expect(page.locator('#accountLine')).toContainText('Avery Plumbing');
+
+  await page.getByRole('link', { name: 'Support Chat' }).click();
+  await expect(page.locator('#chatApp')).toBeVisible();
+  await page.locator('#chatInput').fill("What's my plan?");
+  await page.getByRole('button', { name: /^Send/ }).click();
+  await expect(page.locator('#messageList')).toContainText('Starter plan for Avery Plumbing');
 });
 
 test('Operations Dashboard accepts only the separate staff demo account', async ({ page }) => {
@@ -102,6 +153,11 @@ test('Operations Dashboard accepts only the separate staff demo account', async 
   await page.getByRole('button', { name: 'Sign in to Operations' }).click();
   await expect(page.locator('#opsDashboard')).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Operations dashboard' })).toBeVisible();
+  await page.getByRole('button', { name: 'Northstar Field Services' }).click();
+  await page.getByRole('link', { name: 'View read-only Analytics' }).click();
+  await expect(page.getByText('Read-only Operations view.')).toBeVisible();
+  await page.getByRole('link', { name: 'Back to Operations' }).click();
+  await expect(page.getByRole('heading', { name: 'Northstar Field Services' })).toBeVisible();
   await page.getByRole('button', { name: 'Sign out' }).click();
   await expect(page.locator('#opsLoginGate')).toBeVisible();
 });

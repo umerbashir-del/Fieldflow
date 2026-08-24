@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { authenticateMockUser, buildMockAppLink, createMockAccount, mockUserFromSearch } from '../../shared-data/mockSession.js';
+import { authenticateMockUser, buildMockAppLink, createMockAccount, isMockContractor, mockUserFromSearch } from '../../shared-data/mockSession.js';
 
 test('maps John and Sarah to separate demo accounts', () => {
   assert.equal(authenticateMockUser('john@fieldflow.demo', 'john-demo-password').account_id, 'acct_northstar');
@@ -11,6 +11,13 @@ test('maps the separate Operations demo account to the ops role', () => {
   const ops = authenticateMockUser('ops@fieldflow.demo', 'ops-demo-password');
   assert.equal(ops.role, 'ops');
   assert.equal(ops.account_id, undefined);
+  assert.equal(isMockContractor(ops), false);
+  assert.throws(() => buildMockAppLink('http://127.0.0.1:5174/', ops), /Only contractor/);
+});
+
+test('does not accept a browser-supplied canonical account for a new demo business', () => {
+  const user = mockUserFromSearch('?demo_user=new&demo_name=Avery&demo_email=avery%40example.com&demo_company=Avery+Plumbing&account_id=acct_northstar');
+  assert.equal(user, null);
 });
 
 test('rejects invalid mock credentials', () => {

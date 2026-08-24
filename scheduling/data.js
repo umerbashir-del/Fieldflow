@@ -1,20 +1,20 @@
 import sharedAccounts from '../shared-data/accounts.json';
 import sharedClients from '../shared-data/clients.json';
 import sharedJobs from '../shared-data/jobs.json';
-import { mockUserFromSearch } from '../shared-data/mockSession.js';
+import { isMockContractor, mockUserFromSearch } from '../shared-data/mockSession.js';
 
-const requestedAccountId = new URLSearchParams(window.location.search).get('account_id');
 const mockUser = mockUserFromSearch(window.location.search);
 
-export const ACCOUNT_ID = mockUser?.account_id ?? (sharedAccounts.some((account) => account.id === requestedAccountId) ? requestedAccountId : 'acct_northstar');
+export const IS_CONTRACTOR_SESSION = isMockContractor(mockUser);
+export const ACCOUNT_ID = IS_CONTRACTOR_SESSION ? mockUser.account_id : null;
 
 export const accounts = mockUser?.company_name && !sharedAccounts.some((account) => account.id === mockUser.account_id)
   ? [...sharedAccounts, { id: mockUser.account_id, name: mockUser.company_name, plan: 'Starter' }]
   : sharedAccounts;
 
-export const seedClients = sharedClients;
+export const seedClients = ACCOUNT_ID ? sharedClients.filter((client) => client.account_id === ACCOUNT_ID) : [];
 
-export const seedJobs = sharedJobs;
+export const seedJobs = ACCOUNT_ID ? sharedJobs.filter((job) => job.account_id === ACCOUNT_ID) : [];
 
 // Not part of the real shared schema yet — local-only helper lists for
 // the UI's assignee/status pickers.
