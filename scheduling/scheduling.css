@@ -133,10 +133,14 @@ input, select { width: 100%; padding: 12px; border: 1px solid #bfcfc4; border-ra
 button.btn-ghost { background: transparent; color: #17613c; border: 1px solid #17613c; }
 [data-theme="dark"] button.btn-ghost { color: var(--sched-brand-dark-mode); border-color: var(--sched-brand-dark-mode); }
 button.btn-danger[hidden] { display: none; }
-button.btn-danger { background: #c23b3b; }
-/* Second-click "are you sure?" state for delete buttons — darker + a ring
-   so it visibly reads as "armed", not just different button text. */
-button.btn-danger.is-armed { background: #8a1f1f; box-shadow: 0 0 0 2px #f3caca; }
+/* Neutral at rest — this button reads "Edit" until armed, so it shouldn't
+   look like a warning until it actually is one. */
+button.btn-danger { background: transparent; color: #617168; border: 1px solid #dbe6de; }
+[data-theme="dark"] button.btn-danger { color: #9db3a5; border-color: var(--sched-border-dark); }
+/* Second-click "are you sure?" state for delete buttons — solid red + a
+   ring, so it visibly reads as "armed" and dangerous, not just different
+   button text. This is the only state where this button looks red. */
+button.btn-danger.is-armed { background: #8a1f1f; color: #fff; border-color: #8a1f1f; box-shadow: 0 0 0 2px #f3caca; }
 [data-theme="dark"] button.btn-danger.is-armed { box-shadow: 0 0 0 2px #5a2a2a; }
 
 .client-list { display: flex; flex-direction: column; gap: 10px; }
