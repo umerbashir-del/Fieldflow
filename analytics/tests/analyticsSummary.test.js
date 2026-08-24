@@ -105,3 +105,50 @@ test('creates a readable Chat summary from the selected period', () => {
     'Northstar Field Services: This week. 14 jobs, 11 in the previous period, +27% compared with the previous period. 5 new clients and 4 repeat clients.',
   );
 });
+
+test('keeps Monday and Sunday in the selected week and excludes the next Monday', () => {
+  const boundaryJobs = [
+    { id: 'monday', account_id: ACCOUNT_ID, client_id: 'a', scheduled_for: '2026-12-28', status: 'scheduled' },
+    { id: 'sunday', account_id: ACCOUNT_ID, client_id: 'b', scheduled_for: '2027-01-03', status: 'scheduled' },
+    { id: 'next-monday', account_id: ACCOUNT_ID, client_id: 'c', scheduled_for: '2027-01-04', status: 'scheduled' },
+  ];
+  const summary = buildAnalyticsSummary(boundaryJobs, ACCOUNT_ID, 'this_week', new Date('2027-01-01T18:00:00Z'));
+
+  assert.deepEqual(summary.selectedJobs.map((job) => job.id), ['monday', 'sunday']);
+  assert.equal(summary.selectedRangeLabel, 'Dec 28–Jan 3');
+});
+
+test('uses UTC calendar dates consistently across daylight-saving transitions', () => {
+  const daylightJobs = [
+    { id: 'before-dst', account_id: ACCOUNT_ID, client_id: 'a', scheduled_for: '2026-03-02', status: 'scheduled' },
+    { id: 'dst-sunday', account_id: ACCOUNT_ID, client_id: 'b', scheduled_for: '2026-03-08', status: 'scheduled' },
+  ];
+  const summary = buildAnalyticsSummary(daylightJobs, ACCOUNT_ID, 'this_week', new Date('2026-03-08T12:00:00-04:00'));
+
+  assert.deepEqual(summary.trend.map((day) => day.jobs), [1, 0, 0, 0, 0, 0, 1]);
+});
+
+test('counts each client once and classifies prior clients as repeat', () => {
+  const clientJobs = [
+    { id: 'prior', account_id: ACCOUNT_ID, client_id: 'repeat', scheduled_for: '2026-08-10', status: 'completed' },
+    { id: 'repeat-one', account_id: ACCOUNT_ID, client_id: 'repeat', scheduled_for: '2026-08-17', status: 'scheduled' },
+    { id: 'repeat-two', account_id: ACCOUNT_ID, client_id: 'repeat', scheduled_for: '2026-08-18', status: 'scheduled' },
+    { id: 'new-one', account_id: ACCOUNT_ID, client_id: 'new', scheduled_for: '2026-08-19', status: 'cancelled' },
+  ];
+  const summary = buildAnalyticsSummary(clientJobs, ACCOUNT_ID, 'this_week', REFERENCE_DATE);
+
+  assert.equal(summary.newClients, 1);
+  assert.equal(summary.repeatClients, 1);
+  assert.equal(summary.selectedJobs.length, 3);
+});
+
+test('reports a zero-job selected period against a populated comparison period', () => {
+  const comparisonOnly = [
+    { id: 'comparison', account_id: ACCOUNT_ID, client_id: 'prior', scheduled_for: '2026-08-10', status: 'completed' },
+  ];
+  const summary = buildAnalyticsSummary(comparisonOnly, ACCOUNT_ID, 'this_week', REFERENCE_DATE);
+
+  assert.equal(summary.selectedJobs.length, 0);
+  assert.equal(summary.comparisonJobs.length, 1);
+  assert.equal(summary.change, -100);
+});

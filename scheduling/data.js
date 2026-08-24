@@ -1,33 +1,31 @@
-// Local mock data for the Scheduling area.
-//
-// Shaped to match the team's real shared-data files field-for-field
-// (shared-data/accounts.json, clients.json, jobs.json), so wiring this
-// up to the real shared data later is a source swap, not a rewrite —
-// see the notes in scheduling.js at the top of the "DATA ACCESS" section.
-//
-// This module is served through Vite. That lets the production build include
-// its data and makes its dependencies explicit.
+import sharedAccounts from '../shared-data/accounts.json';
+import sharedClients from '../shared-data/clients.json';
+import sharedJobs from '../shared-data/jobs.json';
+import { isMockContractor, mockUserFromSearch } from '../shared-data/mockSession.js';
+import { getAccountData, getSignedInAccount, isSupabaseConfigured } from '../shared-data/supabase.js';
 
-export const ACCOUNT_ID = 'acct_northstar';
+const mockUser = mockUserFromSearch(window.location.search);
+let liveContext = null;
+let liveData = { clients: [], jobs: [] };
 
-export const accounts = [
-  { id: 'acct_northstar', name: 'Northstar Field Services', plan: 'Growth' },
-];
+if (isSupabaseConfigured) {
+  liveContext = await getSignedInAccount();
+  if (liveContext?.account) liveData = await getAccountData(liveContext.account.id);
+}
 
-export const seedClients = [
-  { id: 'client_evergreen', account_id: 'acct_northstar', name: 'Evergreen Properties', city: 'Raleigh' },
-  { id: 'client_harbor', account_id: 'acct_northstar', name: 'Harbor Dental Group', city: 'Durham' },
-  { id: 'client_summit', account_id: 'acct_northstar', name: 'Summit Retail', city: 'Cary' },
-  { id: 'client_pinecrest', account_id: 'acct_northstar', name: 'Pinecrest Apartments', city: 'Chapel Hill' },
-];
+export const LIVE_MODE = isSupabaseConfigured;
+export const IS_CONTRACTOR_SESSION = isSupabaseConfigured ? Boolean(liveContext?.account) : isMockContractor(mockUser);
+export const ACCOUNT_ID = isSupabaseConfigured ? liveContext?.account?.id ?? null : (IS_CONTRACTOR_SESSION ? mockUser.account_id : null);
 
-export const seedJobs = [
-  { id: 'job_101', account_id: 'acct_northstar', client_id: 'client_evergreen', title: 'HVAC inspection', scheduled_for: '2026-08-20', status: 'scheduled', assignee: 'Maya Chen' },
-  { id: 'job_102', account_id: 'acct_northstar', client_id: 'client_harbor', title: 'Equipment calibration', scheduled_for: '2026-08-20', status: 'in_progress', assignee: 'Jordan Lee' },
-  { id: 'job_103', account_id: 'acct_northstar', client_id: 'client_summit', title: 'Safety follow-up', scheduled_for: '2026-08-22', status: 'scheduled', assignee: 'Maya Chen' },
-  { id: 'job_104', account_id: 'acct_northstar', client_id: 'client_evergreen', title: 'Filter replacement', scheduled_for: '2026-08-17', status: 'completed', assignee: 'Jordan Lee' },
-  { id: 'job_105', account_id: 'acct_northstar', client_id: 'client_pinecrest', title: 'Water heater check', scheduled_for: '2026-08-20', status: 'scheduled', assignee: 'Maya Chen' },
-];
+export const accounts = isSupabaseConfigured
+  ? (liveContext?.account ? [liveContext.account] : [])
+  : mockUser?.company_name && !sharedAccounts.some((account) => account.id === mockUser.account_id)
+  ? [...sharedAccounts, { id: mockUser.account_id, name: mockUser.company_name, plan: 'Starter' }]
+  : sharedAccounts;
+
+export const seedClients = isSupabaseConfigured ? liveData.clients : (ACCOUNT_ID ? sharedClients.filter((client) => client.account_id === ACCOUNT_ID) : []);
+
+export const seedJobs = isSupabaseConfigured ? liveData.jobs : (ACCOUNT_ID ? sharedJobs.filter((job) => job.account_id === ACCOUNT_ID) : []);
 
 // Not part of the real shared schema yet — local-only helper lists for
 // the UI's assignee/status pickers.
