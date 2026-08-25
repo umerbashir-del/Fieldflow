@@ -82,5 +82,9 @@ export function getAnswer(rawQuery, accountId) {
   const [docHit] = searchDocs(lower);
   if (docHit) return { text: docHit.body, source: `${docHit.docTitle} — ${docHit.heading}` };
 
-  return { text: "I don't have documentation on that yet. Try asking how to create a job, what job statuses mean, how account scoping works, or what your plan is." };
+  return { text: NO_ANSWER_TEXT };
 }
+
+// Exported so callers (e.g. chatbot.js) can detect this exact fallback and
+// decide whether to try an external API before showing it to the user.
+export const NO_ANSWER_TEXT = "I don't have documentation on that yet. Try asking how to create a job, what job statuses mean, how account scoping works, or what your plan is.";

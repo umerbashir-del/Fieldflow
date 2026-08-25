@@ -10,7 +10,7 @@
   <link rel="stylesheet" href="chatbot.css" />
 </head>
 <body>
-  <div class="ff-shell">
+  <div class="ff-widget" id="ffWidget">
     <div class="ff-card">
       <header class="ff-header">
         <div class="ff-header-left">
@@ -24,13 +24,16 @@
             <p class="ff-subtitle">Online · answers scoped to your account</p>
           </div>
         </div>
-        <label class="ff-account-picker">
-          <span>Account</span>
-          <div class="ff-select-wrap">
-            <select id="accountSelect"></select>
-            <span class="ff-select-caret">▾</span>
-          </div>
-        </label>
+        <div class="ff-header-right">
+          <label class="ff-account-picker">
+            <span>Account</span>
+            <div class="ff-select-wrap">
+              <select id="accountSelect"></select>
+              <span class="ff-select-caret">▾</span>
+            </div>
+          </label>
+          <button type="button" class="ff-close-btn" id="ffClose" aria-label="Close chat">✕</button>
+        </div>
       </header>
 
       <div class="ff-messages" id="messageList"></div>
@@ -44,6 +47,10 @@
       </footer>
     </div>
   </div>
+
+  <button type="button" class="ff-launcher" id="ffLauncher" aria-label="Open chat">
+    <img src="robot.png" alt="" />
+  </button>
 
   <script type="module" src="chatbot.js"></script>
 </body>

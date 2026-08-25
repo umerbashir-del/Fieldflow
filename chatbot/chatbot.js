@@ -1,5 +1,6 @@
 import { accounts } from './data.js';
-import { getAnswer } from './model.js';
+import { getAnswer, NO_ANSWER_TEXT } from './model.js';
+import { askApi } from './apiFallback.js';
 
 const STORAGE_KEY = 'fieldflow_chatbot_account_v1';
 
@@ -41,6 +42,9 @@ const messageList = document.getElementById('messageList');
 const chatForm = document.getElementById('chatForm');
 const chatInput = document.getElementById('chatInput');
 const chipsEl = document.getElementById('suggestionChips');
+const launcher = document.getElementById('ffLauncher');
+const widget = document.getElementById('ffWidget');
+const closeBtn = document.getElementById('ffClose');
 
 function renderAccountOptions() {
   accountSelect.innerHTML = accounts
@@ -112,7 +116,7 @@ function escapeHtml(text) {
   return div.innerHTML;
 }
 
-function sendMessage(text) {
+async function sendMessage(text) {
   const trimmed = text.trim();
   if (!trimmed || typing) return;
   messages.push({ role: 'user', text: trimmed });
@@ -120,12 +124,17 @@ function sendMessage(text) {
   typing = true;
   renderMessages();
 
-  window.setTimeout(() => {
-    const result = getAnswer(trimmed, accountId);
-    typing = false;
-    messages.push({ role: 'bot', text: result.text, source: result.source, jobs: result.jobs });
-    renderMessages();
-  }, 650);
+  await new Promise((resolve) => window.setTimeout(resolve, 650));
+
+  let result = getAnswer(trimmed, accountId);
+  if (result.text === NO_ANSWER_TEXT) {
+    const apiResult = await askApi(trimmed, accountId);
+    if (apiResult) result = apiResult;
+  }
+
+  typing = false;
+  messages.push({ role: 'bot', text: result.text, source: result.source, jobs: result.jobs });
+  renderMessages();
 }
 
 chatForm.addEventListener('submit', (e) => {
@@ -140,6 +149,20 @@ accountSelect.addEventListener('change', () => {
   messages.push({ role: 'bot', text: `Switched to ${account.name}. I'll scope account lookups to this account from now on.` });
   renderMessages();
 });
+
+function openWidget() {
+  widget.classList.add('is-open');
+  launcher.classList.add('is-hidden');
+  chatInput.focus();
+}
+
+function closeWidget() {
+  widget.classList.remove('is-open');
+  launcher.classList.remove('is-hidden');
+}
+
+launcher.addEventListener('click', openWidget);
+closeBtn.addEventListener('click', closeWidget);
 
 renderAccountOptions();
 renderChips();
