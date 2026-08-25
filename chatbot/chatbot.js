@@ -1,9 +1,11 @@
 import { accounts, clients, jobs } from './data.js';
 import { getAnswer } from './model.js';
 import { buildMockAppLink, isMockContractor, mockUserFromSearch } from '../shared-data/mockSession.js';
-import { clearMockDataSession, loadMockAccountData } from '../shared-data/mockDataSession.js';
+import { buildMockDataLink, clearMockDataSession, loadMockAccountData } from '../shared-data/mockDataSession.js';
 import { APP_URLS } from '../shared-data/appConfig.js';
 import { getAccountData, getSignedInAccount, isSupabaseConfigured, signOut } from '../shared-data/supabase.js';
+import { formatReportingDate, reportingDateFromAccount, toggleReportingDateInCurrentUrl, withReportingDate } from '../shared-data/reportingDate.js';
+import { assigneeLabel } from '../shared-data/jobPresentation.js';
 
 const STORAGE_KEY = 'fieldflow_chatbot_account_v1';
 
@@ -28,10 +30,23 @@ const activeAccount = isSupabaseConfigured
   ? liveContext?.account
   : mockUser && (accounts.find((account) => account.id === mockUser.account_id) ?? { id: mockUser.account_id, name: mockUser.company_name ?? 'Your new business', plan: 'Starter' });
 const liveData = isSupabaseConfigured && activeAccount ? await getAccountData(activeAccount.id) : null;
+const reporting = isSupabaseConfigured
+  ? reportingDateFromAccount(activeAccount, window.location.search)
+  : reportingDateFromAccount({ demo_reporting_date: '2026-08-19' }, window.location.search);
 const chatGate = document.getElementById('chatLoginGate');
 const chatApp = document.getElementById('chatApp');
 document.getElementById('chatGateSchedulingLink').href = APP_URLS.scheduling;
-if (isSupabaseConfigured) document.getElementById('chatDemoNotice').hidden = true;
+const reportingNotice = document.getElementById('chatDemoNotice');
+if (activeAccount && reporting.storedDate) {
+  const label = reporting.isDemoDate ? 'Demo data — reporting as of ' : 'Live-date preview — reporting as of ';
+  reportingNotice.replaceChildren(document.createTextNode(`${label}${formatReportingDate(reporting.isoDate)}. `));
+  const dateModeButton = document.createElement('button');
+  dateModeButton.type = 'button';
+  dateModeButton.className = 'ff-date-mode';
+  dateModeButton.textContent = reporting.isDemoDate ? 'Use today' : 'Return to demo date';
+  dateModeButton.addEventListener('click', () => toggleReportingDateInCurrentUrl(reporting));
+  reportingNotice.append(dateModeButton);
+}
 
 if (isSupabaseConfigured ? !activeAccount : !isMockContractor(mockUser)) {
   chatGate.hidden = false;
@@ -74,8 +89,8 @@ function renderAccountOptions() {
 }
 
 function renderAppLinks() {
-  schedulingLink.href = isSupabaseConfigured ? APP_URLS.scheduling : buildMockAppLink(APP_URLS.scheduling, mockUser);
-  analyticsLink.href = isSupabaseConfigured ? APP_URLS.analytics : buildMockAppLink(APP_URLS.analytics, mockUser);
+  schedulingLink.href = withReportingDate(isSupabaseConfigured ? APP_URLS.scheduling : buildMockDataLink(buildMockAppLink(APP_URLS.scheduling, mockUser)), reporting);
+  analyticsLink.href = withReportingDate(isSupabaseConfigured ? APP_URLS.analytics : buildMockDataLink(buildMockAppLink(APP_URLS.analytics, mockUser)), reporting);
 }
 
 function renderChips() {
@@ -95,7 +110,7 @@ function jobCardHtml(job) {
       <div class="ff-job-date"><span class="month">${escapeHtml(month)}</span><span class="day">${escapeHtml(day)}</span></div>
       <div class="ff-job-info">
         <div class="ff-job-title">${escapeHtml(job.title)}</div>
-        <div class="ff-job-meta">${escapeHtml(job.client)} · ${escapeHtml(job.assignee)}</div>
+        <div class="ff-job-meta">${escapeHtml(job.client)} · ${escapeHtml(assigneeLabel(job.assignee))}</div>
       </div>
       <span class="ff-status-badge ff-status--${statusKey}"><span class="dot"></span>${escapeHtml(STATUS_LABEL[statusKey])}</span>
     </div>`;
@@ -155,7 +170,7 @@ function sendMessage(text) {
     const result = getAnswer(trimmed, {
       account: activeAccount,
       ...data,
-      referenceDate: isSupabaseConfigured ? new Date() : undefined,
+      referenceDate: reporting.date,
     });
     typing = false;
     messages.push({ role: 'bot', text: result.text, source: result.source, jobs: result.jobs });

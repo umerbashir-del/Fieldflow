@@ -8,6 +8,7 @@
 import { accounts, clients, jobs, formatDate, clientName } from './data.js';
 import { matchFaq, searchDocs } from './knowledge-base.js';
 import { buildAnalyticsSummary } from '../analytics/src/analyticsSummary.js';
+import { assigneeLabel } from '../shared-data/jobPresentation.js';
 
 const DEMO_REFERENCE_DATE = new Date('2026-08-19T12:00:00Z');
 
@@ -77,7 +78,7 @@ export function getAnswer(rawQuery, accountContext) {
     if (job.account_id !== accountId) {
       return { text: `${jobIdMatch[0]} isn't part of ${account.name}'s account, so I can't show it here — FieldFlow keeps every account's jobs separate.` };
     }
-    return { text: `${job.title} for ${clientName(job.client_id, clients)} is ${job.status.replace('_', ' ')}, scheduled for ${formatDate(job.scheduled_for)} with ${job.assignee}.` };
+    return { text: `${job.title} for ${clientName(job.client_id, scopedClients)} is ${job.status.replace('_', ' ')}, scheduled for ${formatDate(job.scheduled_for)} with ${assigneeLabel(job.assignee)}.` };
   }
 
   if (/\bplan\b|\bsubscription\b|which account|what account|my account\b/.test(lower)) {
@@ -100,7 +101,7 @@ export function getAnswer(rawQuery, accountContext) {
   }
 
   if (isWeeklyScheduleQuestion(lower)) {
-    const { start, end } = weekBounds();
+    const { start, end } = weekBounds(referenceDate);
     const weeklyJobs = scopedJobs
       .filter((j) => j.account_id === accountId
         && j.status !== 'completed'
@@ -114,7 +115,7 @@ export function getAnswer(rawQuery, accountContext) {
       text: `You have ${weeklyJobs.length} job${weeklyJobs.length === 1 ? '' : 's'} scheduled this week (${weekLabel}):`,
       jobs: weeklyJobs.map((j) => ({
         title: j.title,
-        client: clientName(j.client_id, clients),
+        client: clientName(j.client_id, scopedClients),
         iso: j.scheduled_for,
         status: j.status,
         assignee: j.assignee,
@@ -132,7 +133,7 @@ export function getAnswer(rawQuery, accountContext) {
       text: `Here's what's coming up for ${account.name}:`,
       jobs: upcoming.map((j) => ({
         title: j.title,
-        client: clientName(j.client_id, clients),
+        client: clientName(j.client_id, scopedClients),
         iso: j.scheduled_for,
         status: j.status,
         assignee: j.assignee,

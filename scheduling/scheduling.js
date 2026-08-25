@@ -1,9 +1,11 @@
-import { ACCOUNT_ID, accounts, IS_CONTRACTOR_SESSION, LIVE_MODE, seedClients, seedJobs, STATUS_LABELS, STATUS_VALUES, TEAM_MEMBERS } from './data.js';
+import { ACCOUNT_ID, accounts, IS_CONTRACTOR_SESSION, LIVE_MODE, REPORTING, seedClients, seedJobs, STATUS_LABELS, STATUS_VALUES, TEAM_MEMBERS } from './data.js';
 import { clientName, formatDate } from './formatters.js';
-import { addDaysISO, addMonthsISO, isSameMonth, monthDay, monthYearLabel, startOfMonthISO, startOfWeekISO, todayISO, weekdayShort } from './date-utils.js';
-import { loadMockAccountData, saveMockAccountData } from '../shared-data/mockDataSession.js';
+import { addDaysISO, addMonthsISO, isSameMonth, monthDay, monthYearLabel, startOfMonthISO, startOfWeekISO, weekdayShort } from './date-utils.js';
+import { buildMockDataLink, loadMockAccountData, saveMockAccountData } from '../shared-data/mockDataSession.js';
 import { APP_URLS } from '../shared-data/appConfig.js';
 import { createFieldflowClient, createJob, deleteClient, deleteJob as deleteLiveJob, updateClient, updateJob } from '../shared-data/supabase.js';
+import { formatReportingDate, toggleReportingDateInCurrentUrl, withReportingDate } from '../shared-data/reportingDate.js';
+import { assigneeLabel } from '../shared-data/jobPresentation.js';
 
 (function () {
   'use strict';
@@ -30,10 +32,22 @@ import { createFieldflowClient, createJob, deleteClient, deleteJob as deleteLive
   let { clients, jobs } = loadInitialState(); // the actual data being edited
   let tab = 'home';                        // which top-level tab is showing: 'home' | 'calendar' | 'clients'
   let calMode = 'week';                    // which calendar layout is showing: 'day' | 'week' | 'month'
-  let calAnchor = todayISO();              // the date the calendar view is currently centered/focused on
+  let calAnchor = REPORTING.isoDate;       // the date the calendar view is currently centered/focused on
   let jobModal = null;    // null when closed, otherwise { mode: 'new'|'edit', draft, originalId? }
   let clientModal = null; // null when closed, otherwise { mode: 'new'|'edit', draft, originalId? }
   let clientNotice = '';  // warning text shown inside the client modal (e.g. "can't delete, has jobs")
+
+  const reportingNotice = document.getElementById('schedulingDemoNotice');
+  if (REPORTING.storedDate) {
+    const label = REPORTING.isDemoDate ? 'Demo data — reporting as of ' : 'Live-date preview — reporting as of ';
+    reportingNotice.replaceChildren(document.createTextNode(`${label}${formatReportingDate(REPORTING.isoDate)}. `));
+    const dateModeButton = document.createElement('button');
+    dateModeButton.type = 'button';
+    dateModeButton.className = 'notice-link';
+    dateModeButton.textContent = REPORTING.isDemoDate ? 'Use today' : 'Return to demo date';
+    dateModeButton.addEventListener('click', () => toggleReportingDateInCurrentUrl(REPORTING));
+    reportingNotice.append(dateModeButton);
+  }
 
   // Reads any previously-saved clients/jobs out of localStorage. If
   // nothing's saved yet (first visit) or the saved data is corrupted,
@@ -60,7 +74,10 @@ import { createFieldflowClient, createJob, deleteClient, deleteJob as deleteLive
   // Saves the current clients/jobs arrays to localStorage. Called after
   // every add/edit/delete so changes aren't lost on refresh.
   function persist() {
-    if (!LIVE_MODE) saveMockAccountData(ACCOUNT_ID, { clients, jobs });
+    if (!LIVE_MODE) {
+      saveMockAccountData(ACCOUNT_ID, { clients, jobs }, { clients: seedClients, jobs: seedJobs });
+      refreshMockDataLinks();
+    }
   }
 
   // Generates a short unique id like "job_a1b2c3d4" for new records. The
@@ -139,7 +156,10 @@ import { createFieldflowClient, createJob, deleteClient, deleteJob as deleteLive
     ['demo_user', 'demo_name', 'demo_email', 'demo_company'].forEach((name) => {
       if (query.get(name)) link.searchParams.set(name, query.get(name));
     });
-    analyticsLink.href = link.toString();
+    analyticsLink.href = withReportingDate(link.toString(), REPORTING);
+    analyticsLink.addEventListener('click', () => {
+      analyticsLink.href = buildMockDataLink(analyticsLink.href);
+    });
   }
   const chatLink = el('chatLink');
   if (chatLink) {
@@ -149,7 +169,16 @@ import { createFieldflowClient, createJob, deleteClient, deleteJob as deleteLive
     ['demo_user', 'demo_name', 'demo_email', 'demo_company'].forEach((name) => {
       if (query.get(name)) link.searchParams.set(name, query.get(name));
     });
-    chatLink.href = link.toString();
+    chatLink.href = withReportingDate(link.toString(), REPORTING);
+    chatLink.addEventListener('click', () => {
+      chatLink.href = buildMockDataLink(chatLink.href);
+    });
+  }
+
+  function refreshMockDataLinks() {
+    if (LIVE_MODE) return;
+    if (analyticsLink) analyticsLink.href = buildMockDataLink(analyticsLink.href);
+    if (chatLink) chatLink.href = buildMockDataLink(chatLink.href);
   }
 
   // Job modal elements — the popup used for both "New job" and "Edit job".
@@ -189,7 +218,7 @@ import { createFieldflowClient, createJob, deleteClient, deleteJob as deleteLive
   function renderAll() {
     document.documentElement.setAttribute('data-theme', theme);
     themeToggleBtn.textContent = theme === 'dark' ? 'Light mode' : 'Dark mode';
-    accountLine.textContent = (account ? account.name : 'Account') + ' · ' + monthYearLabel(todayISO());
+    accountLine.textContent = (account ? account.name : 'Account') + ' · ' + monthYearLabel(REPORTING.isoDate);
 
     // Show/hide the three top-level sections based on which tab is active.
     // The `hidden` attribute is what the [hidden] CSS rules in
@@ -228,7 +257,7 @@ import { createFieldflowClient, createJob, deleteClient, deleteJob as deleteLive
       '<article class="job ' + (isConflict ? 'is-conflict' : '') + '" data-job-id="' + job.id + '">' +
         '<div>' +
           '<strong>' + escapeHtml(job.title) + '</strong>' +
-          '<div class="muted">' + escapeHtml(clientName(job.client_id, clients)) + ' · ' + escapeHtml(job.assignee) + '</div>' +
+          '<div class="muted">' + escapeHtml(clientName(job.client_id, clients)) + ' · ' + escapeHtml(assigneeLabel(job.assignee)) + '</div>' +
           (isConflict ? conflictFlagHtml() : '') +
         '</div>' +
         '<div>' + statusBadge(job.status) +
@@ -251,7 +280,7 @@ import { createFieldflowClient, createJob, deleteClient, deleteJob as deleteLive
   function renderHome() {
     const aJobs = accountJobs();
     const conflictIds = computeConflictIds(aJobs);
-    const today = todayISO();
+    const today = REPORTING.isoDate;
 
     // Status summary cards: one per possible status, with a live count.
     statusGrid.innerHTML = STATUS_VALUES.map((status) => {
@@ -318,7 +347,7 @@ import { createFieldflowClient, createJob, deleteClient, deleteJob as deleteLive
       if (!jobsByDate.has(j.scheduled_for)) jobsByDate.set(j.scheduled_for, []);
       jobsByDate.get(j.scheduled_for).push(j);
     });
-    const today = todayISO();
+    const today = REPORTING.isoDate;
 
     if (calMode === 'week') renderWeekGrid(jobsByDate, conflictIds, today);
     if (calMode === 'day') renderDayAgenda(jobsByDate, conflictIds);
@@ -377,7 +406,7 @@ import { createFieldflowClient, createJob, deleteClient, deleteJob as deleteLive
     dayAgenda.innerHTML = dayJobs.map((job) =>
       '<div class="agenda-item" data-job-id="' + job.id + '">' +
         '<div><strong>' + escapeHtml(job.title) + '</strong>' +
-          '<div class="muted">' + escapeHtml(clientName(job.client_id, clients)) + ' · ' + escapeHtml(job.assignee) + '</div>' +
+          '<div class="muted">' + escapeHtml(clientName(job.client_id, clients)) + ' · ' + escapeHtml(assigneeLabel(job.assignee)) + '</div>' +
           (conflictIds.has(job.id) ? conflictFlagHtml() : '') +
         '</div>' + statusBadge(job.status) +
       '</div>'
@@ -472,7 +501,7 @@ import { createFieldflowClient, createJob, deleteClient, deleteJob as deleteLive
       draft: {
         client_id: (accountClients()[0] || {}).id || '',
         title: '',
-        scheduled_for: prefillDate || todayISO(),
+        scheduled_for: prefillDate || REPORTING.isoDate,
         status: 'scheduled',
         assignee: TEAM_MEMBERS[0],
       },
@@ -617,6 +646,15 @@ import { createFieldflowClient, createJob, deleteClient, deleteJob as deleteLive
     if (!clientModal) return;
     const { draft, mode, originalId } = clientModal;
     if (!draft.name.trim()) return;
+    const normalizedName = draft.name.trim().toLocaleLowerCase();
+    const duplicate = accountClients().some((client) =>
+      client.id !== originalId && client.name.trim().toLocaleLowerCase() === normalizedName
+    );
+    if (duplicate) {
+      clientNotice = 'A client with this name already exists for this company.';
+      renderClientModal();
+      return;
+    }
     if (mode === 'new') {
       const nextClient = { id: makeId('client'), account_id: ACCOUNT_ID, name: draft.name.trim(), city: draft.city.trim() };
       clients.push(LIVE_MODE ? await createFieldflowClient(nextClient) : nextClient);
@@ -674,7 +712,7 @@ import { createFieldflowClient, createJob, deleteClient, deleteJob as deleteLive
 
   calPrevBtn.addEventListener('click', () => { stepCalendar(-1); });
   calNextBtn.addEventListener('click', () => { stepCalendar(1); });
-  calTodayBtn.addEventListener('click', () => { calAnchor = todayISO(); renderAll(); });
+  calTodayBtn.addEventListener('click', () => { calAnchor = REPORTING.isoDate; renderAll(); });
 
   // Moves calAnchor forward/backward by however much makes sense for the
   // current layout: a day at a time in Day mode, a week at a time in
