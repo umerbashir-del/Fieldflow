@@ -50,7 +50,6 @@
         <p class="muted" id="accountLine">Northstar Field Services</p>
       </div>
       <div class="topbar-actions">
-        <button type="button" class="theme-toggle" id="themeToggleBtn">Dark mode</button>
         <button type="button" id="newJobBtn">New job</button>
         <button type="button" class="btn-ghost" id="mockSignOutBtn">Sign out</button>
       </div>
@@ -172,5 +171,16 @@
 
   <script type="module" src="mockLogin.js"></script>
   <script type="module" src="scheduling.js"></script>
+  <script>
+    setTimeout(() => {
+      const form = document.getElementById('mockLoginForm');
+      const description = document.getElementById('contractorLoginDescription');
+      if (form && [...form.elements].some((element) => element.disabled)) {
+        [...form.elements].forEach((element) => { element.disabled = false; });
+        if (description.textContent.includes('Connecting')) description.textContent = 'We couldn’t load your data. Check your connection and try again.';
+        document.getElementById('mockLoginError').textContent = 'The connection took too long. Try again or check your network.';
+      }
+    }, 12000);
+  </script>
 </body>
 </html>
