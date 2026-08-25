@@ -139,7 +139,12 @@ function closeWidget() {
 
 launcher.addEventListener('click', openWidget);
 closeBtn.addEventListener('click', closeWidget);
-if (isEmbedded) openWidget();
+// Open by default even outside an iframe: visiting this page's own URL
+// directly (e.g. the "Support Chat" link from Scheduling) is itself the
+// equivalent of clicking a launcher elsewhere, so there's no reason to
+// make a visitor click twice. The close button still collapses it back
+// to just the launcher, which reopens it the same way.
+openWidget();
 
 if (loadError) {
   chatGate.querySelector('h1').textContent = 'Support is temporarily unavailable';

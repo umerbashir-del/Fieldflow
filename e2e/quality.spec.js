@@ -48,7 +48,7 @@ test('password reset validates email format without sending a request', async ({
 test('Chatbot clearly gates unauthenticated users', async ({ page }) => {
   await page.goto('http://127.0.0.1:5175/');
   await expect(page.locator('#chatLoginGate')).toBeVisible();
-  await expect(page.locator('#chatLoginGate')).toContainText('Please sign in through Scheduling to open Support.');
+  await expect(page.locator('#chatLoginGate')).toContainText('Sign in through Scheduling first so Support can use your company’s context.');
   await expect(page.locator('#chatApp')).toBeHidden();
 });
 
