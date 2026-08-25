@@ -7,7 +7,42 @@
   <link rel="stylesheet" href="scheduling.css" />
 </head>
 <body>
-  <main>
+  <section class="mock-login-page" id="mockLoginGate">
+    <div class="mock-login-card">
+      <p class="eyebrow">FieldFlow demo</p>
+      <h1>FieldFlow Sign In</h1>
+      <p class="muted" id="contractorLoginDescription">Start in Scheduling. Your selected company follows you to connected FieldFlow areas.</p>
+      <div class="mock-login-details"><strong>Demo accounts</strong><span>John: <code>john@fieldflow.demo</code> / <code>john-demo-password</code></span><span>Sarah: <code>sarah@fieldflow.demo</code> / <code>sarah-demo-password</code></span></div>
+      <form id="mockLoginForm" class="mock-login-form">
+        <label>Email<input id="mockEmail" type="email" autocomplete="email" required /></label>
+        <label>Password<input id="mockPassword" type="password" autocomplete="current-password" required /></label>
+        <button type="submit">Sign in</button>
+        <p id="mockLoginError" class="mock-login-error" role="alert"></p>
+        <button class="auth-link" type="button" data-auth-mode="reset">Forgot password?</button>
+        <button class="auth-link" type="button" data-auth-mode="sign-up">Create a new business account</button>
+      </form>
+      <form id="mockSignUpForm" class="mock-login-form" hidden>
+        <h2>Create your business account</h2>
+        <p class="muted" id="contractorSignUpDescription">Demo flow: this creates a new company, owner, and empty schedule for this browser session.</p>
+        <label>Your name<input name="ownerName" autocomplete="name" required /></label>
+        <label>Business name<input name="companyName" autocomplete="organization" required /></label>
+        <label>Email<input name="email" type="email" autocomplete="email" required /></label>
+        <label>Password<input name="password" type="password" autocomplete="new-password" required /></label>
+        <button type="submit">Create account</button>
+        <p id="mockSignUpError" class="mock-login-error" role="alert"></p>
+        <button class="auth-link" type="button" data-auth-mode="sign-in">Back to sign in</button>
+      </form>
+      <form id="mockResetForm" class="mock-login-form" hidden>
+        <h2>Reset your password</h2>
+        <p class="muted" id="contractorResetDescription">Enter your email to request a password-reset link.</p>
+        <label>Email<input name="email" type="email" autocomplete="email" required /></label>
+        <button type="submit">Send reset link</button>
+        <p id="mockResetMessage" class="mock-reset-message" role="status"></p>
+        <button class="auth-link" type="button" data-auth-mode="sign-in">Back to sign in</button>
+      </form>
+    </div>
+  </section>
+  <main id="schedulingApp" hidden>
     <div class="topbar">
       <div>
         <p class="eyebrow">FieldFlow · Scheduling</p>
@@ -30,6 +65,7 @@
     <section id="homeView">
       <div class="analytics-link-row">
         <a class="analytics-link" href="http://127.0.0.1:5173/" title="Open Customer Analytics for this business">View Analytics</a>
+        <a class="analytics-link" id="chatLink" href="http://127.0.0.1:5175/" title="Open Support Chat for this business">Support Chat</a>
       </div>
       <section class="grid" id="statusGrid"></section>
       <section style="margin-top:28px">
@@ -132,10 +168,8 @@
     </div>
   </div>
 
-  <script src="data.js"></script>
-  <script src="formatters.js"></script>
-  <script src="date-utils.js"></script>
-  <script src="scheduling.js"></script>
+  <script type="module" src="mockLogin.js"></script>
+  <script type="module" src="scheduling.js"></script>
   <script src="http://localhost:5175/embed.js"></script>
 </body>
 </html>

@@ -11,39 +11,50 @@
 </head>
 <body>
   <div class="ff-widget" id="ffWidget">
-    <div class="ff-card">
-      <header class="ff-header">
-        <div class="ff-header-left">
-          <div class="ff-avatar">
-            <img src="robot.png" alt="FieldFlow bot" />
-            <span class="ff-status-dot"></span>
-          </div>
-          <div class="ff-header-text">
-            <p class="ff-eyebrow">FieldFlow · Support</p>
-            <h1 class="ff-title">Chatbot</h1>
-          </div>
-        </div>
-        <div class="ff-header-right">
-          <label class="ff-account-picker">
-            <span>Account</span>
-            <div class="ff-select-wrap">
-              <select id="accountSelect"></select>
-              <span class="ff-select-caret">▾</span>
+    <button type="button" class="ff-close-btn" id="ffClose" aria-label="Close chat">✕</button>
+    <div class="ff-shell">
+      <main class="ff-gate" id="chatLoginGate" hidden>
+        <p class="ff-eyebrow">FieldFlow demo</p>
+        <h1>Start in Scheduling</h1>
+        <p>Sign in through Scheduling first so Support can use your company’s context.</p>
+        <a class="ff-gate-link" id="chatGateSchedulingLink" href="#">Open Scheduling</a>
+      </main>
+      <div class="ff-card" id="chatApp" hidden>
+        <header class="ff-header">
+          <div class="ff-header-left">
+            <div class="ff-avatar">
+              <img src="robot.png" alt="FieldFlow bot" />
+              <span class="ff-status-dot"></span>
             </div>
-          </label>
-          <button type="button" class="ff-close-btn" id="ffClose" aria-label="Close chat">✕</button>
-        </div>
-      </header>
+            <div class="ff-header-text">
+              <p class="ff-eyebrow">FieldFlow · Support</p>
+              <h1 class="ff-title">Chatbot</h1>
+              <p class="ff-demo-notice" id="chatDemoNotice">Demo data stays in this tab until you sign out.</p>
+              <p class="ff-app-links"><a id="chatSchedulingLink" href="#">Scheduling</a><span aria-hidden="true">·</span><a id="chatAnalyticsLink" href="#">Analytics</a></p>
+            </div>
+          </div>
+          <div class="ff-header-right">
+            <label class="ff-account-picker">
+              <span>Account</span>
+              <div class="ff-select-wrap">
+                <select id="accountSelect"></select>
+                <span class="ff-select-caret">▾</span>
+              </div>
+            </label>
+            <button class="ff-sign-out" id="chatSignOutBtn" type="button">Sign out</button>
+          </div>
+        </header>
 
-      <div class="ff-messages" id="messageList"></div>
+        <div class="ff-messages" id="messageList"></div>
 
-      <footer class="ff-footer">
-        <div class="ff-chips" id="suggestionChips"></div>
-        <form class="ff-input-row" id="chatForm">
-          <input id="chatInput" type="text" placeholder="Ask e.g. &ldquo;How do I create a job?&rdquo;" autocomplete="off" />
-          <button type="submit">Send <span class="ff-send-arrow">→</span></button>
-        </form>
-      </footer>
+        <footer class="ff-footer">
+          <div class="ff-chips" id="suggestionChips"></div>
+          <form class="ff-input-row" id="chatForm">
+            <input id="chatInput" type="text" placeholder="Ask e.g. &ldquo;How do I create a job?&rdquo;" autocomplete="off" />
+            <button type="submit">Send <span class="ff-send-arrow">→</span></button>
+          </form>
+        </footer>
+      </div>
     </div>
   </div>
 

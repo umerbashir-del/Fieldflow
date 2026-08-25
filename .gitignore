@@ -4,11 +4,16 @@ node_modules/
 # Build output
 dist/
 build/
+test-results/
+playwright-report/
+deploy/
 
 # Env files
 .env
 .env.local
 .env.*.local
+.env*
+.vercel
 
 # Logs
 npm-debug.log*

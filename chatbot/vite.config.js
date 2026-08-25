@@ -7,9 +7,12 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 // Chat Box reads shared-data/*.json and docs/*.md straight from the repo
 // (see data.js), so the dev server needs permission to serve files outside
 // this workspace folder.
-export default defineConfig({
+export default defineConfig(({ command }) => ({
+  base: command === 'build' ? '/support/' : '/',
+  define: { __FIELDFLOW_DEMO__: command !== 'build', __FIELDFLOW_PRODUCTION__: command === 'build' },
+  envDir: path.resolve(__dirname, '..'),
   server: {
     port: process.env.PORT ? Number(process.env.PORT) : undefined,
     fs: { allow: [path.resolve(__dirname, '..')] },
   },
-});
+}));

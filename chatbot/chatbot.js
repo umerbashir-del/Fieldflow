@@ -1,6 +1,12 @@
-import { accounts } from './data.js';
+import { accounts, clients, jobs } from './data.js';
 import { getAnswer, NO_ANSWER_TEXT } from './model.js';
 import { askApi } from './apiFallback.js';
+import { buildMockAppLink, isMockContractor, mockUserFromSearch } from '../shared-data/mockSession.js';
+import { buildMockDataLink, clearMockDataSession, loadMockAccountData } from '../shared-data/mockDataSession.js';
+import { APP_URLS } from '../shared-data/appConfig.js';
+import { getAccountData, getSignedInAccount, isSupabaseConfigured, signOut } from '../shared-data/supabase.js';
+import { formatReportingDate, reportingDateFromAccount, toggleReportingDateInCurrentUrl, withReportingDate } from '../shared-data/reportingDate.js';
+import { assigneeLabel } from '../shared-data/jobPresentation.js';
 
 const STORAGE_KEY = 'fieldflow_chatbot_account_v1';
 
@@ -9,7 +15,7 @@ const SUGGESTIONS = [
   'What do job statuses mean?',
   "What's my plan?",
   "Why can't I see another company's jobs?",
-  "What's on my schedule today?",
+  'What jobs do I have this week?',
 ];
 
 const STATUS_LABEL = {
@@ -19,37 +25,109 @@ const STATUS_LABEL = {
   cancelled: 'Cancelled',
 };
 
-let accountId = loadAccount();
+const mockUser = mockUserFromSearch(window.location.search);
+const liveContext = isSupabaseConfigured ? await getSignedInAccount() : null;
+const activeAccount = isSupabaseConfigured
+  ? liveContext?.account
+  : mockUser && (accounts.find((account) => account.id === mockUser.account_id) ?? { id: mockUser.account_id, name: mockUser.company_name ?? 'Your new business', plan: 'Starter' });
+const liveData = isSupabaseConfigured && activeAccount ? await getAccountData(activeAccount.id) : null;
+const reporting = isSupabaseConfigured
+  ? reportingDateFromAccount(activeAccount, window.location.search)
+  : reportingDateFromAccount({ demo_reporting_date: '2026-08-19' }, window.location.search);
+const chatGate = document.getElementById('chatLoginGate');
+const chatApp = document.getElementById('chatApp');
+document.getElementById('chatGateSchedulingLink').href = APP_URLS.scheduling;
+const reportingNotice = document.getElementById('chatDemoNotice');
+if (activeAccount && reporting.storedDate) {
+  const label = reporting.isDemoDate ? 'Demo data — reporting as of ' : 'Live-date preview — reporting as of ';
+  reportingNotice.replaceChildren(document.createTextNode(`${label}${formatReportingDate(reporting.isoDate)}. `));
+  const dateModeButton = document.createElement('button');
+  dateModeButton.type = 'button';
+  dateModeButton.className = 'ff-date-mode';
+  dateModeButton.textContent = reporting.isDemoDate ? 'Use today' : 'Return to demo date';
+  dateModeButton.addEventListener('click', () => toggleReportingDateInCurrentUrl(reporting));
+  reportingNotice.append(dateModeButton);
+}
+
+// The floating launcher/widget shell wraps both the sign-in gate and the
+// chat app, so it behaves the same whether the visitor is signed in or
+// not — the launcher always opens the panel, which shows whichever of the
+// two sections below is currently unhidden. This has to live outside
+// startChat() (which only runs once signed in) so the launcher still works
+// for a signed-out visitor.
+const launcher = document.getElementById('ffLauncher');
+const widget = document.getElementById('ffWidget');
+const closeBtn = document.getElementById('ffClose');
+
+// When loaded inside another app's page via embed.js, this page runs
+// inside an iframe with ?embed=1: the host page supplies its own launcher
+// button, so this page skips its own and stays permanently "open," and its
+// close button asks the host to hide the iframe instead of toggling itself.
+const isEmbedded = new URLSearchParams(window.location.search).get('embed') === '1';
+if (isEmbedded) document.body.classList.add('ff-embed');
+
+function openWidget() {
+  widget.classList.add('is-open');
+  launcher.classList.add('is-hidden');
+  document.getElementById('chatInput')?.focus();
+}
+
+function closeWidget() {
+  if (isEmbedded) {
+    window.parent.postMessage({ type: 'fieldflow-chat-close' }, '*');
+    return;
+  }
+  widget.classList.remove('is-open');
+  launcher.classList.remove('is-hidden');
+}
+
+launcher.addEventListener('click', openWidget);
+closeBtn.addEventListener('click', closeWidget);
+if (isEmbedded) openWidget();
+
+if (isSupabaseConfigured ? !activeAccount : !isMockContractor(mockUser)) {
+  chatGate.hidden = false;
+} else {
+  chatApp.hidden = false;
+  startChat();
+}
+
+function startChat() {
+let accountId = activeAccount.id;
 let typing = false;
 const messages = [
   { role: 'bot', text: "Hi, I'm the FieldFlow assistant. Ask me setup or how-to questions, or ask about your account." },
 ];
-
-function loadAccount() {
-  try {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved && accounts.some((a) => a.id === saved)) return saved;
-  } catch (e) { /* ignore blocked storage */ }
-  return accounts.find((a) => a.id === 'acct_northstar')?.id ?? accounts[0].id;
-}
 
 function saveAccount() {
   try { localStorage.setItem(STORAGE_KEY, accountId); } catch (e) { /* ignore blocked storage */ }
 }
 
 const accountSelect = document.getElementById('accountSelect');
+const schedulingLink = document.getElementById('chatSchedulingLink');
+const analyticsLink = document.getElementById('chatAnalyticsLink');
+const signOutButton = document.getElementById('chatSignOutBtn');
 const messageList = document.getElementById('messageList');
 const chatForm = document.getElementById('chatForm');
 const chatInput = document.getElementById('chatInput');
 const chipsEl = document.getElementById('suggestionChips');
-const launcher = document.getElementById('ffLauncher');
-const widget = document.getElementById('ffWidget');
-const closeBtn = document.getElementById('ffClose');
 
 function renderAccountOptions() {
-  accountSelect.innerHTML = accounts
-    .map((a) => `<option value="${a.id}" ${a.id === accountId ? 'selected' : ''}>${a.name}</option>`)
-    .join('');
+  const visibleAccounts = [activeAccount];
+  accountSelect.replaceChildren(...visibleAccounts.map((account) => {
+    const option = document.createElement('option');
+    option.value = account.id;
+    option.selected = account.id === accountId;
+    option.textContent = account.name;
+    return option;
+  }));
+  accountSelect.disabled = true;
+  accountSelect.title = isSupabaseConfigured ? 'Account is determined by your secure sign-in.' : `Demo mode: signed in as ${mockUser.name}.`;
+}
+
+function renderAppLinks() {
+  schedulingLink.href = withReportingDate(isSupabaseConfigured ? APP_URLS.scheduling : buildMockDataLink(buildMockAppLink(APP_URLS.scheduling, mockUser)), reporting);
+  analyticsLink.href = withReportingDate(isSupabaseConfigured ? APP_URLS.analytics : buildMockDataLink(buildMockAppLink(APP_URLS.analytics, mockUser)), reporting);
 }
 
 function renderChips() {
@@ -69,7 +147,7 @@ function jobCardHtml(job) {
       <div class="ff-job-date"><span class="month">${escapeHtml(month)}</span><span class="day">${escapeHtml(day)}</span></div>
       <div class="ff-job-info">
         <div class="ff-job-title">${escapeHtml(job.title)}</div>
-        <div class="ff-job-meta">${escapeHtml(job.client)} · ${escapeHtml(job.assignee)}</div>
+        <div class="ff-job-meta">${escapeHtml(job.client)} · ${escapeHtml(assigneeLabel(job.assignee))}</div>
       </div>
       <span class="ff-status-badge ff-status--${statusKey}"><span class="dot"></span>${escapeHtml(STATUS_LABEL[statusKey])}</span>
     </div>`;
@@ -126,9 +204,14 @@ async function sendMessage(text) {
 
   await new Promise((resolve) => window.setTimeout(resolve, 650));
 
-  let result = getAnswer(trimmed, accountId);
+  const data = isSupabaseConfigured ? liveData : loadMockAccountData(activeAccount.id, { clients, jobs });
+  let result = getAnswer(trimmed, {
+    account: activeAccount,
+    ...data,
+    referenceDate: reporting.date,
+  });
   if (result.text === NO_ANSWER_TEXT) {
-    const apiResult = await askApi(trimmed, accountId);
+    const apiResult = await askApi(trimmed, activeAccount.id);
     if (apiResult) result = apiResult;
   }
 
@@ -150,33 +233,14 @@ accountSelect.addEventListener('change', () => {
   renderMessages();
 });
 
-// When loaded inside another app's page via embed.js, this page runs
-// inside an iframe with ?embed=1: the host page supplies its own launcher
-// button, so this page skips its own and stays permanently "open," and its
-// close button asks the host to hide the iframe instead of toggling itself.
-const isEmbedded = new URLSearchParams(window.location.search).get('embed') === '1';
-if (isEmbedded) document.body.classList.add('ff-embed');
-
-function openWidget() {
-  widget.classList.add('is-open');
-  launcher.classList.add('is-hidden');
-  chatInput.focus();
-}
-
-function closeWidget() {
-  if (isEmbedded) {
-    window.parent.postMessage({ type: 'fieldflow-chat-close' }, '*');
-    return;
-  }
-  widget.classList.remove('is-open');
-  launcher.classList.remove('is-hidden');
-}
-
-launcher.addEventListener('click', openWidget);
-closeBtn.addEventListener('click', closeWidget);
-
-if (isEmbedded) openWidget();
+signOutButton.addEventListener('click', async () => {
+  if (isSupabaseConfigured) await signOut();
+  clearMockDataSession();
+  window.location.assign(APP_URLS.scheduling);
+});
 
 renderAccountOptions();
+renderAppLinks();
 renderChips();
 renderMessages();
+}

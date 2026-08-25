@@ -54,10 +54,25 @@
   launcher.setAttribute('aria-label', 'Open chat');
   launcher.innerHTML = `<img src="${BASE_URL}/robot.png" alt="" />`;
 
+  // In demo/mock mode (no live Supabase config) the signed-in identity
+  // travels as URL query params rather than a shared session — see
+  // shared-data/mockSession.js's demo_user/account_id/demo_* params — and
+  // since the chatbot loads from a different origin/port in local dev, it
+  // can't read the host page's own params. Forward the ones that matter so
+  // a signed-in visitor doesn't land back on the chatbot's sign-in gate.
+  const MOCK_SESSION_PARAMS = ['demo_user', 'account_id', 'demo_name', 'demo_email', 'demo_company'];
+  const hostParams = new URLSearchParams(window.location.search);
+  const frameUrl = new URL(`${BASE_URL}/`);
+  frameUrl.searchParams.set('embed', '1');
+  MOCK_SESSION_PARAMS.forEach((key) => {
+    const value = hostParams.get(key);
+    if (value) frameUrl.searchParams.set(key, value);
+  });
+
   const frame = document.createElement('iframe');
   frame.className = 'ff-embed-frame';
   frame.title = 'FieldFlow Support Assistant';
-  frame.src = `${BASE_URL}/?embed=1`;
+  frame.src = frameUrl.toString();
 
   function ready() {
     document.body.appendChild(frame);

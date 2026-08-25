@@ -1,19 +1,44 @@
 {
   "name": "fieldflow",
   "private": true,
-  "workspaces": ["scheduling", "ops-dashboard", "chatbot", "analytics"],
+  "workspaces": [
+    "scheduling",
+    "ops-dashboard",
+    "chatbot",
+    "analytics"
+  ],
   "scripts": {
     "dev:scheduling": "npm run dev --workspace=@fieldflow/scheduling",
     "dev:ops": "npm run dev --workspace=@fieldflow/ops-dashboard",
     "dev:chatbot": "npm run dev --workspace=@fieldflow/chatbot",
     "dev:analytics": "npm run dev --workspace=@fieldflow/analytics",
+    "seed:supabase": "node scripts/seed-supabase.mjs",
+    "prepare:demo-data": "node scripts/expand-canonical-demo-jobs.mjs",
+    "verify:supabase": "node scripts/verify-supabase.mjs",
+    "provision:test-sarah": "node scripts/provision-sarah-test-user.mjs",
+    "verify:test-sarah": "node scripts/verify-sarah-login.mjs",
+    "provision:test-users": "node scripts/provision-john-and-operations.mjs",
+    "verify:test-users": "node scripts/verify-live-test-users.mjs",
+    "verify:live-flow": "node scripts/verify-live-data-flow.mjs",
+    "verify:deployment": "node scripts/verify-deployment.mjs",
+    "verify:business-signup": "node scripts/verify-business-signup.mjs",
+    "verify:bundle": "node scripts/verify-production-bundle.mjs",
+    "verify:backup": "node scripts/verify-backup-recovery.mjs",
+    "verify:auth-edges": "node scripts/verify-auth-edge-cases.mjs",
+    "build:deploy": "npm run build && node scripts/assemble-deployment.mjs",
+    "test:e2e": "playwright test",
+    "test:ci": "npm run test --workspace=@fieldflow/analytics && npm run build:deploy && npm run verify:bundle && npm run test:e2e",
     "build": "npm run build --workspaces"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.13.0",
+    "@playwright/test": "^1.62.1",
     "@vitejs/plugin-react": "latest",
+    "supabase": "^2.115.0",
     "vite": "latest"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.112.3",
     "react": "latest",
     "react-dom": "latest"
   }

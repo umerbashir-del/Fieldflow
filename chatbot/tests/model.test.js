@@ -48,7 +48,7 @@ test('job id lookup refuses a job that belongs to another account', () => {
 
 test('account/plan lookup reads the real account record', () => {
   const { text } = getAnswer('what plan am I on?', ACCOUNT_ID);
-  assert.equal(text, "You're on the Northstar Field Services account, Growth plan.");
+  assert.equal(text, 'You’re using the Growth plan for Northstar Field Services.');
 });
 
 test('client count reflects the real client list for this account', () => {
@@ -76,35 +76,35 @@ test('schedule query returns the real upcoming jobs, soonest first', () => {
   ]);
 });
 
-test('FAQ match: creating a job cites the API contract doc', () => {
+test('FAQ match: creating a job cites Scheduling', () => {
   const { source } = getAnswer('how do I create a job?', ACCOUNT_ID);
-  assert.equal(source, 'api-contract.md');
+  assert.equal(source, 'Scheduling');
 });
 
-test('FAQ match: job statuses cites the standards doc', () => {
+test('FAQ match: job statuses cites Jobs', () => {
   const { source } = getAnswer('what are the possible statuses?', ACCOUNT_ID);
-  assert.equal(source, 'standards.md — Shared behavior');
+  assert.equal(source, 'Jobs');
 });
 
-test('FAQ match: account scoping cites the standards doc', () => {
+test('FAQ match: account scoping cites Privacy', () => {
   const { text, source } = getAnswer('can other companies see my data?', ACCOUNT_ID);
-  assert.match(text, /scoped to one account_id/);
-  assert.equal(source, 'standards.md — Account scope');
+  assert.match(text, /only see your own company/);
+  assert.equal(source, 'Privacy');
 });
 
-test('FAQ match: date format cites the standards doc', () => {
+test('FAQ match: date format cites Scheduling', () => {
   const { source } = getAnswer('what date format do you use?', ACCOUNT_ID);
-  assert.equal(source, 'standards.md — Dates');
+  assert.equal(source, 'Scheduling');
 });
 
-test('FAQ match: contact support cites the API contract doc', () => {
+test('FAQ match: contact support cites Support', () => {
   const { source } = getAnswer('I need to talk to support', ACCOUNT_ID);
-  assert.equal(source, 'api-contract.md');
+  assert.equal(source, 'Support');
 });
 
-test('unmatched-FAQ query falls back to keyword search over the real docs', () => {
+test('unmatched-FAQ query falls back to the generic FieldFlow help pointer', () => {
   const { source } = getAnswer('what fields make up a service address?', ACCOUNT_ID);
-  assert.equal(source, 'data-model.md — Client');
+  assert.equal(source, 'FieldFlow help');
 });
 
 test('fully unmatched query returns the static fallback, not a guess', () => {
