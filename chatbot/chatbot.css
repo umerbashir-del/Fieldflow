@@ -6,6 +6,12 @@
 * { box-sizing: border-box; }
 body {
   margin: 0;
+  /* The launcher and widget are both position:fixed, so they're taken out
+     of normal document flow and never contribute to body's height on
+     their own — without this, body collapses to 0px tall (only fixed
+     elements would render), which real browsers show fine but automated
+     visibility checks (this page has no other content) treat as hidden. */
+  min-height: 100vh;
   font-family: Inter, ui-sans-serif, system-ui, sans-serif;
   color: var(--ff-color-text);
 }
