@@ -69,17 +69,5 @@
 </main>
 
   <script type="module" src="internal-dashboard.js"></script>
-  <script>
-    (function () {
-      var isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-      var chatbotOrigin = isLocal
-        ? window.location.protocol + '//' + window.location.hostname + ':' + '5175'
-        : window.location.origin + '/support';
-      var s = document.createElement('script');
-      s.src = chatbotOrigin + '/embed.js';
-      s.dataset.src = chatbotOrigin;
-      document.body.appendChild(s);
-    })();
-  </script>
 </body>
 </html>
