@@ -40,7 +40,25 @@ function parseSections(doc) {
     .map((s) => ({ docTitle: doc.title, heading: s.heading, body: s.body }));
 }
 
-const sections = docs.flatMap(parseSections);
+// The real docs are written for developers (HTTP endpoints, JSON shapes,
+// snake_case field names, internal build notes), so raw excerpts are never
+// shown to chat users. Each entry below is a hand-written, plain-language
+// stand-in for one doc section — keyed by "docTitle — heading" — used only
+// when a section matches the search below. Sections with no entry here
+// (component/build notes, the relationship diagram, etc.) are excluded from
+// the fallback entirely, so an unmatched query never leaks internal text.
+const DOC_OVERRIDES = {
+  'data-model.md — Client': "A client's service address is stored as separate parts — building number, street, city, state, and zip — plus a phone number for appointment calls. That keeps addresses consistent so scheduling can sort and look them up reliably.",
+  'data-model.md — Job': 'Each job belongs to one client and has a scheduled date and a status — Scheduled, In progress, Completed, or Cancelled.',
+  'standards.md — Account scope': "Every job and client only ever belongs to one account, and FieldFlow never guesses your account from your name or email — so you'll only ever see your own company's data.",
+  'standards.md — Dates': 'Dates are always shown to you as Month Day, Year — for example, August 20, 2026.',
+};
+
+const sections = docs
+  .flatMap(parseSections)
+  .map((s) => ({ ...s, key: `${s.docTitle} — ${s.heading}` }))
+  .filter((s) => DOC_OVERRIDES[s.key])
+  .map((s) => ({ ...s, body: DOC_OVERRIDES[s.key] }));
 
 function scoreSection(queryTokens, section) {
   const headingTokens = tokenize(section.heading);
