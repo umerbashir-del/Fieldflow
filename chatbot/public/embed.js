@@ -94,6 +94,17 @@
     }
   }
 
+  // The widget should only appear once someone's actually signed in - not
+  // on the sign-in screen itself. Scheduling and Ops Dashboard are plain
+  // pages that always fully reload right after sign-in/sign-out (see their
+  // mockLogin.js), so checking once here at load time is enough to track
+  // that transition correctly; Analytics is reached with the same identity
+  // already in the URL after coming from Scheduling.
+  function isSignedIn() {
+    if (readSupabaseSession()) return true;
+    return Boolean(hostParams.get('demo_user'));
+  }
+
   function bridgeSession() {
     const session = readSupabaseSession();
     if (session) frame.contentWindow.postMessage({ type: 'fieldflow-session', ...session }, BASE_URL);
@@ -101,6 +112,7 @@
   }
 
   function ready() {
+    if (!isSignedIn()) return;
     document.body.appendChild(frame);
     document.body.appendChild(launcher);
     frame.addEventListener('load', bridgeSession);
