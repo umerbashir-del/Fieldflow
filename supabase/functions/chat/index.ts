@@ -1,8 +1,9 @@
 // supabase/functions/chat/index.ts
 //
 // Matches chatbot/apiFallback.js: reads { query, accountId }, returns
-// { text, source? }. Placeholder logic below — swap the `text` line for a
-// real AI call (OpenAI, Anthropic, etc.) when you're ready.
+// { text, source? }. Placeholder logic below returns a generic fallback
+// (deliberately not echoing the user's question) — swap the `text` line
+// for a real AI call (OpenAI, Anthropic, etc.) when you're ready.
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
 const corsHeaders = {
@@ -16,9 +17,9 @@ serve(async (req) => {
   }
 
   try {
-    const { query, accountId } = await req.json();
+    await req.json(); // { query, accountId } — unused until a real AI call is wired in
 
-    const text = `You asked: "${query}". I don't have a live AI hooked up yet, but the connection works end to end.`;
+    const text = "I don't have an answer for that yet. Try asking about creating a job, job statuses, your account, or your schedule — or reach out to your FieldFlow contact for anything else.";
 
     return new Response(
       JSON.stringify({ text }),
