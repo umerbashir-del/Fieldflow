@@ -56,24 +56,42 @@ const STATUS_LABEL = {
 };
 
 const OPS_ACCOUNT = { id: 'ops', name: 'FieldFlow Operations', plan: null };
+const loadingState = document.getElementById('chatLoading');
+const chatGate = document.getElementById('chatLoginGate');
+const chatApp = document.getElementById('chatApp');
+const chatRetryButton = document.getElementById('chatRetryButton');
 const mockUser = mockUserFromSearch(window.location.search);
-const liveContext = isSupabaseConfigured ? await getSignedInAccount() : null;
-// Checked regardless of whether the signed-in user also has a contractor
-// account membership: a person can be registered as both (e.g. shared test
-// data), and being FieldFlow staff should always take priority over an
-// incidental company membership when deciding what the chat shows them.
-const liveOpsContext = isSupabaseConfigured ? await getOperationsSession().catch(() => null) : null;
-const isOpsUser = isSupabaseConfigured ? Boolean(liveOpsContext?.staff) : mockUser?.role === 'ops';
-const activeAccount = isSupabaseConfigured
-  ? (isOpsUser ? OPS_ACCOUNT : liveContext?.account)
-  : (isOpsUser ? OPS_ACCOUNT : mockUser && (accounts.find((account) => account.id === mockUser.account_id) ?? { id: mockUser.account_id, name: mockUser.company_name ?? 'Your new business', plan: 'Starter' }));
-const liveData = isSupabaseConfigured && activeAccount && !isOpsUser ? await getAccountData(activeAccount.id) : null;
-const liveOpsData = isSupabaseConfigured && isOpsUser ? await getOperationsData().catch(() => null) : null;
+let liveContext = null;
+let liveOpsContext = null;
+let isOpsUser = mockUser?.role === 'ops';
+let activeAccount = null;
+let liveData = null;
+let liveOpsData = null;
+let loadError = '';
+try {
+  liveContext = isSupabaseConfigured ? await getSignedInAccount() : null;
+  // A staff membership takes priority when one login has both roles.
+  liveOpsContext = isSupabaseConfigured ? await getOperationsSession().catch(() => null) : null;
+  isOpsUser = isSupabaseConfigured ? Boolean(liveOpsContext?.staff) : mockUser?.role === 'ops';
+  activeAccount = isSupabaseConfigured
+    ? (isOpsUser ? OPS_ACCOUNT : liveContext?.account)
+    : (isOpsUser ? OPS_ACCOUNT : mockUser && (accounts.find((account) => account.id === mockUser.account_id) ?? { id: mockUser.account_id, name: mockUser.company_name ?? 'Your new business', plan: 'Starter' }));
+  liveData = isSupabaseConfigured && activeAccount && !isOpsUser ? await getAccountData(activeAccount.id) : null;
+  liveOpsData = isSupabaseConfigured && isOpsUser ? await getOperationsData().catch(() => null) : null;
+} catch (error) {
+  const message = String(error?.message ?? '').toLowerCase();
+  loadError = message.includes('jwt') || message.includes('session') || message.includes('401')
+    ? 'Your session expired. Please sign in again.'
+    : message.includes('permission') || message.includes('row-level')
+    ? 'You don’t have access to this company’s data.'
+    : typeof navigator !== 'undefined' && !navigator.onLine
+    ? 'You appear to be offline. Check your connection and try again.'
+    : 'We couldn’t load your company data. Check your connection and try again.';
+}
 const reporting = isSupabaseConfigured
   ? reportingDateFromAccount(activeAccount, window.location.search)
   : reportingDateFromAccount({ demo_reporting_date: '2026-08-19' }, window.location.search);
-const chatGate = document.getElementById('chatLoginGate');
-const chatApp = document.getElementById('chatApp');
+loadingState.hidden = true;
 document.getElementById('chatGateSchedulingLink').href = APP_URLS.scheduling;
 const reportingNotice = document.getElementById('chatDemoNotice');
 if (activeAccount && reporting.storedDate) {
@@ -123,7 +141,13 @@ launcher.addEventListener('click', openWidget);
 closeBtn.addEventListener('click', closeWidget);
 if (isEmbedded) openWidget();
 
-if (isSupabaseConfigured ? !activeAccount : !isMockContractor(mockUser) && !isOpsUser) {
+if (loadError) {
+  chatGate.querySelector('h1').textContent = 'Support is temporarily unavailable';
+  chatGate.querySelector('p:not(.ff-eyebrow)').textContent = loadError;
+  chatGate.hidden = false;
+  chatRetryButton.hidden = loadError.includes('session');
+  chatRetryButton.addEventListener('click', () => window.location.reload());
+} else if (isSupabaseConfigured ? !activeAccount : !isMockContractor(mockUser) && !isOpsUser) {
   chatGate.hidden = false;
 } else {
   chatApp.hidden = false;

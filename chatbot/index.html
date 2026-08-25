@@ -13,11 +13,18 @@
   <div class="ff-widget" id="ffWidget">
     <button type="button" class="ff-close-btn" id="ffClose" aria-label="Close chat">✕</button>
     <div class="ff-shell">
+      <main class="ff-loading" id="chatLoading" role="status" aria-live="polite">
+        <div class="ff-spinner" aria-hidden="true"></div>
+        <p class="ff-eyebrow">FieldFlow · Support</p>
+        <h1>Connecting to your FieldFlow account…</h1>
+        <p>Loading your clients and jobs…</p>
+      </main>
       <main class="ff-gate" id="chatLoginGate" hidden>
         <p class="ff-eyebrow">FieldFlow demo</p>
         <h1>Start in Scheduling</h1>
         <p>Sign in through Scheduling first so Support can use your company’s context.</p>
         <a class="ff-gate-link" id="chatGateSchedulingLink" href="#">Open Scheduling</a>
+        <button class="ff-retry-link" id="chatRetryButton" type="button" hidden>Retry connection</button>
       </main>
       <div class="ff-card" id="chatApp" hidden>
         <header class="ff-header">

@@ -10,14 +10,7 @@ const password = document.getElementById('opsPassword');
 const error = document.getElementById('opsLoginError');
 const resetForm = document.getElementById('opsResetForm');
 const resetMessage = document.getElementById('opsResetMessage');
-const quickSignInOps = document.getElementById('quickSignInOps');
-
-// Real Supabase account password for the peer-testing quick-sign-in button
-// below. This ships in plain text to every browser that loads this page
-// (there's no way to autofill+submit a login without the browser having
-// the password) - a deliberate tradeoff for frictionless outside peer
-// testing, accepted knowingly rather than an oversight.
-const QUICK_SIGNIN_OPS = { email: 'operations@fieldflow.demo', password: 'WEZAW4-Hq7ICr_NpyZna_NYmaA7!' };
+const retryButton = document.getElementById('opsRetryButton');
 
 if (isSupabaseConfigured) {
   document.getElementById('operationsLoginEyebrow').textContent = 'FieldFlow';
@@ -43,14 +36,15 @@ function signedInOpsUser() {
   return user?.role === 'ops' ? user : null;
 }
 
-const liveContext = isSupabaseConfigured ? await getOperationsSession() : null;
+let liveContext = null;
+let liveLoadError = '';
 
 function showDashboard() {
   gate.hidden = true;
   dashboard.hidden = false;
 }
 
-if (isSupabaseConfigured ? Boolean(liveContext?.staff) : signedInOpsUser()) {
+if (!isSupabaseConfigured && signedInOpsUser()) {
   showDashboard();
 } else {
   async function attemptSignIn(emailValue, passwordValue) {
@@ -80,11 +74,6 @@ if (isSupabaseConfigured ? Boolean(liveContext?.staff) : signedInOpsUser()) {
     event.preventDefault();
     attemptSignIn(email.value, password.value);
   });
-  quickSignInOps?.addEventListener('click', () => {
-    email.value = QUICK_SIGNIN_OPS.email;
-    password.value = QUICK_SIGNIN_OPS.password;
-    attemptSignIn(QUICK_SIGNIN_OPS.email, QUICK_SIGNIN_OPS.password);
-  });
   document.querySelectorAll('[data-ops-auth-mode]').forEach((button) => button.addEventListener('click', () => showForm(button.dataset.opsAuthMode)));
   resetForm.addEventListener('submit', async (event) => {
     event.preventDefault();
@@ -97,6 +86,24 @@ if (isSupabaseConfigured ? Boolean(liveContext?.staff) : signedInOpsUser()) {
     } catch (resetError) {
       resetMessage.textContent = friendlyAuthError(resetError);
     }
+  });
+}
+
+if (isSupabaseConfigured) {
+  getOperationsSession().then((context) => {
+    liveContext = context;
+    if (context?.staff) showDashboard();
+  }).catch((loadError) => {
+    const message = String(loadError?.message ?? '').toLowerCase();
+    liveLoadError = message.includes('jwt') || message.includes('session') || message.includes('401')
+      ? 'Your session expired. Please sign in again.'
+      : typeof navigator !== 'undefined' && !navigator.onLine
+      ? 'You appear to be offline. Check your connection and try again.'
+      : 'We couldn’t load your data. Check your connection and try again.';
+    error.textContent = `${liveLoadError} You can try signing in again.`;
+    document.getElementById('operationsLoginDescription').textContent = liveLoadError;
+    retryButton.hidden = liveLoadError.includes('session');
+    retryButton.addEventListener('click', () => window.location.reload(), { once: true });
   });
 }
 

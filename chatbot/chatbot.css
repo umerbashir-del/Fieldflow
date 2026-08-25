@@ -14,6 +14,7 @@ body {
 @keyframes ff-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
 @keyframes ff-dot { 0%, 60%, 100% { transform: translateY(0); opacity: .4; } 30% { transform: translateY(-4px); opacity: 1; } }
 @keyframes ff-pop { from { opacity: 0; transform: translateY(16px) scale(.96); } to { opacity: 1; transform: none; } }
+@keyframes ff-spin { to { transform: rotate(360deg); } }
 
 /* --- Floating launcher button --- */
 .ff-launcher {
@@ -88,6 +89,10 @@ body {
   box-shadow: var(--ff-shadow-card);
   animation: ff-pop .2s cubic-bezier(.2,.7,.3,1) both;
 }
+.ff-loading { max-width: 480px; padding: 36px; border: 1px solid var(--ff-color-border); border-radius: 20px; background: var(--ff-color-surface); box-shadow: var(--ff-shadow-card); text-align: center; }
+.ff-loading h1 { margin: 10px 0 8px; font-size: 1.35rem; }
+.ff-loading > p:last-child { color: var(--ff-color-muted); margin: 0; }
+.ff-spinner { width: 30px; height: 30px; margin: 0 auto 18px; border: 3px solid var(--ff-color-border); border-top-color: var(--ff-color-terracotta-500); border-radius: 50%; animation: ff-spin .8s linear infinite; }
 .ff-gate h1 { margin: 6px 0 12px; }
 .ff-gate p:not(.ff-eyebrow) { color: var(--ff-color-muted); line-height: 1.5; }
 .ff-gate-link { display: inline-block; margin-top: 8px; padding: 10px 14px; border-radius: 10px; background: var(--ff-color-brand-700); color: #fff; font-weight: 700; text-decoration: none; }

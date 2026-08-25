@@ -8,10 +8,15 @@ import { reportingDateFromAccount } from '../shared-data/reportingDate.js';
 const mockUser = mockUserFromSearch(window.location.search);
 let liveContext = null;
 let liveData = { clients: [], jobs: [] };
+export let LIVE_LOAD_ERROR = '';
 
 if (isSupabaseConfigured) {
-  liveContext = await getSignedInAccount();
-  if (liveContext?.account) liveData = await getAccountData(liveContext.account.id);
+  try {
+    liveContext = await getSignedInAccount();
+    if (liveContext?.account) liveData = await getAccountData(liveContext.account.id);
+  } catch (error) {
+    LIVE_LOAD_ERROR = 'We couldn’t load your data. Check your connection and try again.';
+  }
 }
 
 export const LIVE_MODE = isSupabaseConfigured;

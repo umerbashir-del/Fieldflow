@@ -44,7 +44,15 @@ export default function AnalyticsPage() {
       const liveJobs = await getJobsForAccount(context.account.id);
       setSessionState({ loading: false, account: context.account, jobs: liveJobs, user: context.user, isOps: false, error: '' });
     } catch (error) {
-      setSessionState({ loading: false, account: null, jobs: [], user: null, isOps: false, error: error.message || 'Unable to load your FieldFlow data.' });
+      const message = String(error?.message ?? '').toLowerCase();
+      const friendly = message.includes('jwt') || message.includes('session') || message.includes('401')
+        ? 'Your session expired. Please sign in again.'
+        : message.includes('permission') || message.includes('row-level')
+        ? 'You don’t have access to this company’s data.'
+        : typeof navigator !== 'undefined' && !navigator.onLine
+        ? 'You appear to be offline. Check your connection and try again.'
+        : 'We couldn’t load your data. Check your connection and try again.';
+      setSessionState({ loading: false, account: null, jobs: [], user: null, isOps: false, error: friendly });
     }
   };
 
@@ -59,7 +67,7 @@ export default function AnalyticsPage() {
 
   if (isSupabaseConfigured && sessionState.loading) return <main className="analytics-page"><p className="subtitle">Loading your FieldFlow account…</p></main>;
   if (isSupabaseConfigured && !sessionState.user) return <SignInPage onSignedIn={loadLiveData} />;
-  if (isSupabaseConfigured && sessionState.error) return <main className="analytics-page"><p className="eyebrow">FieldFlow</p><h1>Account setup needed</h1><p className="subtitle">{sessionState.error}</p></main>;
+  if (isSupabaseConfigured && sessionState.error) return <main className="analytics-page"><p className="eyebrow">FieldFlow</p><h1>{sessionState.error.includes('not assigned') ? 'Account setup needed' : 'Analytics is unavailable'}</h1><p className="subtitle">{sessionState.error}</p><button className="action-link" type="button" onClick={loadLiveData}>Try again</button></main>;
   if (!isSupabaseConfigured && (!mockUser || (!isDemoOps && !isMockContractor(mockUser)))) return <main className="analytics-page"><p className="eyebrow">FieldFlow demo</p><h1>Start in Scheduling</h1><p className="subtitle">Sign in through Scheduling first so FieldFlow can show the right company data.</p><p className="scheduler-action"><a className="action-link" href={SCHEDULING_URL}>Open Scheduling</a></p></main>;
 
   const demoAccountId = isSupabaseConfigured
