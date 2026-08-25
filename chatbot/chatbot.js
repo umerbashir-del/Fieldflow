@@ -166,6 +166,18 @@ const messages = [
   { role: 'bot', text: "Hi, I'm the FieldFlow assistant. Ask me setup or how-to questions, or ask about your account." },
 ];
 
+// A new company starts with no activity. Say so up front instead of making
+// the owner guess whether Support loaded the correct account.
+const initialData = isSupabaseConfigured
+  ? (isOpsUser ? liveOpsData : liveData)
+  : (isOpsUser ? { clients, jobs } : loadMockAccountData(activeAccount.id, { clients, jobs }));
+if (!isOpsUser && !(initialData?.jobs ?? []).length) {
+  messages.push({
+    role: 'bot',
+    text: 'Your account has no jobs yet. Create your first job in Scheduling when you are ready.',
+  });
+}
+
 function saveAccount() {
   try { localStorage.setItem(STORAGE_KEY, accountId); } catch (e) { /* ignore blocked storage */ }
 }
