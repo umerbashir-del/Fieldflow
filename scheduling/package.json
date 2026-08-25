@@ -1,6 +1,7 @@
 {
   "name": "@fieldflow/scheduling",
   "private": true,
+  "type": "module",
   "scripts": { "dev": "vite", "build": "vite build", "test": "node --test tests/*.test.js" },
   "devDependencies": { "playwright": "latest" }
 }

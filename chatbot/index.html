@@ -11,7 +11,13 @@
 </head>
 <body>
   <div class="ff-shell">
-    <div class="ff-card">
+    <main class="ff-gate" id="chatLoginGate" hidden>
+      <p class="ff-eyebrow">FieldFlow demo</p>
+      <h1>Start in Scheduling</h1>
+      <p>Sign in through Scheduling first so Support can use your company’s context.</p>
+      <a class="ff-gate-link" id="chatGateSchedulingLink" href="#">Open Scheduling</a>
+    </main>
+    <div class="ff-card" id="chatApp" hidden>
       <header class="ff-header">
         <div class="ff-header-left">
           <div class="ff-avatar">
@@ -22,6 +28,8 @@
             <p class="ff-eyebrow">FieldFlow · Support</p>
             <h1 class="ff-title">Support Assistant</h1>
             <p class="ff-subtitle">Online · answers scoped to your account</p>
+            <p class="ff-demo-notice" id="chatDemoNotice">Demo data stays in this tab until you sign out.</p>
+            <p class="ff-app-links"><a id="chatSchedulingLink" href="#">Scheduling</a><span aria-hidden="true">·</span><a id="chatAnalyticsLink" href="#">Analytics</a></p>
           </div>
         </div>
         <label class="ff-account-picker">
@@ -31,6 +39,7 @@
             <span class="ff-select-caret">▾</span>
           </div>
         </label>
+        <button class="ff-sign-out" id="chatSignOutBtn" type="button">Sign out</button>
       </header>
 
       <div class="ff-messages" id="messageList"></div>

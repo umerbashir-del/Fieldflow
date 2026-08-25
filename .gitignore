@@ -1,1 +1,11 @@
 node_modules/
+dist/
+test-results/
+playwright-report/
+deploy/
+.env
+.env.local
+.env.*.local
+
+.vercel
+.env*

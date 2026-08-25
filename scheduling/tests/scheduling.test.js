@@ -3,41 +3,77 @@
 // page. Run with: npm test --workspace=@fieldflow/scheduling
 // (needs Playwright's browser installed once: npx playwright install chromium)
 //
-// These drive the real scheduling.html in an actual Chromium browser via
-// Playwright, since the behavior under test is DOM/UI state (button
-// labels, modal position, localStorage persistence) that only exists once
-// the page is actually running — there's no separate "logic layer" to
-// unit-test around it.
-const { test, before, after, beforeEach } = require('node:test');
-const assert = require('node:assert/strict');
-const path = require('path');
-const { chromium } = require('playwright');
+// NOTE: since the Supabase/live-mode merge, scheduling.js is a real ES
+// module (import/export, top-level await) loaded via <script type="module">
+// — it can no longer be opened directly over file://, browsers block
+// module script loading from file: origins. So this suite now spins up
+// the actual Vite dev server itself (child_process) and drives it over
+// http://localhost, the same way you'd run it by hand with `npm run dev`.
+import { test, before, after } from 'node:test';
+import assert from 'node:assert/strict';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { spawn } from 'node:child_process';
+import { chromium } from 'playwright';
 
-const APP_PATH = 'file://' + path.join(__dirname, '..', 'scheduling.html');
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const PORT = 5187; // dedicated port so this doesn't collide with a dev server you already have open on 5174
+const BASE_URL = `http://localhost:${PORT}/scheduling.html`;
+// A fixed demo login so every test starts already signed in, without
+// having to click through the mock-login form each time.
+const DEMO_QUERY = '?demo_user=john&demo_name=John&demo_email=john@fieldflow.demo&demo_company=Northstar';
 
 let browser;
 let page;
+let viteProcess;
+
+async function waitForServer(url, timeoutMs = 15000) {
+  const start = Date.now();
+  while (Date.now() - start < timeoutMs) {
+    try {
+      const res = await fetch(url);
+      if (res.ok || res.status === 404) return;
+    } catch (e) { /* not up yet */ }
+    await new Promise((r) => setTimeout(r, 200));
+  }
+  throw new Error(`Dev server at ${url} did not start within ${timeoutMs}ms`);
+}
 
 before(async () => {
+  viteProcess = spawn('npx', ['vite', '--port', String(PORT), '--strictPort'], {
+    cwd: path.join(__dirname, '..'),
+    stdio: 'ignore', // don't let an undrained pipe buffer block the dev server
+  });
+  await waitForServer(`http://localhost:${PORT}/`);
   browser = await chromium.launch();
 });
 
 after(async () => {
   await browser.close();
+  if (viteProcess) viteProcess.kill();
 });
 
-// Fresh page for every test, seeded via localStorage before the app's own
-// script runs — this avoids each test depending on the real seed data in
-// data.js (which can change) or on state left over from a previous test.
+// Fresh, already-signed-in page for every test, seeded before the app's
+// own script runs — this avoids each test depending on the real
+// shared-data seed (which can change) or on state left over from a
+// previous test.
+//
+// Demo-mode persistence isn't localStorage — it's shared-data/
+// mockDataSession.js, which stores clients/jobs in window.name (tab-
+// scoped, so Scheduling/Analytics/Chatbot on different Vite ports can
+// hand off the same edited demo data within one browser tab). So
+// seeding has to write to window.name in that same shape, not
+// localStorage.
 async function freshPage(seed) {
   if (page) await page.close();
   page = await browser.newPage();
   if (seed) {
     await page.addInitScript((state) => {
-      localStorage.setItem('fieldflow_scheduling_local_v1', JSON.stringify(state));
+      window.name = JSON.stringify({ fieldflowMockData: { accounts: { acct_northstar: state } } });
     }, seed);
   }
-  await page.goto(APP_PATH);
+  await page.goto(BASE_URL + DEMO_QUERY);
+  await page.waitForSelector('#schedulingApp:not([hidden])');
   return page;
 }
 
