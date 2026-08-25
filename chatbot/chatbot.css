@@ -128,6 +128,13 @@ body.ff-embed .ff-widget {
 }
 body.ff-embed .ff-card,
 body.ff-embed .ff-gate { height: 100vh; border-radius: 0; }
+/* The widget's own sign-out button navigates this iframe to the
+   scheduling app's full page - fine standalone, broken embedded (it
+   would take over the small chat panel). Each host page already has its
+   own working sign-out; the session-bridge in chatbot.js already clears
+   this iframe's session when the host signs out, so this button would
+   just be a confusing, redundant, broken control here. */
+body.ff-embed .ff-sign-out { display: none; }
 
 /* --- Header --- */
 .ff-header {

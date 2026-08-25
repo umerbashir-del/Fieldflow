@@ -74,9 +74,34 @@
   frame.title = 'FieldFlow Support Assistant';
   frame.src = frameUrl.toString();
 
+  // Live mode (real Supabase) stores the session in this origin's own
+  // localStorage under a "sb-<project-ref>-auth-token" key - separate
+  // storage from the chatbot's origin/port in local dev, so it can't see a
+  // session this page already has on its own. Read it here and hand it to
+  // the iframe directly, so a visitor already signed in on this page never
+  // has to sign in again just to use the chat.
+  function readSupabaseSession() {
+    try {
+      const key = Object.keys(localStorage).find((k) => /^sb-.*-auth-token$/.test(k));
+      if (!key) return null;
+      const parsed = JSON.parse(localStorage.getItem(key) || 'null');
+      if (!parsed?.access_token || !parsed?.refresh_token) return null;
+      return { accessToken: parsed.access_token, refreshToken: parsed.refresh_token };
+    } catch {
+      return null;
+    }
+  }
+
+  function bridgeSession() {
+    const session = readSupabaseSession();
+    if (session) frame.contentWindow.postMessage({ type: 'fieldflow-session', ...session }, BASE_URL);
+    else frame.contentWindow.postMessage({ type: 'fieldflow-session-clear' }, BASE_URL);
+  }
+
   function ready() {
     document.body.appendChild(frame);
     document.body.appendChild(launcher);
+    frame.addEventListener('load', bridgeSession);
   }
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', ready);
@@ -87,6 +112,7 @@
   launcher.addEventListener('click', () => {
     frame.classList.add('is-open');
     launcher.classList.add('is-hidden');
+    bridgeSession();
   });
 
   window.addEventListener('message', (event) => {

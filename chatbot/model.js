@@ -60,10 +60,28 @@ export function getAnswer(rawQuery, accountContext) {
   if (!query) {
     return { text: 'Ask me something like “How do I create a job?” or “What’s my plan?”' };
   }
-  if (!accountId || !account) {
+  const isOps = Boolean(accountContext?.isOps);
+  if (!isOps && (!accountId || !account)) {
     return { text: 'Sign in through Scheduling so I can safely load your company context.' };
   }
   const lower = query.toLowerCase();
+
+  // Operations staff aren't scoped to one company, so none of the
+  // per-account lookups below (job/client details, schedule, plan) apply
+  // to them — they only get general FAQ/how-to help here, plus a pointer
+  // to the Operations Dashboard for anything account-specific.
+  if (isOps) {
+    const opsFaqMatch = matchFaq(lower);
+    if (opsFaqMatch) return { text: opsFaqMatch.answer, source: opsFaqMatch.source };
+    const [opsDocHit] = searchDocs(lower);
+    if (opsDocHit) {
+      return {
+        text: 'I can help with general FieldFlow questions. For account-specific details, use the Accounts tab in the Operations Dashboard.',
+        source: 'FieldFlow help',
+      };
+    }
+    return { text: NO_ANSWER_TEXT };
+  }
 
   if (isBusinessSummaryQuestion(lower)) {
     const summary = buildAnalyticsSummary(scopedJobs, accountId, 'this_week', referenceDate);

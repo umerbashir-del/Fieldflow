@@ -4,9 +4,39 @@ import { askApi } from './apiFallback.js';
 import { buildMockAppLink, isMockContractor, mockUserFromSearch } from '../shared-data/mockSession.js';
 import { buildMockDataLink, clearMockDataSession, loadMockAccountData } from '../shared-data/mockDataSession.js';
 import { APP_URLS } from '../shared-data/appConfig.js';
-import { getAccountData, getSignedInAccount, isSupabaseConfigured, signOut } from '../shared-data/supabase.js';
+import { getAccountData, getOperationsData, getOperationsSession, getSignedInAccount, isSupabaseConfigured, signOut, supabase } from '../shared-data/supabase.js';
 import { formatReportingDate, reportingDateFromAccount, toggleReportingDateInCurrentUrl, withReportingDate } from '../shared-data/reportingDate.js';
 import { assigneeLabel } from '../shared-data/jobPresentation.js';
+
+// When embedded via embed.js on another app's page (Scheduling, Operations),
+// the host page bridges its already-signed-in Supabase session into this
+// iframe via postMessage: each origin/port has its own separate browser
+// storage in local dev, so without this the widget can't see a session the
+// host page already has, and asks the visitor to sign in a second time.
+// Registered first, before anything below reads the current session.
+if (isSupabaseConfigured) {
+  window.addEventListener('message', async (event) => {
+    if (event.data?.type === 'fieldflow-session-clear') {
+      const { data: { session: existing } } = await supabase.auth.getSession();
+      if (existing) {
+        await supabase.auth.signOut();
+        window.location.reload();
+      }
+      return;
+    }
+    if (event.data?.type !== 'fieldflow-session' || !event.data.accessToken || !event.data.refreshToken) return;
+    // Compare tokens, not just "is anyone signed in": this iframe's own
+    // origin may still hold an unrelated session from a previous visit, and
+    // the host page's currently-active account must always win over that.
+    const { data: { session: existing } } = await supabase.auth.getSession();
+    if (existing?.access_token === event.data.accessToken) return;
+    const { error: setSessionError } = await supabase.auth.setSession({
+      access_token: event.data.accessToken,
+      refresh_token: event.data.refreshToken,
+    });
+    if (!setSessionError) window.location.reload();
+  });
+}
 
 const STORAGE_KEY = 'fieldflow_chatbot_account_v1';
 
@@ -25,12 +55,20 @@ const STATUS_LABEL = {
   cancelled: 'Cancelled',
 };
 
+const OPS_ACCOUNT = { id: 'ops', name: 'FieldFlow Operations', plan: null };
 const mockUser = mockUserFromSearch(window.location.search);
 const liveContext = isSupabaseConfigured ? await getSignedInAccount() : null;
+// Checked regardless of whether the signed-in user also has a contractor
+// account membership: a person can be registered as both (e.g. shared test
+// data), and being FieldFlow staff should always take priority over an
+// incidental company membership when deciding what the chat shows them.
+const liveOpsContext = isSupabaseConfigured ? await getOperationsSession().catch(() => null) : null;
+const isOpsUser = isSupabaseConfigured ? Boolean(liveOpsContext?.staff) : mockUser?.role === 'ops';
 const activeAccount = isSupabaseConfigured
-  ? liveContext?.account
-  : mockUser && (accounts.find((account) => account.id === mockUser.account_id) ?? { id: mockUser.account_id, name: mockUser.company_name ?? 'Your new business', plan: 'Starter' });
-const liveData = isSupabaseConfigured && activeAccount ? await getAccountData(activeAccount.id) : null;
+  ? (isOpsUser ? OPS_ACCOUNT : liveContext?.account)
+  : (isOpsUser ? OPS_ACCOUNT : mockUser && (accounts.find((account) => account.id === mockUser.account_id) ?? { id: mockUser.account_id, name: mockUser.company_name ?? 'Your new business', plan: 'Starter' }));
+const liveData = isSupabaseConfigured && activeAccount && !isOpsUser ? await getAccountData(activeAccount.id) : null;
+const liveOpsData = isSupabaseConfigured && isOpsUser ? await getOperationsData().catch(() => null) : null;
 const reporting = isSupabaseConfigured
   ? reportingDateFromAccount(activeAccount, window.location.search)
   : reportingDateFromAccount({ demo_reporting_date: '2026-08-19' }, window.location.search);
@@ -85,7 +123,7 @@ launcher.addEventListener('click', openWidget);
 closeBtn.addEventListener('click', closeWidget);
 if (isEmbedded) openWidget();
 
-if (isSupabaseConfigured ? !activeAccount : !isMockContractor(mockUser)) {
+if (isSupabaseConfigured ? !activeAccount : !isMockContractor(mockUser) && !isOpsUser) {
   chatGate.hidden = false;
 } else {
   chatApp.hidden = false;
@@ -204,11 +242,14 @@ async function sendMessage(text) {
 
   await new Promise((resolve) => window.setTimeout(resolve, 650));
 
-  const data = isSupabaseConfigured ? liveData : loadMockAccountData(activeAccount.id, { clients, jobs });
+  const data = isSupabaseConfigured
+    ? (isOpsUser ? liveOpsData : liveData)
+    : (isOpsUser ? { clients, jobs } : loadMockAccountData(activeAccount.id, { clients, jobs }));
   let result = getAnswer(trimmed, {
     account: activeAccount,
     ...data,
     referenceDate: reporting.date,
+    isOps: isOpsUser,
   });
   if (result.text === NO_ANSWER_TEXT) {
     const apiResult = await askApi(trimmed, activeAccount.id);
