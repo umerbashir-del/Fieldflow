@@ -120,10 +120,17 @@ input, select { width: 100%; padding: 12px; border: 1px solid #bfcfc4; border-ra
 .month-job-dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #17613c; margin: 6px 2px 0 0; }
 .month-job-dot.is-conflict { background: #c23b3b; }
 
-/* position: absolute (not fixed) relative to body — position: fixed loses
-   click-coordinate accuracy in scaled/sandboxed preview iframes, which is
-   exactly where this app tends to get clicked around in. */
-.modal-backdrop { position: absolute; inset: 0; min-height: 100%; background: #0003; display: flex; align-items: center; justify-content: center; padding: 20px; z-index: 50; }
+/* position: fixed, viewport-relative — this is the correct choice for real
+   browser use: the backdrop and modal always cover and center in whatever
+   part of the page you're currently looking at, regardless of scroll
+   position. (An earlier version used position: absolute to work around a
+   click-accuracy quirk specific to one scaled preview tool; that traded
+   away real scrolled-page correctness for a preview-only workaround, which
+   was the wrong tradeoff — verified by reproducing the resulting bug: on a
+   scrolled page, the modal could open ~1000px off-screen and be completely
+   invisible. position: fixed doesn't have that problem in a normal
+   browser.) */
+.modal-backdrop { position: fixed; inset: 0; background: #0003; display: flex; align-items: center; justify-content: center; padding: 20px; z-index: 50; }
 .modal-backdrop[hidden] { display: none; }
 .modal-card { background: #fff; border-radius: 16px; padding: 24px; width: 100%; max-width: 420px; display: flex; flex-direction: column; gap: 12px; }
 .modal-card h2 { margin: 0; }

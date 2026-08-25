@@ -514,7 +514,7 @@
     jobStatusSel.value = draft.status;
 
     deleteJobBtn.hidden = mode !== 'edit';
-    deleteJobBtn.textContent = jobModal.deleteArmed ? 'Click again to delete' : 'Edit';
+    deleteJobBtn.textContent = jobModal.deleteArmed ? 'Click again to delete' : 'Delete';
     deleteJobBtn.classList.toggle('is-armed', !!jobModal.deleteArmed);
 
     // Live conflict check: would saving this draft as-is create a
@@ -633,7 +633,7 @@
     clientZipInput.value = draft.zip_code;
     clientPhoneInput.value = draft.client_phone;
     deleteClientBtn.hidden = mode !== 'edit';
-    deleteClientBtn.textContent = clientModal.deleteArmed ? 'Click again to delete' : 'Edit';
+    deleteClientBtn.textContent = clientModal.deleteArmed ? 'Click again to delete' : 'Delete';
     deleteClientBtn.classList.toggle('is-armed', !!clientModal.deleteArmed);
     clientNoticeEl.hidden = !clientNotice;
     clientNoticeEl.textContent = clientNotice;
