@@ -9,6 +9,16 @@ export const supabase = isSupabaseConfigured
   ? createClient(supabaseUrl, supabaseAnonKey)
   : null;
 
+const REQUEST_TIMEOUT_MS = 10000;
+
+function withRequestTimeout(promise, label = 'Supabase request') {
+  let timer;
+  const timeout = new Promise((_, reject) => {
+    timer = setTimeout(() => reject(new Error(`${label} timed out.`)), REQUEST_TIMEOUT_MS);
+  });
+  return Promise.race([promise, timeout]).finally(() => clearTimeout(timer));
+}
+
 function requireSupabase() {
   if (!supabase) {
     throw new Error('Supabase is not configured. Add VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_KEY to .env.');
@@ -57,7 +67,7 @@ export function onAuthStateChange(callback) {
   return requireSupabase().auth.onAuthStateChange(callback).data.subscription;
 }
 
-export async function getSignedInAccount() {
+async function loadSignedInAccount() {
   const client = requireSupabase();
   const { data: { session }, error: sessionError } = await client.auth.getSession();
   if (sessionError) throw sessionError;
@@ -78,7 +88,11 @@ export async function getSignedInAccount() {
   return { user, membership: data, account: data.accounts };
 }
 
-export async function getOperationsSession() {
+export function getSignedInAccount() {
+  return withRequestTimeout(loadSignedInAccount(), 'Account connection');
+}
+
+async function loadOperationsSession() {
   const client = requireSupabase();
   const { data: { session }, error: sessionError } = await client.auth.getSession();
   if (sessionError) throw sessionError;
@@ -95,44 +109,52 @@ export async function getOperationsSession() {
   return data ? { user, staff: data } : { user, staff: null };
 }
 
+export function getOperationsSession() {
+  return withRequestTimeout(loadOperationsSession(), 'Operations connection');
+}
+
 export async function getOperationsData() {
   const client = requireSupabase();
-  const [accountResult, clientResult, jobResult] = await Promise.all([
+  const request = Promise.all([
     client.from('accounts').select('*').order('name'),
     client.from('clients').select('*').order('name'),
     client.from('jobs').select('*').order('scheduled_for', { ascending: false }),
   ]);
+  const [accountResult, clientResult, jobResult] = await withRequestTimeout(request, 'Operations data request');
   const error = accountResult.error || clientResult.error || jobResult.error;
   if (error) throw error;
   return { accounts: accountResult.data, clients: clientResult.data, jobs: jobResult.data };
 }
 
 export async function getJobsForAccount(accountId) {
-  const { data, error } = await requireSupabase()
+  const request = requireSupabase()
     .from('jobs')
     .select('*')
     .eq('account_id', accountId)
     .order('scheduled_for', { ascending: true });
+  const { data, error } = await withRequestTimeout(request, 'Jobs request');
   if (error) throw error;
   return data;
 }
 
 export async function getAccountById(accountId) {
-  const { data, error } = await requireSupabase()
+  const request = requireSupabase()
     .from('accounts')
     .select('*')
     .eq('id', accountId)
     .maybeSingle();
+  const { data, error } = await withRequestTimeout(request, 'Account request');
   if (error) throw error;
   return data;
 }
 
 export async function getClientsForAccount(accountId) {
-  const { data, error } = await requireSupabase()
+  const request = requireSupabase()
     .from('clients')
     .select('*')
     .eq('account_id', accountId)
     .order('name', { ascending: true });
+  const { data, error } = await withRequestTimeout(request, 'Clients request');
   if (error) throw error;
   return data;
 }
@@ -149,53 +171,59 @@ export async function getAccountData(accountId) {
 }
 
 export async function createJob(job) {
-  const { data, error } = await requireSupabase()
+  const request = requireSupabase()
     .from('jobs')
     .insert(job)
     .select()
     .single();
+  const { data, error } = await withRequestTimeout(request, 'Create job request');
   if (error) throw error;
   return data;
 }
 
 export async function updateJob(jobId, changes) {
-  const { data, error } = await requireSupabase()
+  const request = requireSupabase()
     .from('jobs')
     .update(changes)
     .eq('id', jobId)
     .select()
     .single();
+  const { data, error } = await withRequestTimeout(request, 'Update job request');
   if (error) throw error;
   return data;
 }
 
 export async function deleteJob(jobId) {
-  const { error } = await requireSupabase().from('jobs').delete().eq('id', jobId);
+  const request = requireSupabase().from('jobs').delete().eq('id', jobId);
+  const { error } = await withRequestTimeout(request, 'Delete job request');
   if (error) throw error;
 }
 
 export async function createFieldflowClient(client) {
-  const { data, error } = await requireSupabase()
+  const request = requireSupabase()
     .from('clients')
     .insert(client)
     .select()
     .single();
+  const { data, error } = await withRequestTimeout(request, 'Create client request');
   if (error) throw error;
   return data;
 }
 
 export async function updateClient(clientId, changes) {
-  const { data, error } = await requireSupabase()
+  const request = requireSupabase()
     .from('clients')
     .update(changes)
     .eq('id', clientId)
     .select()
     .single();
+  const { data, error } = await withRequestTimeout(request, 'Update client request');
   if (error) throw error;
   return data;
 }
 
 export async function deleteClient(clientId) {
-  const { error } = await requireSupabase().from('clients').delete().eq('id', clientId);
+  const request = requireSupabase().from('clients').delete().eq('id', clientId);
+  const { error } = await withRequestTimeout(request, 'Delete client request');
   if (error) throw error;
 }

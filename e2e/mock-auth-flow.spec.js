@@ -173,6 +173,7 @@ test('new account creates an empty company context and supports keyboard navigat
 
   await page.getByRole('link', { name: 'Support Chat' }).click();
   await expect(page.locator('#chatApp')).toBeVisible();
+  await expect(page.locator('#messageList')).toContainText('Your account has no jobs yet');
   await page.locator('#chatInput').fill("What's my plan?");
   await page.getByRole('button', { name: /^Send/ }).click();
   await expect(page.locator('#messageList')).toContainText('Starter plan for Avery Plumbing');
