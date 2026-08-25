@@ -1,13 +1,18 @@
 import { useEffect, useState } from 'react';
-import demoAccounts from '../../shared-data/accounts.json';
-import demoJobs from '../../shared-data/jobs.json';
-import { getAccountById, getJobsForAccount, getOperationsSession, getSignedInAccount, isSupabaseConfigured, signOut } from '../../shared-data/supabase.js';
+import { getAccountById, getAnalyticsDashboardData, getOperationsSession, getSignedInAccount, isSupabaseConfigured, signOut } from '../../shared-data/supabase.js';
 import { buildMockAppLink, isMockContractor, mockUserFromSearch } from '../../shared-data/mockSession.js';
 import { buildMockDataLink, loadMockAccountData } from '../../shared-data/mockDataSession.js';
-import { buildAnalyticsSummary, buildSchedulingLink, chatSummaryText } from './analyticsSummary.js';
+import { buildAnalyticsSummary, buildSchedulingLink, buildServerAnalyticsSummary, chatSummaryText, getAnalyticsPeriod, toIsoDate } from './analyticsSummary.js';
 import SignInPage from './SignInPage.jsx';
 import { APP_URLS } from '../../shared-data/appConfig.js';
 import { formatReportingDate, reportingDateFromAccount, toggleReportingDateInCurrentUrl, withReportingDate } from '../../shared-data/reportingDate.js';
+
+const [demoAccounts, demoJobs] = __FIELDFLOW_DEMO__
+  ? await Promise.all([
+      import('../../shared-data/accounts.json').then((module) => module.default),
+      import('../../shared-data/jobs.json').then((module) => module.default),
+    ])
+  : [[], []];
 
 const DEMO_ACCOUNT_ID = 'acct_northstar';
 const SCHEDULING_URL = APP_URLS.scheduling;
@@ -19,6 +24,8 @@ export default function AnalyticsPage() {
   const [copyStatus, setCopyStatus] = useState('');
   const [hoveredPoint, setHoveredPoint] = useState(null);
   const [sessionState, setSessionState] = useState({ loading: isSupabaseConfigured, account: null, jobs: [], user: null, isOps: false, error: '' });
+  const [liveSummaryState, setLiveSummaryState] = useState({ loading: false, summary: null, error: '' });
+  const [summaryRefresh, setSummaryRefresh] = useState(0);
 
   const loadLiveData = async () => {
     setSessionState((current) => ({ ...current, loading: true, error: '' }));
@@ -34,15 +41,13 @@ export default function AnalyticsPage() {
         if (operations?.staff && requested) {
           const operationsAccount = await getAccountById(requested);
           if (!operationsAccount) throw new Error('The requested company could not be found.');
-          const operationsJobs = await getJobsForAccount(operationsAccount.id);
-          setSessionState({ loading: false, account: operationsAccount, jobs: operationsJobs, user: context.user, isOps: true, error: '' });
+          setSessionState({ loading: false, account: operationsAccount, jobs: [], user: context.user, isOps: true, error: '' });
           return;
         }
         setSessionState({ loading: false, account: null, jobs: [], user: context.user, isOps: false, error: 'This login is not assigned to a FieldFlow company yet.' });
         return;
       }
-      const liveJobs = await getJobsForAccount(context.account.id);
-      setSessionState({ loading: false, account: context.account, jobs: liveJobs, user: context.user, isOps: false, error: '' });
+      setSessionState({ loading: false, account: context.account, jobs: [], user: context.user, isOps: false, error: '' });
     } catch (error) {
       const message = String(error?.message ?? '').toLowerCase();
       const friendly = message.includes('jwt') || message.includes('session') || message.includes('401')
@@ -60,14 +65,42 @@ export default function AnalyticsPage() {
     if (isSupabaseConfigured) loadLiveData();
   }, []);
 
+  const liveReporting = reportingDateFromAccount(sessionState.account, window.location.search);
+  useEffect(() => {
+    if (!isSupabaseConfigured || !sessionState.account) return undefined;
+    let cancelled = false;
+    const period = getAnalyticsPeriod(timeframe, liveReporting.date);
+    setLiveSummaryState({ loading: true, summary: null, error: '' });
+    getAnalyticsDashboardData(sessionState.account.id, toIsoDate(period.selectedPeriod.start), toIsoDate(period.selectedEnd))
+      .then((data) => {
+        if (cancelled) return;
+        setLiveSummaryState({
+          loading: false,
+          summary: buildServerAnalyticsSummary({
+            accountId: sessionState.account.id,
+            timeframe,
+            referenceDate: liveReporting.date,
+            ...data,
+          }),
+          error: '',
+        });
+      })
+      .catch((error) => {
+        if (!cancelled) setLiveSummaryState({ loading: false, summary: null, error: error.message || 'Analytics could not be loaded.' });
+      });
+    return () => { cancelled = true; };
+  }, [timeframe, sessionState.account?.id, liveReporting.isoDate, summaryRefresh]);
+
   const mockUser = mockUserFromSearch(window.location.search);
   const requestedAccountId = new URLSearchParams(window.location.search).get('account_id');
   const isDemoOps = !isSupabaseConfigured && mockUser?.role === 'ops';
   const isOperationsView = isDemoOps || sessionState.isOps;
 
   if (isSupabaseConfigured && sessionState.loading) return <main className="analytics-page"><p className="subtitle">Loading your FieldFlow account…</p></main>;
-  if (isSupabaseConfigured && !sessionState.user) return <SignInPage onSignedIn={loadLiveData} />;
   if (isSupabaseConfigured && sessionState.error) return <main className="analytics-page"><p className="eyebrow">FieldFlow</p><h1>{sessionState.error.includes('not assigned') ? 'Account setup needed' : 'Analytics is unavailable'}</h1><p className="subtitle">{sessionState.error}</p><button className="action-link" type="button" onClick={loadLiveData}>Try again</button></main>;
+  if (isSupabaseConfigured && !sessionState.user) return <SignInPage onSignedIn={loadLiveData} />;
+  if (isSupabaseConfigured && sessionState.account && (liveSummaryState.loading || !liveSummaryState.summary) && !liveSummaryState.error) return <main className="analytics-page"><p className="subtitle">Calculating your selected period…</p></main>;
+  if (isSupabaseConfigured && liveSummaryState.error) return <main className="analytics-page"><p className="eyebrow">FieldFlow</p><h1>Analytics is unavailable</h1><p className="subtitle">{liveSummaryState.error}</p><button className="action-link" type="button" onClick={() => setSummaryRefresh((current) => current + 1)}>Try again</button></main>;
   if (!isSupabaseConfigured && (!mockUser || (!isDemoOps && !isMockContractor(mockUser)))) return <main className="analytics-page"><p className="eyebrow">FieldFlow demo</p><h1>Start in Scheduling</h1><p className="subtitle">Sign in through Scheduling first so FieldFlow can show the right company data.</p><p className="scheduler-action"><a className="action-link" href={SCHEDULING_URL}>Open Scheduling</a></p></main>;
 
   const demoAccountId = isSupabaseConfigured
@@ -76,14 +109,14 @@ export default function AnalyticsPage() {
       ? (demoAccounts.some((item) => item.id === requestedAccountId) ? requestedAccountId : DEMO_ACCOUNT_ID)
       : mockUser.account_id;
   const account = isSupabaseConfigured ? sessionState.account : demoAccounts.find((item) => item.id === demoAccountId) ?? { id: demoAccountId, name: mockUser.company_name ?? 'Your new business', plan: 'Starter' };
-  const accountJobs = isSupabaseConfigured ? sessionState.jobs : loadMockAccountData(demoAccountId, { clients: [], jobs: demoJobs }).jobs;
+  const accountJobs = isSupabaseConfigured ? [] : loadMockAccountData(demoAccountId, { clients: [], jobs: demoJobs }).jobs;
   const accountId = account?.id ?? (isSupabaseConfigured ? DEMO_ACCOUNT_ID : demoAccountId);
   const reporting = isSupabaseConfigured
-    ? reportingDateFromAccount(account, window.location.search)
+    ? liveReporting
     : reportingDateFromAccount({ demo_reporting_date: '2026-08-19' }, window.location.search);
   const referenceDate = reporting.date;
-  const summary = buildAnalyticsSummary(accountJobs, accountId, timeframe, referenceDate);
-  const { selectedPeriod, selectedEnd, selectedRangeLabel, comparisonRangeLabel, selectedJobs, comparisonJobs, change, hasCompleteComparison, newClients, repeatClients, trend } = summary;
+  const summary = isSupabaseConfigured ? liveSummaryState.summary : buildAnalyticsSummary(accountJobs, accountId, timeframe, referenceDate);
+  const { selectedPeriod, selectedEnd, selectedRangeLabel, comparisonRangeLabel, selectedJobCount, comparisonJobCount, change, hasCompleteComparison, newClients, repeatClients, trend } = summary;
   const displayedChange = hasCompleteComparison ? change : null;
   const changeDescription = displayedChange === null ? null : `${displayedChange > 0 ? 'More' : displayedChange < 0 ? 'Fewer' : 'The same number of'} jobs than ${comparisonRangeLabel}`;
   const totalClients = newClients + repeatClients;
@@ -160,15 +193,15 @@ export default function AnalyticsPage() {
       <section className="summary-grid" aria-label="Weekly job summary">
         <article className="card primary-card" title={`Counts every job scheduled from ${selectedRangeLabel}.`}>
           <p className="card-label">{selectedRangeLabel}</p>
-          <p className="metric">{selectedJobs.length}</p>
+          <p className="metric">{selectedJobCount}</p>
           <p className="helper">Selected period</p>
         </article>
         <article className="card" title={`Counts every job scheduled from ${comparisonRangeLabel}.`}>
           <p className="card-label">{comparisonRangeLabel}</p>
-          <p className="metric">{comparisonJobs.length}</p>
+          <p className="metric">{comparisonJobCount}</p>
           <p className="helper">Previous {selectedPeriod.weeks} week{selectedPeriod.weeks === 1 ? '' : 's'}</p>
         </article>
-        <article className="card" title={displayedChange === null ? 'A fair comparison is not available yet.' : `Calculated from ${selectedJobs.length} jobs versus ${comparisonJobs.length} jobs.`}>
+        <article className="card" title={displayedChange === null ? 'A fair comparison is not available yet.' : `Calculated from ${selectedJobCount} jobs versus ${comparisonJobCount} jobs.`}>
           <p className="card-label">Change vs. previous period</p>
           <p className={`metric ${displayedChange !== null && displayedChange < 0 ? 'negative' : 'positive'}`}>
             {displayedChange === null ? '—' : `${displayedChange > 0 ? '+' : ''}${displayedChange}%`}
@@ -178,7 +211,7 @@ export default function AnalyticsPage() {
           {changeDescription && <p className="helper">{changeDescription}</p>}
         </article>
       </section>
-      {selectedJobs.length === 0 && <p className="empty-state">No jobs are scheduled in this period yet. Add one in Scheduling to update this view.</p>}
+      {selectedJobCount === 0 && <p className="empty-state">No jobs are scheduled in this period yet. Add one in Scheduling to update this view.</p>}
 
       <section className="card client-card" aria-labelledby="client-heading">
         <div>

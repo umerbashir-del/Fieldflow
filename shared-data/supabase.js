@@ -19,6 +19,25 @@ function withRequestTimeout(promise, label = 'Supabase request') {
   return Promise.race([promise, timeout]).finally(() => clearTimeout(timer));
 }
 
+async function withAbortableRequest(request, label = 'Supabase request') {
+  const controller = new AbortController();
+  let timedOut = false;
+  const timer = setTimeout(() => {
+    timedOut = true;
+    controller.abort();
+  }, REQUEST_TIMEOUT_MS);
+  try {
+    const result = await request.abortSignal(controller.signal);
+    if (timedOut) throw new Error(`${label} timed out and was cancelled.`);
+    return result;
+  } catch (error) {
+    if (timedOut) throw new Error(`${label} timed out and was cancelled.`);
+    throw error;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 function requireSupabase() {
   if (!supabase) {
     throw new Error('Supabase is not configured. Add VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_KEY to .env.');
@@ -115,15 +134,72 @@ export function getOperationsSession() {
 
 export async function getOperationsData() {
   const client = requireSupabase();
-  const request = Promise.all([
-    client.from('accounts').select('*').order('name'),
-    client.from('clients').select('*').order('name'),
-    client.from('jobs').select('*').order('scheduled_for', { ascending: false }),
+  const [overviewResult, jobResult] = await Promise.all([
+    withAbortableRequest(client.rpc('get_operations_overview'), 'Operations overview request'),
+    withAbortableRequest(
+      client.from('jobs')
+        .select('*, account:accounts(name), client:clients(name)')
+        .order('scheduled_for', { ascending: false })
+        .limit(100),
+      'Recent Operations jobs request',
+    ),
   ]);
-  const [accountResult, clientResult, jobResult] = await withRequestTimeout(request, 'Operations data request');
-  const error = accountResult.error || clientResult.error || jobResult.error;
+  const error = overviewResult.error || jobResult.error;
   if (error) throw error;
-  return { accounts: accountResult.data, clients: clientResult.data, jobs: jobResult.data };
+  const accounts = overviewResult.data.map((account) => ({
+    id: account.id,
+    name: account.name,
+    plan: account.plan,
+    demo_reporting_date: account.demo_reporting_date,
+    metrics: {
+      clients: Number(account.client_count),
+      jobs: Number(account.job_count),
+      completed: Number(account.completed_count),
+      open: Number(account.open_count),
+      inProgress: Number(account.in_progress_count),
+    },
+  }));
+  const jobs = jobResult.data.map((job) => ({
+    ...job,
+    account_name: job.account?.name,
+    client_name: job.client?.name,
+  }));
+  return { accounts, clients: [], jobs };
+}
+
+export async function getOperationsAccountData(accountId) {
+  const client = requireSupabase();
+  const [clientResult, jobResult] = await Promise.all([
+    withAbortableRequest(client.from('clients').select('*').eq('account_id', accountId).order('name'), 'Operations clients request'),
+    withAbortableRequest(client.from('jobs').select('*').eq('account_id', accountId).order('scheduled_for', { ascending: false }).limit(50), 'Operations account jobs request'),
+  ]);
+  const error = clientResult.error || jobResult.error;
+  if (error) throw error;
+  return { clients: clientResult.data, jobs: jobResult.data };
+}
+
+export async function getAnalyticsDashboardData(accountId, periodStart, periodEnd) {
+  const client = requireSupabase();
+  const [summaryResult, selectedResult, earliestResult] = await Promise.all([
+    withAbortableRequest(client.rpc('get_analytics_summary', {
+      requested_account_id: accountId,
+      period_start: periodStart,
+      period_end: periodEnd,
+    }), 'Analytics summary request'),
+    withAbortableRequest(
+      client.from('jobs').select('*').eq('account_id', accountId).gte('scheduled_for', periodStart).lt('scheduled_for', periodEnd).order('scheduled_for'),
+      'Analytics trend request',
+    ),
+    withAbortableRequest(
+      client.from('jobs').select('scheduled_for').eq('account_id', accountId).order('scheduled_for').limit(1).maybeSingle(),
+      'Analytics history request',
+    ),
+  ]);
+  const error = summaryResult.error || selectedResult.error || earliestResult.error;
+  if (error) throw error;
+  const counts = summaryResult.data?.[0];
+  if (!counts) throw new Error('Analytics access was not available for this company.');
+  return { counts, selectedJobs: selectedResult.data, earliestJobDate: earliestResult.data?.scheduled_for ?? null };
 }
 
 export async function getJobsForAccount(accountId) {
@@ -132,7 +208,7 @@ export async function getJobsForAccount(accountId) {
     .select('*')
     .eq('account_id', accountId)
     .order('scheduled_for', { ascending: true });
-  const { data, error } = await withRequestTimeout(request, 'Jobs request');
+  const { data, error } = await withAbortableRequest(request, 'Jobs request');
   if (error) throw error;
   return data;
 }
@@ -143,7 +219,7 @@ export async function getAccountById(accountId) {
     .select('*')
     .eq('id', accountId)
     .maybeSingle();
-  const { data, error } = await withRequestTimeout(request, 'Account request');
+  const { data, error } = await withAbortableRequest(request, 'Account request');
   if (error) throw error;
   return data;
 }
@@ -154,7 +230,7 @@ export async function getClientsForAccount(accountId) {
     .select('*')
     .eq('account_id', accountId)
     .order('name', { ascending: true });
-  const { data, error } = await withRequestTimeout(request, 'Clients request');
+  const { data, error } = await withAbortableRequest(request, 'Clients request');
   if (error) throw error;
   return data;
 }
@@ -173,57 +249,80 @@ export async function getAccountData(accountId) {
 export async function createJob(job) {
   const request = requireSupabase()
     .from('jobs')
-    .insert(job)
+    .upsert(job, { onConflict: 'id', ignoreDuplicates: true })
     .select()
-    .single();
-  const { data, error } = await withRequestTimeout(request, 'Create job request');
+    .maybeSingle();
+  const { data, error } = await withAbortableRequest(request, 'Create job request');
   if (error) throw error;
-  return data;
+  if (data) return data;
+  const { data: existing, error: lookupError } = await withAbortableRequest(
+    requireSupabase().from('jobs').select('*').eq('id', job.id).single(),
+    'Confirm job request',
+  );
+  if (lookupError) throw lookupError;
+  return existing;
 }
 
 export async function updateJob(jobId, changes) {
+  const editableChanges = {
+    title: changes.title,
+    client_id: changes.client_id,
+    scheduled_for: changes.scheduled_for,
+    status: changes.status,
+    assignee: changes.assignee ?? null,
+  };
   const request = requireSupabase()
     .from('jobs')
-    .update(changes)
+    .update(editableChanges)
     .eq('id', jobId)
     .select()
     .single();
-  const { data, error } = await withRequestTimeout(request, 'Update job request');
+  const { data, error } = await withAbortableRequest(request, 'Update job request');
   if (error) throw error;
   return data;
 }
 
 export async function deleteJob(jobId) {
   const request = requireSupabase().from('jobs').delete().eq('id', jobId);
-  const { error } = await withRequestTimeout(request, 'Delete job request');
+  const { error } = await withAbortableRequest(request, 'Delete job request');
   if (error) throw error;
 }
 
 export async function createFieldflowClient(client) {
   const request = requireSupabase()
     .from('clients')
-    .insert(client)
+    .upsert(client, { onConflict: 'id', ignoreDuplicates: true })
     .select()
-    .single();
-  const { data, error } = await withRequestTimeout(request, 'Create client request');
+    .maybeSingle();
+  const { data, error } = await withAbortableRequest(request, 'Create client request');
   if (error) throw error;
-  return data;
+  if (data) return data;
+  const { data: existing, error: lookupError } = await withAbortableRequest(
+    requireSupabase().from('clients').select('*').eq('id', client.id).single(),
+    'Confirm client request',
+  );
+  if (lookupError) throw lookupError;
+  return existing;
 }
 
 export async function updateClient(clientId, changes) {
+  const editableFields = ['name', 'building_number', 'street_name', 'city', 'state', 'zip_code', 'client_phone'];
+  const editableChanges = Object.fromEntries(
+    editableFields.filter((field) => Object.hasOwn(changes, field)).map((field) => [field, changes[field]]),
+  );
   const request = requireSupabase()
     .from('clients')
-    .update(changes)
+    .update(editableChanges)
     .eq('id', clientId)
     .select()
     .single();
-  const { data, error } = await withRequestTimeout(request, 'Update client request');
+  const { data, error } = await withAbortableRequest(request, 'Update client request');
   if (error) throw error;
   return data;
 }
 
 export async function deleteClient(clientId) {
   const request = requireSupabase().from('clients').delete().eq('id', clientId);
-  const { error } = await withRequestTimeout(request, 'Delete client request');
+  const { error } = await withAbortableRequest(request, 'Delete client request');
   if (error) throw error;
 }

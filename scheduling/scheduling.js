@@ -483,6 +483,7 @@ import { assigneeLabel } from '../shared-data/jobPresentation.js';
     jobModal = {
       mode: 'new',
       draft: {
+        id: makeId('job'),
         client_id: (accountClients()[0] || {}).id || '',
         title: '',
         scheduled_for: prefillDate || REPORTING.isoDate,
@@ -564,11 +565,26 @@ import { assigneeLabel } from '../shared-data/jobPresentation.js';
     if (!jobModal) return;
     const { draft, mode, originalId } = jobModal;
     if (!draft.title.trim() || !draft.client_id || !draft.scheduled_for) return;
+    saveJobBtn.disabled = true;
     if (mode === 'new') {
-      const nextJob = Object.assign({ id: makeId('job'), account_id: ACCOUNT_ID }, draft, { title: draft.title.trim() });
-      jobs.push(LIVE_MODE ? await createJob(nextJob) : nextJob);
+      const nextJob = Object.assign({ account_id: ACCOUNT_ID }, draft, { title: draft.title.trim() });
+      try {
+        jobs.push(LIVE_MODE ? await createJob(nextJob) : nextJob);
+      } catch (error) {
+        saveJobBtn.disabled = false;
+        jobConflictWarning.hidden = false;
+        jobConflictWarning.textContent = error.message || 'The job could not be saved. Try again.';
+        return;
+      }
     } else {
-      if (LIVE_MODE) await updateJob(originalId, Object.assign({}, draft, { title: draft.title.trim() }));
+      try {
+        if (LIVE_MODE) await updateJob(originalId, Object.assign({}, draft, { title: draft.title.trim() }));
+      } catch (error) {
+        saveJobBtn.disabled = false;
+        jobConflictWarning.hidden = false;
+        jobConflictWarning.textContent = error.message || 'The job could not be saved. Try again.';
+        return;
+      }
       jobs = jobs.map((j) => (j.id === originalId ? Object.assign({}, j, draft, { title: draft.title.trim() }) : j));
     }
     persist();
@@ -594,7 +610,7 @@ import { assigneeLabel } from '../shared-data/jobPresentation.js';
   // (much simpler) client record: name + city.
 
   function openNewClient() {
-    clientModal = { mode: 'new', draft: { name: '', city: '' } };
+    clientModal = { mode: 'new', draft: { id: makeId('client'), name: '', city: '' } };
     clientNotice = '';
     renderAll();
   }
@@ -639,11 +655,26 @@ import { assigneeLabel } from '../shared-data/jobPresentation.js';
       renderClientModal();
       return;
     }
+    saveClientBtn.disabled = true;
     if (mode === 'new') {
-      const nextClient = { id: makeId('client'), account_id: ACCOUNT_ID, name: draft.name.trim(), city: draft.city.trim() };
-      clients.push(LIVE_MODE ? await createFieldflowClient(nextClient) : nextClient);
+      const nextClient = { id: draft.id, account_id: ACCOUNT_ID, name: draft.name.trim(), city: draft.city.trim() };
+      try {
+        clients.push(LIVE_MODE ? await createFieldflowClient(nextClient) : nextClient);
+      } catch (error) {
+        saveClientBtn.disabled = false;
+        clientNotice = error.message || 'The client could not be saved. Try again.';
+        renderClientModal();
+        return;
+      }
     } else {
-      if (LIVE_MODE) await updateClient(originalId, { name: draft.name.trim(), city: draft.city.trim() });
+      try {
+        if (LIVE_MODE) await updateClient(originalId, { name: draft.name.trim(), city: draft.city.trim() });
+      } catch (error) {
+        saveClientBtn.disabled = false;
+        clientNotice = error.message || 'The client could not be saved. Try again.';
+        renderClientModal();
+        return;
+      }
       clients = clients.map((c) => (c.id === originalId ? Object.assign({}, c, { name: draft.name.trim(), city: draft.city.trim() }) : c));
     }
     persist();

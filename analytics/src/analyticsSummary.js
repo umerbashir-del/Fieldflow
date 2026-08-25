@@ -35,11 +35,23 @@ function rangeLabel(start, exclusiveEnd) {
   return `${startLabel}–${endLabel}`;
 }
 
+function buildTrend(accountJobs, selectedPeriod) {
+  return selectedPeriod.granularity === 'day'
+    ? Array.from({ length: 7 }, (_, index) => {
+      const dayStart = new Date(selectedPeriod.start.getTime() + index * DAY);
+      return { label: dayLabel(dayStart), detail: fullDateLabel(dayStart), jobs: accountJobs.filter((job) => isInRange(job, dayStart, new Date(dayStart.getTime() + DAY))).length };
+    })
+    : Array.from({ length: selectedPeriod.weeks }, (_, index) => {
+      const weekStart = new Date(selectedPeriod.start.getTime() + index * 7 * DAY);
+      return { label: weekLabel(weekStart), detail: rangeLabel(weekStart, new Date(weekStart.getTime() + 7 * DAY)), jobs: accountJobs.filter((job) => isInRange(job, weekStart, new Date(weekStart.getTime() + 7 * DAY))).length };
+    });
+}
+
 export function toIsoDate(date) {
   return date.toISOString().slice(0, 10);
 }
 
-export function buildAnalyticsSummary(jobs, accountId, timeframe, referenceDate = new Date()) {
+export function getAnalyticsPeriod(timeframe, referenceDate = new Date()) {
   const thisWeekStart = startOfWeek(referenceDate);
   const periods = {
     this_week: { weeks: 1, start: thisWeekStart, label: 'This week', jobsLabel: 'Jobs this week', comparisonLabel: 'Previous week', granularity: 'day' },
@@ -51,6 +63,17 @@ export function buildAnalyticsSummary(jobs, accountId, timeframe, referenceDate 
   const selectedPeriod = periods[timeframe] ?? periods.this_week;
   const selectedEnd = new Date(selectedPeriod.start.getTime() + selectedPeriod.weeks * 7 * DAY);
   const comparisonStart = new Date(selectedPeriod.start.getTime() - selectedPeriod.weeks * 7 * DAY);
+  return {
+    selectedPeriod,
+    selectedEnd,
+    comparisonStart,
+    selectedRangeLabel: rangeLabel(selectedPeriod.start, selectedEnd),
+    comparisonRangeLabel: rangeLabel(comparisonStart, selectedPeriod.start),
+  };
+}
+
+export function buildAnalyticsSummary(jobs, accountId, timeframe, referenceDate = new Date()) {
+  const { selectedPeriod, selectedEnd, comparisonStart, selectedRangeLabel, comparisonRangeLabel } = getAnalyticsPeriod(timeframe, referenceDate);
   const accountJobs = jobs.filter((job) => job.account_id === accountId);
   const selectedJobs = accountJobs.filter((job) => isInRange(job, selectedPeriod.start, selectedEnd));
   const comparisonJobs = accountJobs.filter((job) => isInRange(job, comparisonStart, selectedPeriod.start));
@@ -64,23 +87,17 @@ export function buildAnalyticsSummary(jobs, accountId, timeframe, referenceDate 
   const selectedClientIds = new Set(selectedJobs.map((job) => job.client_id));
   const newClients = [...selectedClientIds].filter((clientId) => !priorClientIds.has(clientId)).length;
   const repeatClients = [...selectedClientIds].filter((clientId) => priorClientIds.has(clientId)).length;
-  const trend = selectedPeriod.granularity === 'day'
-    ? Array.from({ length: 7 }, (_, index) => {
-      const dayStart = new Date(selectedPeriod.start.getTime() + index * DAY);
-      return { label: dayLabel(dayStart), detail: fullDateLabel(dayStart), jobs: accountJobs.filter((job) => isInRange(job, dayStart, new Date(dayStart.getTime() + DAY))).length };
-    })
-    : Array.from({ length: selectedPeriod.weeks }, (_, index) => {
-      const weekStart = new Date(selectedPeriod.start.getTime() + index * 7 * DAY);
-      return { label: weekLabel(weekStart), detail: rangeLabel(weekStart, new Date(weekStart.getTime() + 7 * DAY)), jobs: accountJobs.filter((job) => isInRange(job, weekStart, new Date(weekStart.getTime() + 7 * DAY))).length };
-    });
+  const trend = buildTrend(accountJobs, selectedPeriod);
 
   return {
     selectedPeriod,
     selectedEnd,
-    selectedRangeLabel: rangeLabel(selectedPeriod.start, selectedEnd),
-    comparisonRangeLabel: rangeLabel(comparisonStart, selectedPeriod.start),
+    selectedRangeLabel,
+    comparisonRangeLabel,
     selectedJobs,
     comparisonJobs,
+    selectedJobCount: selectedJobs.length,
+    comparisonJobCount: comparisonJobs.length,
     change,
     hasCompleteComparison,
     newClients,
@@ -89,11 +106,31 @@ export function buildAnalyticsSummary(jobs, accountId, timeframe, referenceDate 
   };
 }
 
+export function buildServerAnalyticsSummary({ accountId, timeframe, referenceDate, selectedJobs, earliestJobDate, counts }) {
+  const { selectedPeriod, selectedEnd, comparisonStart, selectedRangeLabel, comparisonRangeLabel } = getAnalyticsPeriod(timeframe, referenceDate);
+  const earliest = earliestJobDate ? toUtcDate(earliestJobDate) : null;
+  return {
+    selectedPeriod,
+    selectedEnd,
+    selectedRangeLabel,
+    comparisonRangeLabel,
+    selectedJobs,
+    comparisonJobs: [],
+    selectedJobCount: Number(counts.selected_jobs ?? 0),
+    comparisonJobCount: Number(counts.previous_jobs ?? 0),
+    change: counts.change_percent === null ? null : Number(counts.change_percent),
+    hasCompleteComparison: earliest !== null && earliest <= comparisonStart,
+    newClients: Number(counts.new_clients ?? 0),
+    repeatClients: Number(counts.repeat_clients ?? 0),
+    trend: buildTrend(selectedJobs.filter((job) => job.account_id === accountId), selectedPeriod),
+  };
+}
+
 export function chatSummaryText(accountName, summary) {
   const changeText = !summary.hasCompleteComparison
     ? 'There is not enough earlier data for a fair comparison.'
     : summary.change === null ? 'There is no earlier period to compare.' : `${summary.change > 0 ? '+' : ''}${summary.change}% compared with the previous period.`;
-  return `${accountName}: ${summary.selectedPeriod.label}. ${summary.selectedJobs.length} jobs, ${summary.comparisonJobs.length} in the previous period, ${changeText} ${summary.newClients} new clients and ${summary.repeatClients} repeat clients.`;
+  return `${accountName}: ${summary.selectedPeriod.label}. ${summary.selectedJobCount ?? summary.selectedJobs.length} jobs, ${summary.comparisonJobCount ?? summary.comparisonJobs.length} in the previous period, ${changeText} ${summary.newClients} new clients and ${summary.repeatClients} repeat clients.`;
 }
 
 export function buildSchedulingLink(baseUrl, accountId, start, end) {
