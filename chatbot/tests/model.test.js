@@ -9,6 +9,7 @@
 // Vite's SSR module runner (see chatbot/vite.config.js's fs.allow comment).
 import assert from 'node:assert/strict';
 import { test, before, after } from 'node:test';
+import { fileURLToPath } from 'node:url';
 import { createServer } from 'vite';
 
 const ACCOUNT_ID = 'acct_northstar'; // Northstar Field Services, Growth plan
@@ -17,9 +18,11 @@ let getAnswer;
 let server;
 
 before(async () => {
+  const chatbotRoot = fileURLToPath(new URL('..', import.meta.url));
+  const configFile = fileURLToPath(new URL('../vite.config.js', import.meta.url));
   server = await createServer({
-    root: new URL('..', import.meta.url).pathname,
-    configFile: new URL('../vite.config.js', import.meta.url).pathname,
+    root: chatbotRoot,
+    configFile,
     server: { middlewareMode: true },
     appType: 'custom',
     logLevel: 'error',
@@ -28,7 +31,7 @@ before(async () => {
 });
 
 after(async () => {
-  await server.close();
+  await server?.close();
 });
 
 test('job id lookup returns the real job record', () => {
@@ -49,6 +52,24 @@ test('job id lookup refuses a job that belongs to another account', () => {
 test('account/plan lookup reads the real account record', () => {
   const { text } = getAnswer('what plan am I on?', ACCOUNT_ID);
   assert.equal(text, 'You’re using the Growth plan for Northstar Field Services.');
+});
+
+test('a new empty business receives its own plan response', () => {
+  const { text } = getAnswer("What's my plan?", {
+    account: { id: 'acct_demo_avery', name: 'Avery Plumbing', plan: 'Starter' },
+    clients: [],
+    jobs: [],
+  });
+  assert.equal(text, 'You’re using the Starter plan for Avery Plumbing.');
+});
+
+test('a new empty business does not inherit another company’s upcoming jobs', () => {
+  const { text } = getAnswer('what is on my schedule today?', {
+    account: { id: 'acct_demo_avery', name: 'Avery Plumbing', plan: 'Starter' },
+    clients: [],
+    jobs: [],
+  });
+  assert.equal(text, 'Avery Plumbing has no upcoming jobs right now.');
 });
 
 test('client count reflects the real client list for this account', () => {

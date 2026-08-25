@@ -176,6 +176,7 @@ test('new account creates an empty company context and supports keyboard navigat
   await expect(page.locator('#messageList')).toContainText('Your account has no jobs yet');
   await page.locator('#chatInput').fill("What's my plan?");
   await page.getByRole('button', { name: /^Send/ }).click();
+  await expect(page.locator('.ff-typing-bubble')).toBeHidden({ timeout: 10_000 });
   await expect(page.locator('#messageList')).toContainText('Starter plan for Avery Plumbing');
 });
 

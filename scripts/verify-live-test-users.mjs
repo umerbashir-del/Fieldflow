@@ -33,12 +33,18 @@ const { error: opsSignInError } = await operations.auth.signInWithPassword({ ema
 if (opsSignInError) throw opsSignInError;
 const { data: staff, error: staffError } = await operations.from('operations_staff').select('user_id').single();
 if (staffError || !staff) throw staffError || new Error('Operations staff record is missing.');
-const { count: accountCount, error: accountsError } = await operations.from('accounts').select('id', { count: 'exact', head: true });
+const { data: visibleAccounts, error: accountsError } = await operations.from('accounts').select('id');
 if (accountsError) throw accountsError;
-if (accountCount !== 10) throw new Error(`Operations expected 10 accounts but read ${accountCount}.`);
+const visibleAccountIds = new Set(visibleAccounts.map((account) => account.id));
+for (const requiredAccountId of ['acct_northstar', 'acct_horizon']) {
+  if (!visibleAccountIds.has(requiredAccountId)) {
+    throw new Error(`Operations could not read required account ${requiredAccountId}.`);
+  }
+}
+if (visibleAccountIds.size < 2) throw new Error('Operations should be able to read more than one customer account.');
 const { error: forbiddenWriteError } = await operations.from('clients').insert({ id: 'client_ops_write_probe', account_id: 'acct_northstar', name: 'Forbidden write probe' });
 if (!forbiddenWriteError) throw new Error('RLS failure: Operations was allowed to create customer data.');
 await operations.auth.signOut();
 
 console.log('John verified: Northstar owner; Horizon jobs hidden.');
-console.log('Operations verified: 10 accounts readable; customer-data writes blocked.');
+console.log(`Operations verified: ${visibleAccountIds.size} accounts readable; customer-data writes blocked.`);

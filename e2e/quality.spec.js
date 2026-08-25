@@ -103,6 +103,21 @@ test('light-mode sign-in and Analytics meet automated color-contrast checks', as
   expect(analyticsResults.violations).toEqual([]);
 });
 
+test('Support and Operations meet automated color-contrast checks', async ({ page }) => {
+  await page.goto('http://127.0.0.1:5175/?demo_user=john&account_id=acct_northstar');
+  await expect(page.locator('#chatApp')).toBeVisible();
+  const supportResults = await new AxeBuilder({ page }).withRules(['color-contrast']).analyze();
+  expect(supportResults.violations).toEqual([]);
+
+  await page.goto('http://127.0.0.1:5176/');
+  await page.locator('#opsLoginForm').getByLabel('Email').fill('ops@fieldflow.demo');
+  await page.locator('#opsLoginForm').getByLabel('Password').fill('ops-demo-password');
+  await page.getByRole('button', { name: 'Sign in to Operations' }).click();
+  await expect(page.locator('#opsDashboard')).toBeVisible();
+  const operationsResults = await new AxeBuilder({ page }).withRules(['color-contrast']).analyze();
+  expect(operationsResults.violations).toEqual([]);
+});
+
 test('all application shells load within the local performance budget', async ({ page }) => {
   for (const url of [schedulingUrl, 'http://127.0.0.1:5173/', 'http://127.0.0.1:5175/', 'http://127.0.0.1:5176/']) {
     const started = Date.now();
