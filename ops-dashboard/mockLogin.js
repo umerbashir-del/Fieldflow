@@ -10,6 +10,14 @@ const password = document.getElementById('opsPassword');
 const error = document.getElementById('opsLoginError');
 const resetForm = document.getElementById('opsResetForm');
 const resetMessage = document.getElementById('opsResetMessage');
+const quickSignInOps = document.getElementById('quickSignInOps');
+
+// Real Supabase account password for the peer-testing quick-sign-in button
+// below. This ships in plain text to every browser that loads this page
+// (there's no way to autofill+submit a login without the browser having
+// the password) - a deliberate tradeoff for frictionless outside peer
+// testing, accepted knowingly rather than an oversight.
+const QUICK_SIGNIN_OPS = { email: 'operations@fieldflow.demo', password: 'WEZAW4-Hq7ICr_NpyZna_NYmaA7!' };
 
 if (isSupabaseConfigured) {
   document.getElementById('operationsLoginEyebrow').textContent = 'FieldFlow';
@@ -45,12 +53,11 @@ function showDashboard() {
 if (isSupabaseConfigured ? Boolean(liveContext?.staff) : signedInOpsUser()) {
   showDashboard();
 } else {
-  form.addEventListener('submit', async (event) => {
-    event.preventDefault();
+  async function attemptSignIn(emailValue, passwordValue) {
     error.textContent = '';
     try {
       if (isSupabaseConfigured) {
-        await signIn(email.value, password.value);
+        await signIn(emailValue, passwordValue);
         const context = await getOperationsSession();
         if (!context?.staff) {
           await signOut();
@@ -58,7 +65,7 @@ if (isSupabaseConfigured ? Boolean(liveContext?.staff) : signedInOpsUser()) {
         }
         window.location.reload();
       } else {
-        const user = authenticateMockUser(email.value, password.value);
+        const user = authenticateMockUser(emailValue, passwordValue);
         if (user.role !== 'ops') throw new Error('This sign-in is for FieldFlow Operations staff. Use Scheduling for contractor accounts.');
         const url = new URL(window.location.href);
         url.searchParams.set('demo_user', user.id);
@@ -67,6 +74,16 @@ if (isSupabaseConfigured ? Boolean(liveContext?.staff) : signedInOpsUser()) {
     } catch (signInError) {
       error.textContent = friendlyAuthError(signInError);
     }
+  }
+
+  form.addEventListener('submit', (event) => {
+    event.preventDefault();
+    attemptSignIn(email.value, password.value);
+  });
+  quickSignInOps?.addEventListener('click', () => {
+    email.value = QUICK_SIGNIN_OPS.email;
+    password.value = QUICK_SIGNIN_OPS.password;
+    attemptSignIn(QUICK_SIGNIN_OPS.email, QUICK_SIGNIN_OPS.password);
   });
   document.querySelectorAll('[data-ops-auth-mode]').forEach((button) => button.addEventListener('click', () => showForm(button.dataset.opsAuthMode)));
   resetForm.addEventListener('submit', async (event) => {
