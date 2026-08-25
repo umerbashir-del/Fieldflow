@@ -1,0 +1,12 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "chatbot",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev", "--prefix", "chatbot"],
+      "port": 5175,
+      "autoPort": true
+    }
+  ]
+}
