@@ -20,6 +20,7 @@ if (isSupabaseConfigured) {
   document.getElementById('contractorSignUpDescription').textContent = 'Create your company and its first owner account. You may need to confirm your email before signing in.';
   document.getElementById('contractorResetDescription').textContent = 'Enter your registered FieldFlow email and we will send a password-reset link.';
   document.getElementById('contractorDemoAccounts').hidden = true;
+  document.getElementById('contractorLoginDescription').textContent = 'Use your registered FieldFlow email and password. Checking for an existing session…';
 } else if (isDemoModeAvailable) {
   const demoAccounts = document.getElementById('contractorDemoAccounts');
   const heading = document.createElement('strong');
@@ -38,12 +39,16 @@ function showForm(mode) {
 }
 
 const currentUser = mockUserFromSearch(window.location.search);
-const liveContext = isSupabaseConfigured ? await getSignedInAccount() : null;
+let liveContext = null;
+let liveLoadError = '';
+const showContractorApp = (context) => {
+  if (context?.account) {
+    gate.hidden = true;
+    app.hidden = false;
+  }
+};
 
-if (isSupabaseConfigured && liveContext?.account) {
-  gate.hidden = true;
-  app.hidden = false;
-} else if (!isSupabaseConfigured && isMockContractor(currentUser)) {
+if (!isSupabaseConfigured && isMockContractor(currentUser)) {
   gate.hidden = true;
   app.hidden = false;
 } else {
@@ -104,6 +109,22 @@ if (isSupabaseConfigured && liveContext?.account) {
     } catch (resetError) {
       resetMessage.textContent = friendlyAuthError(resetError);
     }
+  });
+}
+
+if (isSupabaseConfigured) {
+  getSignedInAccount().then((context) => {
+    liveContext = context;
+    showContractorApp(context);
+  }).catch((loadError) => {
+    const message = String(loadError?.message ?? '').toLowerCase();
+    liveLoadError = message.includes('jwt') || message.includes('session') || message.includes('401')
+      ? 'Your session expired. Please sign in again.'
+      : typeof navigator !== 'undefined' && !navigator.onLine
+      ? 'You appear to be offline. Check your connection and try again.'
+      : 'We couldn’t load your data. Check your connection and try again.';
+    error.textContent = `${liveLoadError} You can try signing in again.`;
+    document.getElementById('contractorLoginDescription').textContent = liveLoadError;
   });
 }
 
