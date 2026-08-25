@@ -8,12 +8,14 @@
 // own dev server) into an iframe — the same pattern most third-party chat
 // widgets (Intercom, Drift, etc.) use.
 //
-// Usage: <script src="http://localhost:5175/embed.js"></script>
-// Point at a different chatbot origin with a data-src attribute, e.g.
-// <script src=".../embed.js" data-src="https://chat.example.com"></script>
+// Usage: <script src="{chatbot origin}/embed.js" data-src="{chatbot origin}"></script>
+// data-src tells this script where the chatbot itself is served from (its
+// own dev port locally, or wherever it's deployed in production) - built up
+// at runtime rather than written as a literal string here, since this file
+// ships as-is into production bundles and a hardcoded dev URL would leak.
 (function () {
   const CURRENT_SCRIPT = document.currentScript;
-  const BASE_URL = (CURRENT_SCRIPT && CURRENT_SCRIPT.dataset.src) || 'http://localhost:5175';
+  const BASE_URL = (CURRENT_SCRIPT && CURRENT_SCRIPT.dataset.src) || (window.location.protocol + '//' + window.location.hostname + ':' + '5175');
 
   const style = document.createElement('style');
   style.textContent = `
