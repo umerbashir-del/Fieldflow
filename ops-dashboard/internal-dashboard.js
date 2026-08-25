@@ -22,14 +22,13 @@ if (isSupabaseConfigured) {
   }
 }
 
-const THEME_KEY = 'fieldflow_ops_theme';
 const STATUS_LABELS = { scheduled: 'Scheduled', in_progress: 'In progress', completed: 'Completed', cancelled: 'Cancelled' };
-const state = { view: 'overview', selectedAccountId: null, accountSearch: '', statusFilter: 'all', theme: localStorage.getItem(THEME_KEY) === 'dark' ? 'dark' : 'light' };
+const state = { view: 'overview', selectedAccountId: null, accountSearch: '', statusFilter: 'all' };
 const $ = (id) => document.getElementById(id);
 const els = {
   accountCount: $('accountCount'), clientCount: $('clientCount'), jobCount: $('jobCount'), progressCount: $('progressCount'),
   accountTable: $('accountTable'), accountCards: $('accountCards'), activityList: $('activityList'), detailContent: $('detailContent'),
-  accountSearch: $('accountSearch'), statusFilter: $('statusFilter'), themeBtn: $('themeBtn'), backBtn: $('backBtn'),
+  accountSearch: $('accountSearch'), statusFilter: $('statusFilter'), backBtn: $('backBtn'),
   tabs: [...document.querySelectorAll('.tab')], views: { overview: $('overview'), accounts: $('accounts'), activity: $('activity'), detail: $('detail') },
 };
 
@@ -119,14 +118,11 @@ function showView(view) {
 }
 
 function openAccount(accountId) { state.selectedAccountId = accountId; showView('detail'); }
-function applyTheme() { document.documentElement.dataset.theme = state.theme; els.themeBtn.textContent = state.theme === 'dark' ? 'Light mode' : 'Dark mode'; }
 
 els.tabs.forEach((tab) => tab.addEventListener('click', () => showView(tab.dataset.view)));
 els.accountSearch.addEventListener('input', (event) => { state.accountSearch = event.target.value; renderAccounts(); });
 els.statusFilter.addEventListener('change', (event) => { state.statusFilter = event.target.value; renderActivity(); });
 els.backBtn.addEventListener('click', () => showView('accounts'));
-els.themeBtn.addEventListener('click', () => { state.theme = state.theme === 'dark' ? 'light' : 'dark'; localStorage.setItem(THEME_KEY, state.theme); applyTheme(); });
-applyTheme();
 const requestedAccountId = new URLSearchParams(window.location.search).get('account_id');
 if (accountData.some((account) => account.id === requestedAccountId)) openAccount(requestedAccountId);
 else showView('overview');

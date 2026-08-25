@@ -78,9 +78,6 @@ test('sign-in and Analytics meet automated color-contrast checks', async ({ page
   expect(signInResults.violations).toEqual([]);
 
   await signIn(page);
-  await page.locator('#themeToggleBtn').click();
-  const darkSchedulingResults = await new AxeBuilder({ page }).withRules(['color-contrast']).analyze();
-  expect(darkSchedulingResults.violations).toEqual([]);
   await page.getByRole('link', { name: 'View Analytics' }).click();
   const analyticsResults = await new AxeBuilder({ page }).withRules(['color-contrast']).analyze();
   expect(analyticsResults.violations).toEqual([]);
