@@ -68,7 +68,7 @@ export async function getSignedInAccount() {
 
   const { data, error } = await client
     .from('account_memberships')
-    .select('account_id, role, accounts(id, name, plan)')
+    .select('account_id, role, accounts(id, name, plan, demo_reporting_date)')
     .order('created_at', { ascending: true })
     .limit(1)
     .maybeSingle();

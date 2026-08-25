@@ -42,3 +42,20 @@ export function saveMockAccountData(accountId, data) {
 export function clearMockDataSession() {
   if (typeof window !== 'undefined') window.name = '';
 }
+
+// window.name already carries this tab's demo data across same-tab
+// navigation, even cross-origin (Scheduling/Analytics/Chatbot each run on
+// their own port). This attaches the same payload as a URL param too, as a
+// fallback for browsers/contexts where window.name isn't preserved (e.g. a
+// link opened in a new tab), so the destination product can still recover
+// the current demo data if it chooses to read the `mock_data` param.
+export function buildMockDataLink(href) {
+  if (typeof window === 'undefined' || !window.name) return href;
+  try {
+    const url = new URL(href, window.location.href);
+    url.searchParams.set('mock_data', window.name);
+    return url.toString();
+  } catch {
+    return href;
+  }
+}

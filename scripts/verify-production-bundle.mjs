@@ -4,8 +4,9 @@ import { fileURLToPath } from 'node:url';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const deployRoot = path.join(root, 'deploy');
+const envText = await readFile(path.join(root, '.env'), 'utf8').catch(() => '');
 const env = Object.fromEntries(
-  (await readFile(path.join(root, '.env'), 'utf8')).split(/\r?\n/)
+  envText.split(/\r?\n/)
     .map((line) => line.match(/^\s*([A-Z0-9_]+)\s*=\s*(.*?)\s*$/))
     .filter(Boolean)
     .map((match) => [match[1], match[2].replace(/^['"]|['"]$/g, '')]),

@@ -11,7 +11,7 @@
     <div class="ops-login-card">
       <p class="eyebrow" id="operationsLoginEyebrow">FieldFlow demo</p>
       <h1>Sign in to Operations</h1>
-      <p class="muted">This area is for FieldFlow staff. Contractor accounts use Scheduling instead.</p>
+      <p class="muted" id="operationsLoginDescription">This area is for FieldFlow staff. Contractor accounts use Scheduling instead.</p>
       <div class="ops-login-details" id="operationsDemoAccount"></div>
       <form id="opsLoginForm" class="ops-login-form">
         <label>Email<input id="opsEmail" type="email" autocomplete="email" required></label>
@@ -22,7 +22,7 @@
       </form>
       <form id="opsResetForm" class="ops-login-form" hidden>
         <h2>Reset your Operations password</h2>
-        <p class="muted">In the deployed version, Supabase would send a reset email to your staff account.</p>
+        <p class="muted" id="operationsResetDescription">Enter your staff email to request a password-reset link.</p>
         <label>Email<input name="email" type="email" autocomplete="email" required></label>
         <button type="submit">Send reset link</button>
         <p id="opsResetMessage" class="ops-reset-message" role="status"></p>

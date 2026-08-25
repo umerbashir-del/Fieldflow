@@ -60,6 +60,25 @@ test('Sarah sees only Horizon data', async ({ page }) => {
   await expect(page.locator('#clientList')).not.toContainText('Evergreen Properties');
 });
 
+test('demo reporting date follows the user across Scheduling, Analytics, and Chatbot', async ({ page }) => {
+  await signIn(page, 'john@fieldflow.demo', 'john-demo-password');
+  await expect(page.locator('#schedulingDemoNotice')).toContainText('August 19, 2026');
+  await page.getByRole('button', { name: 'Use today' }).click();
+  await expect(page).toHaveURL(/reporting_date=today/);
+  await expect(page.locator('#schedulingDemoNotice')).toContainText('Live-date preview');
+
+  await page.getByRole('link', { name: 'View Analytics' }).click();
+  await expect(page).toHaveURL(/reporting_date=today/);
+  await expect(page.getByText(/Live-date preview — reporting as of/)).toBeVisible();
+
+  await page.getByRole('link', { name: 'Support Chat' }).click();
+  await expect(page).toHaveURL(/reporting_date=today/);
+  await expect(page.locator('#chatDemoNotice')).toContainText('Live-date preview');
+  await page.getByRole('button', { name: 'Return to demo date' }).click();
+  await expect(page).not.toHaveURL(/reporting_date=today/);
+  await expect(page.locator('#chatDemoNotice')).toContainText('August 19, 2026');
+});
+
 test('Scheduling edits follow the same demo account into Analytics and Chatbot', async ({ page }) => {
   await signIn(page, 'john@fieldflow.demo', 'john-demo-password');
   await page.locator('#newJobBtn').click();

@@ -1,5 +1,788 @@
 [
   {
+    "id": "sj_0061",
+    "account_id": "acct_brightspark",
+    "client_id": "cli2_harvesttable",
+    "title": "Harvest Table Bistro service visit",
+    "scheduled_for": "2026-01-16",
+    "status": "completed",
+    "assignee": null
+  },
+  {
+    "id": "sj_0064",
+    "account_id": "acct_brightspark",
+    "client_id": "cli2_ridgeline",
+    "title": "Ridgeline Fitness Studio service visit",
+    "scheduled_for": "2026-01-24",
+    "status": "cancelled",
+    "assignee": null
+  },
+  {
+    "id": "sj_0060",
+    "account_id": "acct_brightspark",
+    "client_id": "cli2_harvesttable",
+    "title": "Harvest Table Bistro service visit",
+    "scheduled_for": "2026-02-03",
+    "status": "completed",
+    "assignee": null
+  },
+  {
+    "id": "sj_0070",
+    "account_id": "acct_brightspark",
+    "client_id": "cli2_bluebird",
+    "title": "Bluebird Preschool service visit",
+    "scheduled_for": "2026-02-03",
+    "status": "completed",
+    "assignee": null
+  },
+  {
+    "id": "sj_0067",
+    "account_id": "acct_brightspark",
+    "client_id": "cli2_ridgeline",
+    "title": "Ridgeline Fitness Studio service visit",
+    "scheduled_for": "2026-03-07",
+    "status": "completed",
+    "assignee": null
+  },
+  {
+    "id": "sj_0069",
+    "account_id": "acct_brightspark",
+    "client_id": "cli2_ridgeline",
+    "title": "Ridgeline Fitness Studio service visit",
+    "scheduled_for": "2026-05-13",
+    "status": "completed",
+    "assignee": null
+  },
+  {
+    "id": "sj_0072",
+    "account_id": "acct_brightspark",
+    "client_id": "cli2_bluebird",
+    "title": "Bluebird Preschool service visit",
+    "scheduled_for": "2026-05-29",
+    "status": "completed",
+    "assignee": null
+  },
+  {
+    "id": "sj_0073",
+    "account_id": "acct_brightspark",
+    "client_id": "cli2_bluebird",
+    "title": "Bluebird Preschool service visit",
+    "scheduled_for": "2026-06-02",
+    "status": "completed",
+    "assignee": null
+  },
+  {
+    "id": "sj_0074",
+    "account_id": "acct_brightspark",
+    "client_id": "cli2_cascadestorage",
+    "title": "Cascade Self Storage service visit",
+    "scheduled_for": "2026-06-06",
+    "status": "completed",
+    "assignee": null
+  },
+  {
+    "id": "sj_0065",
+    "account_id": "acct_brightspark",
+    "client_id": "cli2_ridgeline",
+    "title": "Ridgeline Fitness Studio service visit",
+    "scheduled_for": "2026-06-15",
+    "status": "completed",
+    "assignee": null
+  },
+  {
+    "id": "sj_0075",
+    "account_id": "acct_brightspark",
+    "client_id": "cli2_cascadestorage",
+    "title": "Cascade Self Storage service visit",
+    "scheduled_for": "2026-06-17",
+    "status": "completed",
+    "assignee": null
+  },
+  {
+    "id": "sj_0062",
+    "account_id": "acct_brightspark",
+    "client_id": "cli2_unionstation",
+    "title": "Union Station Lofts service visit",
+    "scheduled_for": "2026-07-03",
+    "status": "completed",
+    "assignee": null
+  },
+  {
+    "id": "sj_0071",
+    "account_id": "acct_brightspark",
+    "client_id": "cli2_bluebird",
+    "title": "Bluebird Preschool service visit",
+    "scheduled_for": "2026-08-16",
+    "status": "cancelled",
+    "assignee": null
+  },
+  {
+    "id": "sj_0063",
+    "account_id": "acct_brightspark",
+    "client_id": "cli2_unionstation",
+    "title": "Union Station Lofts service visit",
+    "scheduled_for": "2026-08-26",
+    "status": "scheduled",
+    "assignee": null
+  },
+  {
+    "id": "sj_0066",
+    "account_id": "acct_brightspark",
+    "client_id": "cli2_ridgeline",
+    "title": "Ridgeline Fitness Studio service visit",
+    "scheduled_for": "2026-08-29",
+    "status": "scheduled",
+    "assignee": null
+  },
+  {
+    "id": "sj_0068",
+    "account_id": "acct_brightspark",
+    "client_id": "cli2_ridgeline",
+    "title": "Ridgeline Fitness Studio service visit",
+    "scheduled_for": "2026-09-18",
+    "status": "scheduled",
+    "assignee": null
+  },
+  {
+    "id": "sj_0077",
+    "account_id": "acct_clearview",
+    "client_id": "cli2_palmetto",
+    "title": "Palmetto Insurance Group service visit",
+    "scheduled_for": "2026-02-02",
+    "status": "completed",
+    "assignee": null
+  },
+  {
+    "id": "sj_0079",
+    "account_id": "acct_clearview",
+    "client_id": "cli2_whistlestop",
+    "title": "Whistlestop Diner service visit",
+    "scheduled_for": "2026-03-06",
+    "status": "completed",
+    "assignee": null
+  },
+  {
+    "id": "sj_0082",
+    "account_id": "acct_clearview",
+    "client_id": "cli2_foothills",
+    "title": "Foothills Realty service visit",
+    "scheduled_for": "2026-03-10",
+    "status": "completed",
+    "assignee": null
+  },
+  {
+    "id": "sj_0085",
+    "account_id": "acct_clearview",
+    "client_id": "cli2_foothills",
+    "title": "Foothills Realty service visit",
+    "scheduled_for": "2026-03-10",
+    "status": "completed",
+    "assignee": null
+  },
+  {
+    "id": "sj_0087",
+    "account_id": "acct_clearview",
+    "client_id": "cli2_copperline",
+    "title": "Copperline Brewing Co. service visit",
+    "scheduled_for": "2026-03-21",
+    "status": "completed",
+    "assignee": null
+  },
+  {
+    "id": "sj_0078",
+    "account_id": "acct_clearview",
+    "client_id": "cli2_whistlestop",
+    "title": "Whistlestop Diner service visit",
+    "scheduled_for": "2026-03-29",
+    "status": "completed",
+    "assignee": null
+  },
+  {
+    "id": "sj_0088",
+    "account_id": "acct_clearview",
+    "client_id": "cli2_northgate",
+    "title": "Northgate Medical Plaza service visit",
+    "scheduled_for": "2026-05-26",
+    "status": "completed",
+    "assignee": null
+  },
+  {
+    "id": "sj_0081",
+    "account_id": "acct_clearview",
+    "client_id": "cli2_foothills",
+    "title": "Foothills Realty service visit",
+    "scheduled_for": "2026-06-08",
+    "status": "completed",
+    "assignee": null
+  },
+  {
+    "id": "sj_0076",
+    "account_id": "acct_clearview",
+    "client_id": "cli2_palmetto",
+    "title": "Palmetto Insurance Group service visit",
+    "scheduled_for": "2026-06-29",
+    "status": "completed",
+    "assignee": null
+  },
+  {
+    "id": "sj_0080",
+    "account_id": "acct_clearview",
+    "client_id": "cli2_foothills",
+    "title": "Foothills Realty service visit",
+    "scheduled_for": "2026-07-05",
+    "status": "completed",
+    "assignee": null
+  },
+  {
+    "id": "sj_0083",
+    "account_id": "acct_clearview",
+    "client_id": "cli2_foothills",
+    "title": "Foothills Realty service visit",
+    "scheduled_for": "2026-07-20",
+    "status": "completed",
+    "assignee": null
+  },
+  {
+    "id": "sj_0086",
+    "account_id": "acct_clearview",
+    "client_id": "cli2_copperline",
+    "title": "Copperline Brewing Co. service visit",
+    "scheduled_for": "2026-07-27",
+    "status": "cancelled",
+    "assignee": null
+  },
+  {
+    "id": "sj_0089",
+    "account_id": "acct_clearview",
+    "client_id": "cli2_northgate",
+    "title": "Northgate Medical Plaza service visit",
+    "scheduled_for": "2026-08-06",
+    "status": "completed",
+    "assignee": null
+  },
+  {
+    "id": "sj_0084",
+    "account_id": "acct_clearview",
+    "client_id": "cli2_foothills",
+    "title": "Foothills Realty service visit",
+    "scheduled_for": "2026-08-08",
+    "status": "completed",
+    "assignee": null
+  },
+  {
+    "id": "sj_0107",
+    "account_id": "acct_coastal",
+    "client_id": "cli2_southgate",
+    "title": "Southgate Shopping Center service visit",
+    "scheduled_for": "2026-01-07",
+    "status": "cancelled",
+    "assignee": null
+  },
+  {
+    "id": "sj_0096",
+    "account_id": "acct_coastal",
+    "client_id": "cli2_ironbridge",
+    "title": "Ironbridge Machine Shop service visit",
+    "scheduled_for": "2026-01-10",
+    "status": "completed",
+    "assignee": null
+  },
+  {
+    "id": "sj_0092",
+    "account_id": "acct_coastal",
+    "client_id": "cli2_willowbrook",
+    "title": "Willowbrook Assisted Living service visit",
+    "scheduled_for": "2026-01-24",
+    "status": "completed",
+    "assignee": null
+  },
+  {
+    "id": "sj_0109",
+    "account_id": "acct_coastal",
+    "client_id": "cli2_southgate",
+    "title": "Southgate Shopping Center service visit",
+    "scheduled_for": "2026-01-24",
+    "status": "completed",
+    "assignee": null
+  },
+  {
+    "id": "sj_0091",
+    "account_id": "acct_coastal",
+    "client_id": "cli2_willowbrook",
+    "title": "Willowbrook Assisted Living service visit",
+    "scheduled_for": "2026-02-19",
+    "status": "completed",
+    "assignee": null
+  },
+  {
+    "id": "sj_0090",
+    "account_id": "acct_coastal",
+    "client_id": "cli2_willowbrook",
+    "title": "Willowbrook Assisted Living service visit",
+    "scheduled_for": "2026-03-16",
+    "status": "cancelled",
+    "assignee": null
+  },
+  {
+    "id": "sj_0102",
+    "account_id": "acct_coastal",
+    "client_id": "cli2_mapleandvine",
+    "title": "Maple & Vine Florist service visit",
+    "scheduled_for": "2026-04-17",
+    "status": "completed",
+    "assignee": null
+  },
+  {
+    "id": "sj_0097",
+    "account_id": "acct_coastal",
+    "client_id": "cli2_ironbridge",
+    "title": "Ironbridge Machine Shop service visit",
+    "scheduled_for": "2026-05-09",
+    "status": "completed",
+    "assignee": null
+  },
+  {
+    "id": "sj_0101",
+    "account_id": "acct_coastal",
+    "client_id": "cli2_mapleandvine",
+    "title": "Maple & Vine Florist service visit",
+    "scheduled_for": "2026-05-26",
+    "status": "completed",
+    "assignee": null
+  },
+  {
+    "id": "sj_0105",
+    "account_id": "acct_coastal",
+    "client_id": "cli2_southgate",
+    "title": "Southgate Shopping Center service visit",
+    "scheduled_for": "2026-06-13",
+    "status": "completed",
+    "assignee": null
+  },
+  {
+    "id": "sj_0095",
+    "account_id": "acct_coastal",
+    "client_id": "cli2_ironbridge",
+    "title": "Ironbridge Machine Shop service visit",
+    "scheduled_for": "2026-06-16",
+    "status": "completed",
+    "assignee": null
+  },
+  {
+    "id": "sj_0100",
+    "account_id": "acct_coastal",
+    "client_id": "cli2_sundial",
+    "title": "Sundial Yoga Studio service visit",
+    "scheduled_for": "2026-07-08",
+    "status": "cancelled",
+    "assignee": null
+  },
+  {
+    "id": "sj_0099",
+    "account_id": "acct_coastal",
+    "client_id": "cli2_sundial",
+    "title": "Sundial Yoga Studio service visit",
+    "scheduled_for": "2026-07-28",
+    "status": "completed",
+    "assignee": null
+  },
+  {
+    "id": "sj_0106",
+    "account_id": "acct_coastal",
+    "client_id": "cli2_southgate",
+    "title": "Southgate Shopping Center service visit",
+    "scheduled_for": "2026-08-03",
+    "status": "completed",
+    "assignee": null
+  },
+  {
+    "id": "sj_0103",
+    "account_id": "acct_coastal",
+    "client_id": "cli2_mapleandvine",
+    "title": "Maple & Vine Florist service visit",
+    "scheduled_for": "2026-08-28",
+    "status": "scheduled",
+    "assignee": null
+  },
+  {
+    "id": "sj_0104",
+    "account_id": "acct_coastal",
+    "client_id": "cli2_southgate",
+    "title": "Southgate Shopping Center service visit",
+    "scheduled_for": "2026-09-04",
+    "status": "cancelled",
+    "assignee": null
+  },
+  {
+    "id": "sj_0098",
+    "account_id": "acct_coastal",
+    "client_id": "cli2_sundial",
+    "title": "Sundial Yoga Studio service visit",
+    "scheduled_for": "2026-09-22",
+    "status": "scheduled",
+    "assignee": null
+  },
+  {
+    "id": "sj_0093",
+    "account_id": "acct_coastal",
+    "client_id": "cli2_willowbrook",
+    "title": "Willowbrook Assisted Living service visit",
+    "scheduled_for": "2026-09-25",
+    "status": "scheduled",
+    "assignee": null
+  },
+  {
+    "id": "sj_0094",
+    "account_id": "acct_coastal",
+    "client_id": "cli2_ironbridge",
+    "title": "Ironbridge Machine Shop service visit",
+    "scheduled_for": "2026-09-28",
+    "status": "scheduled",
+    "assignee": null
+  },
+  {
+    "id": "sj_0108",
+    "account_id": "acct_coastal",
+    "client_id": "cli2_southgate",
+    "title": "Southgate Shopping Center service visit",
+    "scheduled_for": "2026-09-29",
+    "status": "scheduled",
+    "assignee": null
+  },
+  {
+    "id": "sj_0131",
+    "account_id": "acct_greenscape",
+    "client_id": "cli2_thistlewood",
+    "title": "Thistlewood Manor service visit",
+    "scheduled_for": "2026-01-06",
+    "status": "completed",
+    "assignee": null
+  },
+  {
+    "id": "sj_0136",
+    "account_id": "acct_greenscape",
+    "client_id": "cli2_copperkettle",
+    "title": "Copper Kettle Coffeehouse service visit",
+    "scheduled_for": "2026-02-11",
+    "status": "completed",
+    "assignee": null
+  },
+  {
+    "id": "sj_0134",
+    "account_id": "acct_greenscape",
+    "client_id": "cli2_copperkettle",
+    "title": "Copper Kettle Coffeehouse service visit",
+    "scheduled_for": "2026-03-10",
+    "status": "completed",
+    "assignee": null
+  },
+  {
+    "id": "sj_0129",
+    "account_id": "acct_greenscape",
+    "client_id": "cli2_landmarkcu",
+    "title": "Landmark Credit Union service visit",
+    "scheduled_for": "2026-03-20",
+    "status": "completed",
+    "assignee": null
+  },
+  {
+    "id": "sj_0133",
+    "account_id": "acct_greenscape",
+    "client_id": "cli2_beaconridge",
+    "title": "Beacon Ridge Church service visit",
+    "scheduled_for": "2026-03-24",
+    "status": "completed",
+    "assignee": null
+  },
+  {
+    "id": "sj_0128",
+    "account_id": "acct_greenscape",
+    "client_id": "cli2_landmarkcu",
+    "title": "Landmark Credit Union service visit",
+    "scheduled_for": "2026-04-06",
+    "status": "completed",
+    "assignee": null
+  },
+  {
+    "id": "sj_0137",
+    "account_id": "acct_greenscape",
+    "client_id": "cli2_vantagepoint",
+    "title": "Vantage Point Offices service visit",
+    "scheduled_for": "2026-06-08",
+    "status": "completed",
+    "assignee": null
+  },
+  {
+    "id": "sj_0135",
+    "account_id": "acct_greenscape",
+    "client_id": "cli2_copperkettle",
+    "title": "Copper Kettle Coffeehouse service visit",
+    "scheduled_for": "2026-06-21",
+    "status": "completed",
+    "assignee": null
+  },
+  {
+    "id": "sj_0138",
+    "account_id": "acct_greenscape",
+    "client_id": "cli2_vantagepoint",
+    "title": "Vantage Point Offices service visit",
+    "scheduled_for": "2026-07-02",
+    "status": "completed",
+    "assignee": null
+  },
+  {
+    "id": "sj_0141",
+    "account_id": "acct_greenscape",
+    "client_id": "cli2_vantagepoint",
+    "title": "Vantage Point Offices service visit",
+    "scheduled_for": "2026-07-07",
+    "status": "completed",
+    "assignee": null
+  },
+  {
+    "id": "sj_0132",
+    "account_id": "acct_greenscape",
+    "client_id": "cli2_beaconridge",
+    "title": "Beacon Ridge Church service visit",
+    "scheduled_for": "2026-07-12",
+    "status": "completed",
+    "assignee": null
+  },
+  {
+    "id": "sj_0142",
+    "account_id": "acct_greenscape",
+    "client_id": "cli2_vantagepoint",
+    "title": "Vantage Point Offices service visit",
+    "scheduled_for": "2026-08-26",
+    "status": "cancelled",
+    "assignee": null
+  },
+  {
+    "id": "sj_0139",
+    "account_id": "acct_greenscape",
+    "client_id": "cli2_vantagepoint",
+    "title": "Vantage Point Offices service visit",
+    "scheduled_for": "2026-09-17",
+    "status": "scheduled",
+    "assignee": null
+  },
+  {
+    "id": "sj_0130",
+    "account_id": "acct_greenscape",
+    "client_id": "cli2_thistlewood",
+    "title": "Thistlewood Manor service visit",
+    "scheduled_for": "2026-09-25",
+    "status": "scheduled",
+    "assignee": null
+  },
+  {
+    "id": "sj_0140",
+    "account_id": "acct_greenscape",
+    "client_id": "cli2_vantagepoint",
+    "title": "Vantage Point Offices service visit",
+    "scheduled_for": "2026-09-27",
+    "status": "scheduled",
+    "assignee": null
+  },
+  {
+    "id": "job_201",
+    "account_id": "acct_horizon",
+    "client_id": "client_arcade",
+    "title": "Panel inspection",
+    "scheduled_for": "2026-08-10",
+    "status": "completed",
+    "assignee": "Riley Park"
+  },
+  {
+    "id": "job_202",
+    "account_id": "acct_horizon",
+    "client_id": "client_beacon",
+    "title": "Lighting repair",
+    "scheduled_for": "2026-08-12",
+    "status": "completed",
+    "assignee": "Riley Park"
+  },
+  {
+    "id": "job_203",
+    "account_id": "acct_horizon",
+    "client_id": "client_grove",
+    "title": "Outlet installation",
+    "scheduled_for": "2026-08-18",
+    "status": "completed",
+    "assignee": "Riley Park"
+  },
+  {
+    "id": "job_204",
+    "account_id": "acct_horizon",
+    "client_id": "client_arcade",
+    "title": "Emergency lighting test",
+    "scheduled_for": "2026-08-21",
+    "status": "scheduled",
+    "assignee": "Riley Park"
+  },
+  {
+    "id": "sj_0124",
+    "account_id": "acct_ironclad",
+    "client_id": "cli2_crescentmoon",
+    "title": "Crescent Moon Bakery service visit",
+    "scheduled_for": "2026-01-09",
+    "status": "completed",
+    "assignee": null
+  },
+  {
+    "id": "sj_0112",
+    "account_id": "acct_ironclad",
+    "client_id": "cli2_trailhead",
+    "title": "Trailhead Outfitters service visit",
+    "scheduled_for": "2026-01-14",
+    "status": "completed",
+    "assignee": null
+  },
+  {
+    "id": "sj_0117",
+    "account_id": "acct_ironclad",
+    "client_id": "cli2_ambergrove",
+    "title": "Amber Grove Elementary service visit",
+    "scheduled_for": "2026-02-27",
+    "status": "completed",
+    "assignee": null
+  },
+  {
+    "id": "sj_0116",
+    "account_id": "acct_ironclad",
+    "client_id": "cli2_ambergrove",
+    "title": "Amber Grove Elementary service visit",
+    "scheduled_for": "2026-03-26",
+    "status": "cancelled",
+    "assignee": null
+  },
+  {
+    "id": "sj_0127",
+    "account_id": "acct_ironclad",
+    "client_id": "cli2_crescentmoon",
+    "title": "Crescent Moon Bakery service visit",
+    "scheduled_for": "2026-04-02",
+    "status": "completed",
+    "assignee": null
+  },
+  {
+    "id": "sj_0123",
+    "account_id": "acct_ironclad",
+    "client_id": "cli2_crescentmoon",
+    "title": "Crescent Moon Bakery service visit",
+    "scheduled_for": "2026-04-11",
+    "status": "cancelled",
+    "assignee": null
+  },
+  {
+    "id": "sj_0120",
+    "account_id": "acct_ironclad",
+    "client_id": "cli2_riversidemarina",
+    "title": "Riverside Marina service visit",
+    "scheduled_for": "2026-04-12",
+    "status": "completed",
+    "assignee": null
+  },
+  {
+    "id": "sj_0111",
+    "account_id": "acct_ironclad",
+    "client_id": "cli2_cobblestone",
+    "title": "Cobblestone Row Condos service visit",
+    "scheduled_for": "2026-05-20",
+    "status": "completed",
+    "assignee": null
+  },
+  {
+    "id": "sj_0122",
+    "account_id": "acct_ironclad",
+    "client_id": "cli2_riversidemarina",
+    "title": "Riverside Marina service visit",
+    "scheduled_for": "2026-05-31",
+    "status": "completed",
+    "assignee": null
+  },
+  {
+    "id": "sj_0121",
+    "account_id": "acct_ironclad",
+    "client_id": "cli2_riversidemarina",
+    "title": "Riverside Marina service visit",
+    "scheduled_for": "2026-06-03",
+    "status": "completed",
+    "assignee": null
+  },
+  {
+    "id": "sj_0110",
+    "account_id": "acct_ironclad",
+    "client_id": "cli2_cobblestone",
+    "title": "Cobblestone Row Condos service visit",
+    "scheduled_for": "2026-06-07",
+    "status": "completed",
+    "assignee": null
+  },
+  {
+    "id": "sj_0113",
+    "account_id": "acct_ironclad",
+    "client_id": "cli2_trailhead",
+    "title": "Trailhead Outfitters service visit",
+    "scheduled_for": "2026-06-11",
+    "status": "completed",
+    "assignee": null
+  },
+  {
+    "id": "sj_0119",
+    "account_id": "acct_ironclad",
+    "client_id": "cli2_riversidemarina",
+    "title": "Riverside Marina service visit",
+    "scheduled_for": "2026-06-12",
+    "status": "completed",
+    "assignee": null
+  },
+  {
+    "id": "sj_0126",
+    "account_id": "acct_ironclad",
+    "client_id": "cli2_crescentmoon",
+    "title": "Crescent Moon Bakery service visit",
+    "scheduled_for": "2026-07-06",
+    "status": "completed",
+    "assignee": null
+  },
+  {
+    "id": "sj_0114",
+    "account_id": "acct_ironclad",
+    "client_id": "cli2_ambergrove",
+    "title": "Amber Grove Elementary service visit",
+    "scheduled_for": "2026-07-18",
+    "status": "completed",
+    "assignee": null
+  },
+  {
+    "id": "sj_0118",
+    "account_id": "acct_ironclad",
+    "client_id": "cli2_ambergrove",
+    "title": "Amber Grove Elementary service visit",
+    "scheduled_for": "2026-07-23",
+    "status": "completed",
+    "assignee": null
+  },
+  {
+    "id": "sj_0125",
+    "account_id": "acct_ironclad",
+    "client_id": "cli2_crescentmoon",
+    "title": "Crescent Moon Bakery service visit",
+    "scheduled_for": "2026-09-07",
+    "status": "cancelled",
+    "assignee": null
+  },
+  {
+    "id": "sj_0115",
+    "account_id": "acct_ironclad",
+    "client_id": "cli2_ambergrove",
+    "title": "Amber Grove Elementary service visit",
+    "scheduled_for": "2026-09-26",
+    "status": "scheduled",
+    "assignee": null
+  },
+  {
     "id": "job_071",
     "account_id": "acct_northstar",
     "client_id": "client_evergreen",
@@ -450,15 +1233,6 @@
     "assignee": "Jordan Lee"
   },
   {
-    "id": "job_201",
-    "account_id": "acct_horizon",
-    "client_id": "client_arcade",
-    "title": "Panel inspection",
-    "scheduled_for": "2026-08-10",
-    "status": "completed",
-    "assignee": "Riley Park"
-  },
-  {
     "id": "job_121",
     "account_id": "acct_northstar",
     "client_id": "client_harbor",
@@ -466,15 +1240,6 @@
     "scheduled_for": "2026-08-11",
     "status": "completed",
     "assignee": "Maya Chen"
-  },
-  {
-    "id": "job_301",
-    "account_id": "acct_riverstone",
-    "client_id": "client_foundry",
-    "title": "Boiler inspection",
-    "scheduled_for": "2026-08-11",
-    "status": "completed",
-    "assignee": "Casey Morgan"
   },
   {
     "id": "job_122",
@@ -493,15 +1258,6 @@
     "scheduled_for": "2026-08-12",
     "status": "completed",
     "assignee": "Maya Chen"
-  },
-  {
-    "id": "job_202",
-    "account_id": "acct_horizon",
-    "client_id": "client_beacon",
-    "title": "Lighting repair",
-    "scheduled_for": "2026-08-12",
-    "status": "completed",
-    "assignee": "Riley Park"
   },
   {
     "id": "job_124",
@@ -529,15 +1285,6 @@
     "scheduled_for": "2026-08-14",
     "status": "completed",
     "assignee": "Jordan Lee"
-  },
-  {
-    "id": "job_302",
-    "account_id": "acct_riverstone",
-    "client_id": "client_maple",
-    "title": "Pump repair",
-    "scheduled_for": "2026-08-14",
-    "status": "completed",
-    "assignee": "Casey Morgan"
   },
   {
     "id": "job_127",
@@ -603,15 +1350,6 @@
     "assignee": "Maya Chen"
   },
   {
-    "id": "job_203",
-    "account_id": "acct_horizon",
-    "client_id": "client_grove",
-    "title": "Outlet installation",
-    "scheduled_for": "2026-08-18",
-    "status": "completed",
-    "assignee": "Riley Park"
-  },
-  {
     "id": "job_134",
     "account_id": "acct_northstar",
     "client_id": "client_evergreen",
@@ -628,15 +1366,6 @@
     "scheduled_for": "2026-08-19",
     "status": "scheduled",
     "assignee": "Maya Chen"
-  },
-  {
-    "id": "job_303",
-    "account_id": "acct_riverstone",
-    "client_id": "client_slate",
-    "title": "Cooling system check",
-    "scheduled_for": "2026-08-19",
-    "status": "in_progress",
-    "assignee": "Casey Morgan"
   },
   {
     "id": "job_136",
@@ -684,15 +1413,6 @@
     "assignee": "Jordan Lee"
   },
   {
-    "id": "job_204",
-    "account_id": "acct_horizon",
-    "client_id": "client_arcade",
-    "title": "Emergency lighting test",
-    "scheduled_for": "2026-08-21",
-    "status": "scheduled",
-    "assignee": "Riley Park"
-  },
-  {
     "id": "job_141",
     "account_id": "acct_northstar",
     "client_id": "client_northline",
@@ -711,6 +1431,42 @@
     "assignee": "Jordan Lee"
   },
   {
+    "id": "job_143",
+    "account_id": "acct_northstar",
+    "client_id": "client_summit",
+    "title": "Storefront comfort check",
+    "scheduled_for": "2026-08-23",
+    "status": "scheduled",
+    "assignee": "Maya Chen"
+  },
+  {
+    "id": "job_301",
+    "account_id": "acct_riverstone",
+    "client_id": "client_foundry",
+    "title": "Boiler inspection",
+    "scheduled_for": "2026-08-11",
+    "status": "completed",
+    "assignee": "Casey Morgan"
+  },
+  {
+    "id": "job_302",
+    "account_id": "acct_riverstone",
+    "client_id": "client_maple",
+    "title": "Pump repair",
+    "scheduled_for": "2026-08-14",
+    "status": "completed",
+    "assignee": "Casey Morgan"
+  },
+  {
+    "id": "job_303",
+    "account_id": "acct_riverstone",
+    "client_id": "client_slate",
+    "title": "Cooling system check",
+    "scheduled_for": "2026-08-19",
+    "status": "in_progress",
+    "assignee": "Casey Morgan"
+  },
+  {
     "id": "job_304",
     "account_id": "acct_riverstone",
     "client_id": "client_foundry",
@@ -720,12 +1476,354 @@
     "assignee": "Casey Morgan"
   },
   {
-    "id": "job_143",
-    "account_id": "acct_northstar",
-    "client_id": "client_summit",
-    "title": "Storefront comfort check",
-    "scheduled_for": "2026-08-23",
+    "id": "sj_0143",
+    "account_id": "acct_summitpaint",
+    "client_id": "cli2_millrace",
+    "title": "Millrace Antiques service visit",
+    "scheduled_for": "2026-02-16",
+    "status": "completed",
+    "assignee": null
+  },
+  {
+    "id": "sj_0144",
+    "account_id": "acct_summitpaint",
+    "client_id": "cli2_millrace",
+    "title": "Millrace Antiques service visit",
+    "scheduled_for": "2026-02-18",
+    "status": "completed",
+    "assignee": null
+  },
+  {
+    "id": "sj_0156",
+    "account_id": "acct_summitpaint",
+    "client_id": "cli2_wraymond",
+    "title": "Wraymond Textiles service visit",
+    "scheduled_for": "2026-03-06",
+    "status": "completed",
+    "assignee": null
+  },
+  {
+    "id": "sj_0155",
+    "account_id": "acct_summitpaint",
+    "client_id": "cli2_hillcrestvet",
+    "title": "Hillcrest Animal Hospital service visit",
+    "scheduled_for": "2026-03-11",
+    "status": "completed",
+    "assignee": null
+  },
+  {
+    "id": "sj_0159",
+    "account_id": "acct_summitpaint",
+    "client_id": "cli2_wraymond",
+    "title": "Wraymond Textiles service visit",
+    "scheduled_for": "2026-03-19",
+    "status": "completed",
+    "assignee": null
+  },
+  {
+    "id": "sj_0150",
+    "account_id": "acct_summitpaint",
+    "client_id": "cli2_stonebridge",
+    "title": "Stonebridge Country Club service visit",
+    "scheduled_for": "2026-04-05",
+    "status": "completed",
+    "assignee": null
+  },
+  {
+    "id": "sj_0146",
+    "account_id": "acct_summitpaint",
+    "client_id": "cli2_millrace",
+    "title": "Millrace Antiques service visit",
+    "scheduled_for": "2026-04-30",
+    "status": "completed",
+    "assignee": null
+  },
+  {
+    "id": "sj_0158",
+    "account_id": "acct_summitpaint",
+    "client_id": "cli2_wraymond",
+    "title": "Wraymond Textiles service visit",
+    "scheduled_for": "2026-05-22",
+    "status": "completed",
+    "assignee": null
+  },
+  {
+    "id": "sj_0160",
+    "account_id": "acct_summitpaint",
+    "client_id": "cli2_cypressgrove",
+    "title": "Cypress Grove Apartments service visit",
+    "scheduled_for": "2026-05-22",
+    "status": "completed",
+    "assignee": null
+  },
+  {
+    "id": "sj_0145",
+    "account_id": "acct_summitpaint",
+    "client_id": "cli2_millrace",
+    "title": "Millrace Antiques service visit",
+    "scheduled_for": "2026-06-13",
+    "status": "completed",
+    "assignee": null
+  },
+  {
+    "id": "sj_0148",
+    "account_id": "acct_summitpaint",
+    "client_id": "cli2_stonebridge",
+    "title": "Stonebridge Country Club service visit",
+    "scheduled_for": "2026-06-19",
+    "status": "cancelled",
+    "assignee": null
+  },
+  {
+    "id": "sj_0152",
+    "account_id": "acct_summitpaint",
+    "client_id": "cli2_hillcrestvet",
+    "title": "Hillcrest Animal Hospital service visit",
+    "scheduled_for": "2026-07-03",
+    "status": "completed",
+    "assignee": null
+  },
+  {
+    "id": "sj_0153",
+    "account_id": "acct_summitpaint",
+    "client_id": "cli2_hillcrestvet",
+    "title": "Hillcrest Animal Hospital service visit",
+    "scheduled_for": "2026-07-19",
+    "status": "completed",
+    "assignee": null
+  },
+  {
+    "id": "sj_0154",
+    "account_id": "acct_summitpaint",
+    "client_id": "cli2_hillcrestvet",
+    "title": "Hillcrest Animal Hospital service visit",
+    "scheduled_for": "2026-08-19",
     "status": "scheduled",
-    "assignee": "Maya Chen"
+    "assignee": null
+  },
+  {
+    "id": "sj_0157",
+    "account_id": "acct_summitpaint",
+    "client_id": "cli2_wraymond",
+    "title": "Wraymond Textiles service visit",
+    "scheduled_for": "2026-08-20",
+    "status": "scheduled",
+    "assignee": null
+  },
+  {
+    "id": "sj_0161",
+    "account_id": "acct_summitpaint",
+    "client_id": "cli2_cypressgrove",
+    "title": "Cypress Grove Apartments service visit",
+    "scheduled_for": "2026-08-27",
+    "status": "scheduled",
+    "assignee": null
+  },
+  {
+    "id": "sj_0151",
+    "account_id": "acct_summitpaint",
+    "client_id": "cli2_stonebridge",
+    "title": "Stonebridge Country Club service visit",
+    "scheduled_for": "2026-08-30",
+    "status": "scheduled",
+    "assignee": null
+  },
+  {
+    "id": "sj_0149",
+    "account_id": "acct_summitpaint",
+    "client_id": "cli2_stonebridge",
+    "title": "Stonebridge Country Club service visit",
+    "scheduled_for": "2026-09-14",
+    "status": "scheduled",
+    "assignee": null
+  },
+  {
+    "id": "sj_0147",
+    "account_id": "acct_summitpaint",
+    "client_id": "cli2_stonebridge",
+    "title": "Stonebridge Country Club service visit",
+    "scheduled_for": "2026-09-21",
+    "status": "scheduled",
+    "assignee": null
+  },
+  {
+    "id": "sj_0169",
+    "account_id": "acct_truenorth",
+    "client_id": "cli2_foundersrow",
+    "title": "Founders Row Market service visit",
+    "scheduled_for": "2026-01-10",
+    "status": "completed",
+    "assignee": null
+  },
+  {
+    "id": "sj_0162",
+    "account_id": "acct_truenorth",
+    "client_id": "cli2_lanternhill",
+    "title": "Lantern Hill Retirement Village service visit",
+    "scheduled_for": "2026-01-16",
+    "status": "completed",
+    "assignee": null
+  },
+  {
+    "id": "sj_0174",
+    "account_id": "acct_truenorth",
+    "client_id": "cli2_emberash",
+    "title": "Ember & Ash Restaurant service visit",
+    "scheduled_for": "2026-01-24",
+    "status": "completed",
+    "assignee": null
+  },
+  {
+    "id": "sj_0180",
+    "account_id": "acct_truenorth",
+    "client_id": "cli2_timberline",
+    "title": "Timberline Contractors service visit",
+    "scheduled_for": "2026-02-22",
+    "status": "completed",
+    "assignee": null
+  },
+  {
+    "id": "sj_0175",
+    "account_id": "acct_truenorth",
+    "client_id": "cli2_emberash",
+    "title": "Ember & Ash Restaurant service visit",
+    "scheduled_for": "2026-03-07",
+    "status": "completed",
+    "assignee": null
+  },
+  {
+    "id": "sj_0179",
+    "account_id": "acct_truenorth",
+    "client_id": "cli2_silverleaf",
+    "title": "Silverleaf Salon & Spa service visit",
+    "scheduled_for": "2026-04-11",
+    "status": "completed",
+    "assignee": null
+  },
+  {
+    "id": "sj_0181",
+    "account_id": "acct_truenorth",
+    "client_id": "cli2_timberline",
+    "title": "Timberline Contractors service visit",
+    "scheduled_for": "2026-04-27",
+    "status": "cancelled",
+    "assignee": null
+  },
+  {
+    "id": "sj_0170",
+    "account_id": "acct_truenorth",
+    "client_id": "cli2_foundersrow",
+    "title": "Founders Row Market service visit",
+    "scheduled_for": "2026-05-14",
+    "status": "completed",
+    "assignee": null
+  },
+  {
+    "id": "sj_0176",
+    "account_id": "acct_truenorth",
+    "client_id": "cli2_emberash",
+    "title": "Ember & Ash Restaurant service visit",
+    "scheduled_for": "2026-05-22",
+    "status": "completed",
+    "assignee": null
+  },
+  {
+    "id": "sj_0163",
+    "account_id": "acct_truenorth",
+    "client_id": "cli2_lanternhill",
+    "title": "Lantern Hill Retirement Village service visit",
+    "scheduled_for": "2026-06-22",
+    "status": "completed",
+    "assignee": null
+  },
+  {
+    "id": "sj_0167",
+    "account_id": "acct_truenorth",
+    "client_id": "cli2_foundersrow",
+    "title": "Founders Row Market service visit",
+    "scheduled_for": "2026-06-23",
+    "status": "completed",
+    "assignee": null
+  },
+  {
+    "id": "sj_0164",
+    "account_id": "acct_truenorth",
+    "client_id": "cli2_lanternhill",
+    "title": "Lantern Hill Retirement Village service visit",
+    "scheduled_for": "2026-06-26",
+    "status": "completed",
+    "assignee": null
+  },
+  {
+    "id": "sj_0178",
+    "account_id": "acct_truenorth",
+    "client_id": "cli2_silverleaf",
+    "title": "Silverleaf Salon & Spa service visit",
+    "scheduled_for": "2026-07-13",
+    "status": "completed",
+    "assignee": null
+  },
+  {
+    "id": "sj_0168",
+    "account_id": "acct_truenorth",
+    "client_id": "cli2_foundersrow",
+    "title": "Founders Row Market service visit",
+    "scheduled_for": "2026-07-28",
+    "status": "completed",
+    "assignee": null
+  },
+  {
+    "id": "sj_0171",
+    "account_id": "acct_truenorth",
+    "client_id": "cli2_emberash",
+    "title": "Ember & Ash Restaurant service visit",
+    "scheduled_for": "2026-08-05",
+    "status": "completed",
+    "assignee": null
+  },
+  {
+    "id": "sj_0177",
+    "account_id": "acct_truenorth",
+    "client_id": "cli2_silverleaf",
+    "title": "Silverleaf Salon & Spa service visit",
+    "scheduled_for": "2026-08-27",
+    "status": "scheduled",
+    "assignee": null
+  },
+  {
+    "id": "sj_0172",
+    "account_id": "acct_truenorth",
+    "client_id": "cli2_emberash",
+    "title": "Ember & Ash Restaurant service visit",
+    "scheduled_for": "2026-09-05",
+    "status": "scheduled",
+    "assignee": null
+  },
+  {
+    "id": "sj_0173",
+    "account_id": "acct_truenorth",
+    "client_id": "cli2_emberash",
+    "title": "Ember & Ash Restaurant service visit",
+    "scheduled_for": "2026-09-09",
+    "status": "scheduled",
+    "assignee": null
+  },
+  {
+    "id": "sj_0165",
+    "account_id": "acct_truenorth",
+    "client_id": "cli2_lanternhill",
+    "title": "Lantern Hill Retirement Village service visit",
+    "scheduled_for": "2026-09-15",
+    "status": "cancelled",
+    "assignee": null
+  },
+  {
+    "id": "sj_0166",
+    "account_id": "acct_truenorth",
+    "client_id": "cli2_lanternhill",
+    "title": "Lantern Hill Retirement Village service visit",
+    "scheduled_for": "2026-09-26",
+    "status": "scheduled",
+    "assignee": null
   }
 ]

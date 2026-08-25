@@ -3,6 +3,7 @@ import clients from '../shared-data/clients.json';
 import jobs from '../shared-data/jobs.json';
 import { APP_URLS } from '../shared-data/appConfig.js';
 import { getOperationsData, getOperationsSession, isSupabaseConfigured } from '../shared-data/supabase.js';
+import { formatReportingDate, reportingDateFromAccount, withReportingDate } from '../shared-data/reportingDate.js';
 
 let accountData = accounts;
 let clientData = clients;
@@ -98,7 +99,13 @@ function renderDetail() {
   const analyticsUrl = new URL(APP_URLS.analytics);
   if (!isSupabaseConfigured) analyticsUrl.searchParams.set('demo_user', 'ops');
   analyticsUrl.searchParams.set('account_id', account.id);
-  els.detailContent.innerHTML = `<div class="detail-header"><p class="eyebrow">Account detail</p><h2>${escapeHtml(account.name)}</h2><p class="muted">${escapeHtml(account.plan)} plan · ${summary.status}</p><p><a class="account-analytics-link" href="${analyticsUrl.toString()}">View read-only Analytics</a></p></div><div class="grid detail-metrics"><div class="card"><div class="muted">Clients</div><div class="metric">${summary.clients.length}</div></div><div class="card"><div class="muted">Jobs</div><div class="metric">${summary.jobs.length}</div></div><div class="card"><div class="muted">Completed</div><div class="metric">${summary.completed}</div></div><div class="card"><div class="muted">Open work</div><div class="metric">${summary.open}</div></div></div><div class="section"><div class="section-header"><h2>Recent jobs</h2></div><div class="jobs">${recentJobs.length ? recentJobs.map((job) => jobHtml(job, false)).join('') : '<p class="empty">No jobs are available for this account.</p>'}</div></div>`;
+  const reporting = isSupabaseConfigured
+    ? reportingDateFromAccount(account, window.location.search)
+    : { isoDate: '2026-08-19', isDemoDate: true, storedDate: '2026-08-19' };
+  const reportingNotice = reporting.storedDate
+    ? `<p class="muted">${reporting.isDemoDate ? 'Demo data' : 'Live-date preview'} — reporting as of ${escapeHtml(formatReportingDate(reporting.isoDate))}.</p>`
+    : '';
+  els.detailContent.innerHTML = `<div class="detail-header"><p class="eyebrow">Account detail</p><h2>${escapeHtml(account.name)}</h2><p class="muted">${escapeHtml(account.plan)} plan · ${summary.status}</p>${reportingNotice}<p><a class="account-analytics-link" href="${withReportingDate(analyticsUrl.toString(), reporting)}">View read-only Analytics</a></p></div><div class="grid detail-metrics"><div class="card"><div class="muted">Clients</div><div class="metric">${summary.clients.length}</div></div><div class="card"><div class="muted">Jobs</div><div class="metric">${summary.jobs.length}</div></div><div class="card"><div class="muted">Completed</div><div class="metric">${summary.completed}</div></div><div class="card"><div class="muted">Open work</div><div class="metric">${summary.open}</div></div></div><div class="section"><div class="section-header"><h2>Recent jobs</h2></div><div class="jobs">${recentJobs.length ? recentJobs.map((job) => jobHtml(job, false)).join('') : '<p class="empty">No jobs are available for this account.</p>'}</div></div>`;
 }
 
 function showView(view) {

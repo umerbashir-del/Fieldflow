@@ -1,5 +1,6 @@
 import { authenticateMockUser, isDemoModeAvailable, mockUserFromSearch } from '../shared-data/mockSession.js';
 import { getOperationsSession, isSupabaseConfigured, sendPasswordReset, signIn, signOut } from '../shared-data/supabase.js';
+import { friendlyAuthError, passwordResetConfirmation } from '../shared-data/authMessages.js';
 
 const gate = document.getElementById('opsLoginGate');
 const dashboard = document.getElementById('opsDashboard');
@@ -12,6 +13,8 @@ const resetMessage = document.getElementById('opsResetMessage');
 
 if (isSupabaseConfigured) {
   document.getElementById('operationsLoginEyebrow').textContent = 'FieldFlow';
+  document.getElementById('operationsLoginDescription').textContent = 'Use your registered FieldFlow staff email and password. Contractor accounts use Scheduling instead.';
+  document.getElementById('operationsResetDescription').textContent = 'Enter your registered staff email and we will send a password-reset link.';
   document.getElementById('operationsDemoAccount').hidden = true;
 } else if (isDemoModeAvailable) {
   const demoAccount = document.getElementById('operationsDemoAccount');
@@ -62,7 +65,7 @@ if (isSupabaseConfigured ? Boolean(liveContext?.staff) : signedInOpsUser()) {
         window.location.assign(url.toString());
       }
     } catch (signInError) {
-      error.textContent = signInError.message;
+      error.textContent = friendlyAuthError(signInError);
     }
   });
   document.querySelectorAll('[data-ops-auth-mode]').forEach((button) => button.addEventListener('click', () => showForm(button.dataset.opsAuthMode)));
@@ -72,12 +75,10 @@ if (isSupabaseConfigured ? Boolean(liveContext?.staff) : signedInOpsUser()) {
     try {
       if (isSupabaseConfigured) {
         await sendPasswordReset(resetEmail, window.location.origin);
-        resetMessage.textContent = `A password-reset email was sent to ${resetEmail}.`;
-      } else {
-        resetMessage.textContent = `Demo only: a reset email would be sent to ${resetEmail}.`;
       }
+      resetMessage.textContent = passwordResetConfirmation(resetEmail, isSupabaseConfigured);
     } catch (resetError) {
-      resetMessage.textContent = resetError.message;
+      resetMessage.textContent = friendlyAuthError(resetError);
     }
   });
 }

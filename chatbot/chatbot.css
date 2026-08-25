@@ -71,6 +71,7 @@ body { margin: 0; }
 .ff-title { margin: 2px 0 0; font-size: 1.18rem; font-weight: 700; line-height: 1.1; }
 .ff-subtitle { margin: 3px 0 0; font-size: .78rem; color: var(--ff-color-muted); }
 .ff-demo-notice { margin: 5px 0 0; font-size: .7rem; color: var(--ff-color-muted); }
+.ff-date-mode { background: transparent; border: 0; color: var(--ff-color-brand-600); cursor: pointer; font: inherit; font-weight: 700; padding: 0; text-decoration: underline; }
 .ff-sign-out { border: 1px solid var(--ff-color-border); background: var(--ff-color-surface); border-radius: 9px; color: var(--ff-color-brand-700); cursor: pointer; font: inherit; font-size: .76rem; font-weight: 700; padding: 8px 10px; }
 .ff-app-links { margin: 6px 0 0; font-size: .75rem; font-weight: 700; color: var(--ff-color-muted); }
 .ff-app-links a { color: var(--ff-color-brand-600); text-decoration: none; }
