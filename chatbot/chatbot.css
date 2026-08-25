@@ -74,6 +74,20 @@ body {
   .ff-card { height: min(640px, calc(100vh - 24px)); }
 }
 
+/* --- Embedded mode: rendered inside embed.js's iframe on another app's
+   page, which already has its own launcher button, so this page's own
+   launcher is hidden and the panel fills the iframe instead of floating. */
+body.ff-embed { background: transparent; }
+body.ff-embed .ff-launcher { display: none; }
+body.ff-embed .ff-widget {
+  position: static;
+  width: 100%;
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+}
+body.ff-embed .ff-card { height: 100vh; border-radius: 0; }
+
 /* --- Header --- */
 .ff-header {
   display: flex;

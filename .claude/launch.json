@@ -7,6 +7,13 @@
       "runtimeArgs": ["run", "dev", "--prefix", "chatbot"],
       "port": 5175,
       "autoPort": true
+    },
+    {
+      "name": "scheduling",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev", "--prefix", "scheduling"],
+      "port": 5174,
+      "autoPort": true
     }
   ]
 }

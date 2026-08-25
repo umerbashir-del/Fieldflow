@@ -150,6 +150,13 @@ accountSelect.addEventListener('change', () => {
   renderMessages();
 });
 
+// When loaded inside another app's page via embed.js, this page runs
+// inside an iframe with ?embed=1: the host page supplies its own launcher
+// button, so this page skips its own and stays permanently "open," and its
+// close button asks the host to hide the iframe instead of toggling itself.
+const isEmbedded = new URLSearchParams(window.location.search).get('embed') === '1';
+if (isEmbedded) document.body.classList.add('ff-embed');
+
 function openWidget() {
   widget.classList.add('is-open');
   launcher.classList.add('is-hidden');
@@ -157,12 +164,18 @@ function openWidget() {
 }
 
 function closeWidget() {
+  if (isEmbedded) {
+    window.parent.postMessage({ type: 'fieldflow-chat-close' }, '*');
+    return;
+  }
   widget.classList.remove('is-open');
   launcher.classList.remove('is-hidden');
 }
 
 launcher.addEventListener('click', openWidget);
 closeBtn.addEventListener('click', closeWidget);
+
+if (isEmbedded) openWidget();
 
 renderAccountOptions();
 renderChips();
