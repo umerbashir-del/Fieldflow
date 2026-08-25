@@ -138,11 +138,12 @@ export async function getJobsForAccount(accountId) {
 }
 
 export async function getAccountById(accountId) {
-  const { data, error } = await requireSupabase()
+  const request = requireSupabase()
     .from('accounts')
     .select('*')
     .eq('id', accountId)
     .maybeSingle();
+  const { data, error } = await withRequestTimeout(request, 'Account request');
   if (error) throw error;
   return data;
 }
@@ -170,53 +171,59 @@ export async function getAccountData(accountId) {
 }
 
 export async function createJob(job) {
-  const { data, error } = await requireSupabase()
+  const request = requireSupabase()
     .from('jobs')
     .insert(job)
     .select()
     .single();
+  const { data, error } = await withRequestTimeout(request, 'Create job request');
   if (error) throw error;
   return data;
 }
 
 export async function updateJob(jobId, changes) {
-  const { data, error } = await requireSupabase()
+  const request = requireSupabase()
     .from('jobs')
     .update(changes)
     .eq('id', jobId)
     .select()
     .single();
+  const { data, error } = await withRequestTimeout(request, 'Update job request');
   if (error) throw error;
   return data;
 }
 
 export async function deleteJob(jobId) {
-  const { error } = await requireSupabase().from('jobs').delete().eq('id', jobId);
+  const request = requireSupabase().from('jobs').delete().eq('id', jobId);
+  const { error } = await withRequestTimeout(request, 'Delete job request');
   if (error) throw error;
 }
 
 export async function createFieldflowClient(client) {
-  const { data, error } = await requireSupabase()
+  const request = requireSupabase()
     .from('clients')
     .insert(client)
     .select()
     .single();
+  const { data, error } = await withRequestTimeout(request, 'Create client request');
   if (error) throw error;
   return data;
 }
 
 export async function updateClient(clientId, changes) {
-  const { data, error } = await requireSupabase()
+  const request = requireSupabase()
     .from('clients')
     .update(changes)
     .eq('id', clientId)
     .select()
     .single();
+  const { data, error } = await withRequestTimeout(request, 'Update client request');
   if (error) throw error;
   return data;
 }
 
 export async function deleteClient(clientId) {
-  const { error } = await requireSupabase().from('clients').delete().eq('id', clientId);
+  const request = requireSupabase().from('clients').delete().eq('id', clientId);
+  const { error } = await withRequestTimeout(request, 'Delete client request');
   if (error) throw error;
 }
