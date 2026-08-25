@@ -13,6 +13,18 @@ const signInForm = document.getElementById('mockLoginForm');
 const signUpForm = document.getElementById('mockSignUpForm');
 const resetForm = document.getElementById('mockResetForm');
 const resetMessage = document.getElementById('mockResetMessage');
+const quickSignInJohn = document.getElementById('quickSignInJohn');
+const quickSignInSarah = document.getElementById('quickSignInSarah');
+
+// Real Supabase account passwords for the two peer-testing quick-sign-in
+// buttons below. These ship in plain text to every browser that loads this
+// page (there's no way to autofill+submit a login without the browser
+// having the password) - a deliberate tradeoff for frictionless outside
+// peer testing, accepted knowingly rather than an oversight.
+const QUICK_SIGNIN_ACCOUNTS = {
+  john: { email: 'john@fieldflow.demo', password: '8QXSDfbmH-DujdbLQMO0y2s4aA7!' },
+  sarah: { email: 'sarah@fieldflow.demo', password: 'G-EJyv4LikxYzMj1Zdyfw2K_aA7!' },
+};
 
 if (isSupabaseConfigured) {
   document.getElementById('contractorLoginEyebrow').textContent = 'FieldFlow';
@@ -55,12 +67,11 @@ if (!isSupabaseConfigured && isMockContractor(currentUser)) {
   if (currentUser?.role === 'ops') {
     error.textContent = 'Operations staff use the Operations Dashboard, not Scheduling.';
   }
-  form.addEventListener('submit', async (event) => {
-    event.preventDefault();
+  async function attemptSignIn(emailValue, passwordValue) {
     error.textContent = '';
     try {
       if (isSupabaseConfigured) {
-        await signIn(email.value, password.value);
+        await signIn(emailValue, passwordValue);
         const context = await getSignedInAccount();
         if (!context?.account) {
           await signOut();
@@ -68,13 +79,28 @@ if (!isSupabaseConfigured && isMockContractor(currentUser)) {
         }
         window.location.reload();
       } else {
-        const user = authenticateMockUser(email.value, password.value);
+        const user = authenticateMockUser(emailValue, passwordValue);
         if (!isMockContractor(user)) throw new Error('Operations staff use the Operations Dashboard, not Scheduling.');
         window.location.assign(buildMockAppLink(window.location.href, user));
       }
     } catch (signInError) {
       error.textContent = friendlyAuthError(signInError);
     }
+  }
+
+  form.addEventListener('submit', (event) => {
+    event.preventDefault();
+    attemptSignIn(email.value, password.value);
+  });
+  quickSignInJohn?.addEventListener('click', () => {
+    email.value = QUICK_SIGNIN_ACCOUNTS.john.email;
+    password.value = QUICK_SIGNIN_ACCOUNTS.john.password;
+    attemptSignIn(QUICK_SIGNIN_ACCOUNTS.john.email, QUICK_SIGNIN_ACCOUNTS.john.password);
+  });
+  quickSignInSarah?.addEventListener('click', () => {
+    email.value = QUICK_SIGNIN_ACCOUNTS.sarah.email;
+    password.value = QUICK_SIGNIN_ACCOUNTS.sarah.password;
+    attemptSignIn(QUICK_SIGNIN_ACCOUNTS.sarah.email, QUICK_SIGNIN_ACCOUNTS.sarah.password);
   });
   document.querySelectorAll('[data-auth-mode]').forEach((button) => button.addEventListener('click', () => showForm(button.dataset.authMode)));
   signUpForm.addEventListener('submit', async (event) => {

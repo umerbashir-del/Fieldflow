@@ -36,7 +36,7 @@ const $ = (id) => document.getElementById(id);
 const els = {
   accountCount: $('accountCount'), clientCount: $('clientCount'), jobCount: $('jobCount'), progressCount: $('progressCount'),
   accountTable: $('accountTable'), accountCards: $('accountCards'), activityList: $('activityList'), detailContent: $('detailContent'),
-  accountSearch: $('accountSearch'), statusFilter: $('statusFilter'), themeBtn: $('themeBtn'), backBtn: $('backBtn'),
+  accountSearch: $('accountSearch'), statusFilter: $('statusFilter'), backBtn: $('backBtn'),
   tabs: [...document.querySelectorAll('.tab')], views: { overview: $('overview'), accounts: $('accounts'), activity: $('activity'), detail: $('detail') },
 };
 

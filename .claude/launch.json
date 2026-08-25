@@ -2,16 +2,25 @@
   "version": "0.0.1",
   "configurations": [
     {
-      "name": "scheduling",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "dev:scheduling"],
-      "port": 5173
-    },
-    {
       "name": "chatbot",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "dev:chatbot"],
-      "port": 5175
+      "runtimeArgs": ["run", "dev", "--prefix", "chatbot"],
+      "port": 5175,
+      "autoPort": true
+    },
+    {
+      "name": "scheduling",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev", "--prefix", "scheduling"],
+      "port": 5174,
+      "autoPort": true
+    },
+    {
+      "name": "ops-dashboard",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev", "--prefix", "ops-dashboard"],
+      "port": 5176,
+      "autoPort": true
     }
   ]
 }

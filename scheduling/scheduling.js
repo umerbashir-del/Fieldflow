@@ -14,7 +14,8 @@ import { assigneeLabel } from '../shared-data/jobPresentation.js';
   // any company data unless a contractor demo session is present.
   if (!IS_CONTRACTOR_SESSION) return;
 
-  // Key used to save app state in the browser's localStorage.
+  // Key used to save app state in the browser's localStorage, so your
+  // data survives a page refresh.
   const STORAGE_KEY = 'fieldflow_scheduling_local_v2_' + ACCOUNT_ID;
 
   // ---------------------------------------------------------------
@@ -201,7 +202,6 @@ import { assigneeLabel } from '../shared-data/jobPresentation.js';
   // tracking exactly what needs to change, and the app is small enough
   // that redrawing everything is instant.
   function renderAll() {
-    document.documentElement.setAttribute('data-theme', 'light');
     accountLine.textContent = (account ? account.name : 'Account') + ' · ' + monthYearLabel(REPORTING.isoDate);
 
     // Show/hide the three top-level sections based on which tab is active.
