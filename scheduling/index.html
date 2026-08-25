@@ -175,6 +175,17 @@
 
   <script type="module" src="mockLogin.js"></script>
   <script type="module" src="scheduling.js"></script>
+  <script>
+    setTimeout(() => {
+      const form = document.getElementById('mockLoginForm');
+      const description = document.getElementById('contractorLoginDescription');
+      if (form && [...form.elements].some((element) => element.disabled)) {
+        [...form.elements].forEach((element) => { element.disabled = false; });
+        if (description.textContent.includes('Connecting')) description.textContent = 'We couldn’t load your data. Check your connection and try again.';
+        document.getElementById('mockLoginError').textContent = 'The connection took too long. Try again or check your network.';
+      }
+    }, 12000);
+  </script>
   <script src="http://localhost:5175/embed.js"></script>
 </body>
 </html>

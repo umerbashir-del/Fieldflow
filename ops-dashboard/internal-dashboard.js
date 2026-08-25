@@ -8,17 +8,25 @@ import { formatReportingDate, reportingDateFromAccount, withReportingDate } from
 let accountData = accounts;
 let clientData = clients;
 let jobData = jobs;
+let loadError = '';
 if (isSupabaseConfigured) {
-  const operations = await getOperationsSession();
-  if (operations?.staff) {
-    const live = await getOperationsData();
-    accountData = live.accounts;
-    clientData = live.clients;
-    jobData = live.jobs;
-  } else {
-    accountData = [];
-    clientData = [];
-    jobData = [];
+  try {
+    const operations = await getOperationsSession();
+    if (operations?.staff) {
+      const live = await getOperationsData();
+      accountData = live.accounts;
+      clientData = live.clients;
+      jobData = live.jobs;
+    } else {
+      accountData = [];
+      clientData = [];
+      jobData = [];
+    }
+  } catch (error) {
+    const message = String(error?.message ?? '').toLowerCase();
+    loadError = message.includes('permission') || message.includes('row-level')
+      ? 'You don’t have access to Operations data.'
+      : 'We couldn’t load your data. Check your connection and try again.';
   }
 }
 
@@ -31,6 +39,20 @@ const els = {
   accountSearch: $('accountSearch'), statusFilter: $('statusFilter'), backBtn: $('backBtn'),
   tabs: [...document.querySelectorAll('.tab')], views: { overview: $('overview'), accounts: $('accounts'), activity: $('activity'), detail: $('detail') },
 };
+
+if (loadError) {
+  document.getElementById('opsDashboard').hidden = true;
+  document.getElementById('opsLoginGate').hidden = false;
+  const errorElement = document.getElementById('opsLoginError');
+  const descriptionElement = document.getElementById('operationsLoginDescription');
+  const retryElement = document.getElementById('opsRetryButton');
+  if (errorElement) errorElement.textContent = loadError;
+  if (descriptionElement) descriptionElement.textContent = `${loadError} You can try signing in again.`;
+  if (retryElement && !loadError.includes('session')) {
+    retryElement.hidden = false;
+    retryElement.addEventListener('click', () => window.location.reload());
+  }
+}
 
 function escapeHtml(value) {
   return String(value).replace(/[&<>"']/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[character]));
@@ -118,7 +140,6 @@ function showView(view) {
 }
 
 function openAccount(accountId) { state.selectedAccountId = accountId; showView('detail'); }
-
 els.tabs.forEach((tab) => tab.addEventListener('click', () => showView(tab.dataset.view)));
 els.accountSearch.addEventListener('input', (event) => { state.accountSearch = event.target.value; renderAccounts(); });
 els.statusFilter.addEventListener('change', (event) => { state.statusFilter = event.target.value; renderActivity(); });
