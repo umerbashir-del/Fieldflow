@@ -12,10 +12,9 @@ import { createFieldflowClient, createJob, deleteClient, deleteJob as deleteLive
   // any company data unless a contractor demo session is present.
   if (!IS_CONTRACTOR_SESSION) return;
 
-  // Keys used to save app state in the browser's localStorage, so your
-  // data and theme choice survive a page refresh.
+  // Key used to save app state in the browser's localStorage, so your
+  // data survives a page refresh.
   const STORAGE_KEY = 'fieldflow_scheduling_local_v2_' + ACCOUNT_ID;
-  const THEME_KEY = 'fieldflow_scheduling_theme';
 
   // ---------------------------------------------------------------
   // STATE
@@ -26,7 +25,6 @@ import { createFieldflowClient, createJob, deleteClient, deleteJob as deleteLive
   // then re-render. There's no framework doing this automatically (no
   // React here), so renderAll() has to be called by hand after every
   // change.
-  let theme = loadInitialTheme();          // 'light' | 'dark'
   let { clients, jobs } = loadInitialState(); // the actual data being edited
   let tab = 'home';                        // which top-level tab is showing: 'home' | 'calendar' | 'clients'
   let calMode = 'week';                    // which calendar layout is showing: 'day' | 'week' | 'month'
@@ -44,17 +42,6 @@ import { createFieldflowClient, createJob, deleteClient, deleteJob as deleteLive
     try {
     } catch (e) { /* fall back to the scoped demo seed */ }
     return loadMockAccountData(ACCOUNT_ID, { clients: seedClients, jobs: seedJobs });
-  }
-
-  // Figures out which theme to start in: whatever the user picked last
-  // time (saved in localStorage), otherwise whatever their OS/browser
-  // prefers (light or dark), defaulting to light.
-  function loadInitialTheme() {
-    try {
-      const saved = localStorage.getItem(THEME_KEY);
-      if (saved === 'light' || saved === 'dark') return saved;
-    } catch (e) { /* ignore */ }
-    return (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
   }
 
   // Saves the current clients/jobs arrays to localStorage. Called after
@@ -110,7 +97,6 @@ import { createFieldflowClient, createJob, deleteClient, deleteJob as deleteLive
   // Grab every element we'll need to read from or write to, once, up
   // front. `el(id)` is just a shorthand for document.getElementById.
   const el = (id) => document.getElementById(id);
-  const themeToggleBtn = el('themeToggleBtn');
   const newJobBtn = el('newJobBtn');
   const accountLine = el('accountLine');
   const tabBtns = Array.from(document.querySelectorAll('.tab-btn'));
@@ -194,8 +180,6 @@ import { createFieldflowClient, createJob, deleteClient, deleteJob as deleteLive
   // tracking exactly what needs to change, and the app is small enough
   // that redrawing everything is instant.
   function renderAll() {
-    document.documentElement.setAttribute('data-theme', theme);
-    themeToggleBtn.textContent = theme === 'dark' ? 'Light mode' : 'Dark mode';
     accountLine.textContent = (account ? account.name : 'Account') + ' · ' + monthYearLabel(todayISO());
 
     // Show/hide the three top-level sections based on which tab is active.
@@ -749,12 +733,6 @@ import { createFieldflowClient, createJob, deleteClient, deleteJob as deleteLive
   // manually via keydown on the modal card — this avoids relying on
   // form-submit events, which can behave inconsistently inside sandboxed
   // preview iframes.
-
-  themeToggleBtn.addEventListener('click', () => {
-    theme = theme === 'dark' ? 'light' : 'dark';
-    try { localStorage.setItem(THEME_KEY, theme); } catch (e) { /* ignore */ }
-    renderAll();
-  });
 
   newJobBtn.addEventListener('click', () => openNewJob());
   newClientBtn.addEventListener('click', () => openNewClient());
