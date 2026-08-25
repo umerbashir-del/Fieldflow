@@ -9,7 +9,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 // this workspace folder.
 export default defineConfig({
   server: {
-    port: 5175,
+    port: process.env.PORT ? Number(process.env.PORT) : undefined,
     fs: { allow: [path.resolve(__dirname, '..')] },
   },
 });
