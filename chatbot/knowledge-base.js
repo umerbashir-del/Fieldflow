@@ -40,7 +40,25 @@ function parseSections(doc) {
     .map((s) => ({ docTitle: doc.title, heading: s.heading, body: s.body }));
 }
 
-const sections = docs.flatMap(parseSections);
+// The real docs are written for developers (HTTP endpoints, JSON shapes,
+// snake_case field names, internal build notes), so raw excerpts are never
+// shown to chat users. Each entry below is a hand-written, plain-language
+// stand-in for one doc section — keyed by "docTitle — heading" — used only
+// when a section matches the search below. Sections with no entry here
+// (component/build notes, the relationship diagram, etc.) are excluded from
+// the fallback entirely, so an unmatched query never leaks internal text.
+const DOC_OVERRIDES = {
+  'data-model.md — Client': "A client's service address is stored as separate parts — building number, street, city, state, and zip — plus a phone number for appointment calls. That keeps addresses consistent so scheduling can sort and look them up reliably.",
+  'data-model.md — Job': 'Each job belongs to one client and has a scheduled date and a status — Scheduled, In progress, Completed, or Cancelled.',
+  'standards.md — Account scope': "Every job and client only ever belongs to one account, and FieldFlow never guesses your account from your name or email — so you'll only ever see your own company's data.",
+  'standards.md — Dates': 'Dates are always shown to you as Month Day, Year — for example, August 20, 2026.',
+};
+
+const sections = docs
+  .flatMap(parseSections)
+  .map((s) => ({ ...s, key: `${s.docTitle} — ${s.heading}` }))
+  .filter((s) => DOC_OVERRIDES[s.key])
+  .map((s) => ({ ...s, body: DOC_OVERRIDES[s.key] }));
 
 function scoreSection(queryTokens, section) {
   const headingTokens = tokenize(section.heading);
@@ -68,19 +86,19 @@ export const FAQ = [
   {
     id: 'create-job',
     keywords: ['create', 'new', 'add', 'schedule', 'job', 'appointment', 'booking'],
-    answer: "Open Scheduling and click New Job — pick the client, date, and assignee. That saves through POST /accounts/:account_id/jobs, so it's automatically scoped to your account.",
+    answer: "Open Scheduling and click New Job — pick the client, date, and assignee, then save. It's automatically saved under your own account, so other companies never see it.",
     source: 'api-contract.md',
   },
   {
     id: 'job-status',
     keywords: ['status', 'statuses', 'progress', 'complete', 'completed', 'cancel', 'cancelled', 'update'],
-    answer: 'FieldFlow uses four job statuses: scheduled, in_progress, completed, and cancelled. Change one from the job’s card — that calls PATCH /accounts/:account_id/jobs/:job_id.',
+    answer: 'FieldFlow uses four job statuses: Scheduled, In progress, Completed, and Cancelled. You can change a job\'s status right from its card.',
     source: 'standards.md — Shared behavior',
   },
   {
     id: 'add-client',
     keywords: ['client', 'clients', 'customer', 'customers'],
-    answer: 'Add clients from the Clients tab in Scheduling. Keep records small — name and city; operational notes belong in the API, not copied into the product.',
+    answer: 'Add clients from the Clients tab in Scheduling. Keep the record simple — just name and city; save detailed notes elsewhere rather than pasting them into that field.',
     source: 'data-model.md — Client',
   },
   {
@@ -98,7 +116,7 @@ export const FAQ = [
   {
     id: 'contact-support',
     keywords: ['support', 'message', 'help', 'contact', 'human', 'agent'],
-    answer: 'Send a message through the chat panel — it posts to POST /accounts/:account_id/chat/messages, so support automatically sees which account you’re asking from.',
+    answer: 'Send a message through this chat panel — support will automatically see which account you\'re asking from, so you won\'t need to repeat that.',
     source: 'api-contract.md',
   },
 ];
