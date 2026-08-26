@@ -1,4 +1,4 @@
-import { ACCOUNT_ID, accounts, CONFIRMATION_LABELS, CONFIRMATION_VALUES, CONTACT_METHOD_LABELS, CONTACT_METHODS, IS_CONTRACTOR_SESSION, LIVE_LOAD_ERROR, LIVE_MODE, REPORTING, seedClients, seedJobs, STATUS_LABELS, STATUS_VALUES, TEAM_MEMBERS } from './data.js';
+import { ACCOUNT_ID, accounts, CONFIRMATION_LABELS, CONFIRMATION_VALUES, CONTACT_METHOD_LABELS, CONTACT_METHODS, IS_CONTRACTOR_SESSION, LIVE_LOAD_ERROR, LIVE_MODE, loadSchedulingData, loadSchedulingSession, REPORTING, seedClients, seedJobs, STATUS_LABELS, STATUS_VALUES, TEAM_MEMBERS } from './data.js';
 import { clientName, formatDate } from './formatters.js';
 import { addDaysISO, addMonthsISO, isSameMonth, monthDay, monthYearLabel, startOfMonthISO, startOfWeekISO, weekdayShort } from './date-utils.js';
 import { buildMockDataLink, loadMockAccountData, saveMockAccountData } from '../shared-data/mockDataSession.js';
@@ -7,11 +7,18 @@ import { createFieldflowClient, createJob, deleteClient, deleteJob as deleteLive
 import { formatReportingDate, toggleReportingDateInCurrentUrl, withReportingDate } from '../shared-data/reportingDate.js';
 import { assigneeLabel } from '../shared-data/jobPresentation.js';
 
-(function () {
+(async function () {
   'use strict';
 
   // The sign-in screen loads this module too. Do not initialize or retain
   // any company data unless a contractor demo session is present.
+  if (LIVE_MODE) {
+    try {
+      await loadSchedulingSession();
+    } catch (error) {
+      return;
+    }
+  }
   if (!IS_CONTRACTOR_SESSION) return;
 
   const appRoot = document.getElementById('schedulingApp');
@@ -52,11 +59,6 @@ import { assigneeLabel } from '../shared-data/jobPresentation.js';
     appRoot.setAttribute('aria-busy', 'false');
   }
 
-  if (LIVE_LOAD_ERROR) {
-    showSchedulingLoadError(LIVE_LOAD_ERROR);
-    return;
-  }
-
   // Key used to save app state in the browser's localStorage, so your
   // data survives a page refresh.
   const STORAGE_KEY = 'fieldflow_scheduling_local_v2_' + ACCOUNT_ID;
@@ -82,6 +84,7 @@ import { assigneeLabel } from '../shared-data/jobPresentation.js';
   let homeFilter = null;
 
   const reportingNotice = document.getElementById('schedulingDemoNotice');
+  const schedulingDataLoading = document.getElementById('schedulingDataLoading');
   if (REPORTING.storedDate) {
     const label = REPORTING.isDemoDate ? 'Demo data — reporting as of ' : 'Live-date preview — reporting as of ';
     reportingNotice.replaceChildren(document.createTextNode(`${label}${formatReportingDate(REPORTING.isoDate)}. `));
@@ -1123,4 +1126,28 @@ import { assigneeLabel } from '../shared-data/jobPresentation.js';
   renderAll();
   appRoot.classList.add('is-ready');
   appRoot.setAttribute('aria-busy', 'false');
+
+  // Let the page render before fetching the larger company data sets. This
+  // makes navigation responsive even when Supabase is momentarily slow.
+  if (LIVE_MODE) {
+    schedulingDataLoading.hidden = false;
+    newJobBtn.disabled = true;
+    newClientBtn.disabled = true;
+    newJobBtn.title = 'Jobs are loading';
+    newClientBtn.title = 'Clients are loading';
+    appRoot.setAttribute('aria-busy', 'true');
+    loadSchedulingData().then((data) => {
+      clients = data.clients;
+      jobs = data.jobs;
+      schedulingDataLoading.hidden = true;
+      newJobBtn.disabled = false;
+      newClientBtn.disabled = false;
+      newJobBtn.removeAttribute('title');
+      newClientBtn.removeAttribute('title');
+      appRoot.setAttribute('aria-busy', 'false');
+      renderAll();
+    }).catch(() => {
+      showSchedulingLoadError(LIVE_LOAD_ERROR || 'We couldn’t load your data. Check your connection and try again.');
+    });
+  }
 })();
