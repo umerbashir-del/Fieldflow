@@ -46,7 +46,7 @@
     <div class="topbar">
       <div>
         <p class="eyebrow">FieldFlow · Scheduling</p>
-        <h1>Field schedule</h1>
+        <h1>Field Schedule</h1>
         <p class="muted" id="accountLine">Northstar Field Services</p>
       </div>
       <div class="topbar-actions">
@@ -68,9 +68,19 @@
         <a class="analytics-link" id="analyticsLink" href="#" title="Open Customer Analytics for this business">View Analytics</a>
         <a class="analytics-link" id="chatLink" href="#" title="Open Support Chat for this business">Support Chat</a>
       </div>
-      <section class="grid" id="statusGrid"></section>
+      <section style="margin-top:8px">
+        <div class="section-header"><h2>Needs Attention</h2></div>
+        <div class="grid" id="needsAttentionGrid"></div>
+      </section>
+      <section class="grid" id="statusGrid" style="margin-top:16px"></section>
       <section style="margin-top:28px">
-        <div class="section-header"><h2>Today</h2></div>
+        <div class="section-header">
+          <h2>Today</h2>
+          <div id="homeFilterBanner" class="conflict-flag" hidden style="background:var(--ff-color-accent-100,#e5ebea);color:var(--ff-color-accent-600,#29544f)">
+            <span id="homeFilterLabel"></span>
+            <button type="button" class="notice-link" id="homeFilterClearBtn" style="margin-left:8px">Clear filter</button>
+          </div>
+        </div>
         <div id="todayList"></div>
       </section>
       <section style="margin-top:28px">
@@ -121,9 +131,15 @@
         <label for="jobTitle">Title</label>
         <input id="jobTitle" placeholder="e.g. HVAC inspection" maxlength="120" required />
       </div>
-      <div class="field">
-        <label for="jobDate">Date</label>
-        <input id="jobDate" type="date" required />
+      <div class="field-row">
+        <div class="field" style="flex:1">
+          <label for="jobDate">Date</label>
+          <input id="jobDate" type="date" required />
+        </div>
+        <div class="field" style="flex:1">
+          <label for="jobStartTime">Start time (optional)</label>
+          <input id="jobStartTime" type="time" />
+        </div>
       </div>
       <div class="field">
         <label for="jobAssignee">Assignee</label>
@@ -134,6 +150,25 @@
         <select id="jobStatus"></select>
       </div>
       <div class="conflict-flag" id="jobConflictWarning" hidden style="margin-top:0"></div>
+      <div class="field-row">
+        <div class="field" style="flex:1">
+          <label for="jobConfirmationStatus">Appointment confirmation</label>
+          <select id="jobConfirmationStatus"></select>
+        </div>
+        <div class="field" style="flex:1">
+          <label for="jobContactMethod">Contact method</label>
+          <select id="jobContactMethod"></select>
+        </div>
+      </div>
+      <div class="field">
+        <label for="jobConfirmedBy">Confirmed by</label>
+        <input id="jobConfirmedBy" placeholder="e.g. Maya Chen" />
+      </div>
+      <div class="field">
+        <label for="jobConfirmationNote">Confirmation note</label>
+        <input id="jobConfirmationNote" placeholder="e.g. Left voicemail, texting next" />
+      </div>
+      <p class="muted" id="jobConfirmationMeta" hidden style="margin:0;font-size:.8rem"></p>
       <div class="modal-actions">
         <button type="button" class="btn-danger" id="deleteJobBtn" hidden>Delete</button>
         <span id="jobActionsSpacer"></span>
@@ -153,9 +188,33 @@
         <label for="clientName">Name</label>
         <input id="clientName" placeholder="e.g. Evergreen Properties" maxlength="120" required />
       </div>
+      <div class="field-row">
+        <div class="field" style="flex:1">
+          <label for="clientBuildingNumber">Bldg #</label>
+          <input id="clientBuildingNumber" placeholder="482" />
+        </div>
+        <div class="field" style="flex:3">
+          <label for="clientStreetName">Street</label>
+          <input id="clientStreetName" placeholder="Glenwood Ave" />
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field" style="flex:2">
+          <label for="clientCity">City</label>
+          <input id="clientCity" placeholder="Raleigh" />
+        </div>
+        <div class="field" style="flex:1">
+          <label for="clientState">State</label>
+          <input id="clientState" placeholder="NC" maxlength="2" style="text-transform:uppercase" />
+        </div>
+        <div class="field" style="flex:1.5">
+          <label for="clientZip">Zip</label>
+          <input id="clientZip" placeholder="27603" />
+        </div>
+      </div>
       <div class="field">
-        <label for="clientCity">City</label>
-        <input id="clientCity" placeholder="e.g. Raleigh" maxlength="120" />
+        <label for="clientPhone">Phone</label>
+        <input id="clientPhone" placeholder="(919) 555-0142" />
       </div>
       <div class="conflict-flag" id="clientNotice" hidden style="margin-top:0"></div>
       <div class="modal-actions">

@@ -52,3 +52,19 @@ export const STATUS_LABELS = {
   completed: 'Completed',
   cancelled: 'Cancelled',
 };
+
+// Appointment-confirmation tracking (separate from job status — a job can
+// be "Scheduled" and still need someone to actually confirm the customer
+// will be there). Optional on every job; missing/unrecognized values are
+// treated as 'pending' everywhere they're read, so existing jobs that
+// predate this field keep working with no migration needed.
+export const CONFIRMATION_VALUES = ['pending', 'contacted', 'confirmed', 'no_response', 'reschedule_needed'];
+export const CONFIRMATION_LABELS = {
+  pending: 'Needs confirmation',
+  contacted: 'Contacted — awaiting reply',
+  confirmed: 'Confirmed',
+  no_response: 'No response',
+  reschedule_needed: 'Reschedule needed',
+};
+export const CONTACT_METHODS = ['phone', 'text', 'email'];
+export const CONTACT_METHOD_LABELS = { phone: 'Phone', text: 'Text', email: 'Email' };

@@ -1,4 +1,4 @@
-import { ACCOUNT_ID, accounts, IS_CONTRACTOR_SESSION, LIVE_MODE, REPORTING, seedClients, seedJobs, STATUS_LABELS, STATUS_VALUES, TEAM_MEMBERS } from './data.js';
+import { ACCOUNT_ID, accounts, CONFIRMATION_LABELS, CONFIRMATION_VALUES, CONTACT_METHOD_LABELS, CONTACT_METHODS, IS_CONTRACTOR_SESSION, LIVE_MODE, REPORTING, seedClients, seedJobs, STATUS_LABELS, STATUS_VALUES, TEAM_MEMBERS } from './data.js';
 import { clientName, formatDate } from './formatters.js';
 import { addDaysISO, addMonthsISO, isSameMonth, monthDay, monthYearLabel, startOfMonthISO, startOfWeekISO, weekdayShort } from './date-utils.js';
 import { buildMockDataLink, loadMockAccountData, saveMockAccountData } from '../shared-data/mockDataSession.js';
@@ -34,6 +34,9 @@ import { assigneeLabel } from '../shared-data/jobPresentation.js';
   let jobModal = null;    // null when closed, otherwise { mode: 'new'|'edit', draft, originalId? }
   let clientModal = null; // null when closed, otherwise { mode: 'new'|'edit', draft, originalId? }
   let clientNotice = '';  // warning text shown inside the client modal (e.g. "can't delete, has jobs")
+  // Which "Needs attention" chip (if any) is currently narrowing the Home
+  // job lists: null | 'unassigned' | 'cancelled_week' | 'today' | 'awaiting_confirmation'
+  let homeFilter = null;
 
   const reportingNotice = document.getElementById('schedulingDemoNotice');
   if (REPORTING.storedDate) {
@@ -75,25 +78,51 @@ import { assigneeLabel } from '../shared-data/jobPresentation.js';
     return prefix + '_' + rand;
   }
 
-  // Same-assignee-same-day is the closest analog to "double booking" now
-  // that jobs only carry a date, not a time of day. Flagged, not blocked —
-  // one assignee legitimately can cover two jobs in a day at different
-  // times, we just don't have a time field to tell them apart yet.
+  // Two jobs are a double-booking risk if they're the same assignee, same
+  // day, AND the same start time — when both jobs actually have a start
+  // time recorded. If either one doesn't have a time yet, we fall back to
+  // flagging same-day-same-assignee as before, since "no time recorded"
+  // isn't proof they *don't* overlap, just that we can't rule it out yet.
+  function sameTimeSlot(a, b) {
+    if (!a.scheduled_start_time || !b.scheduled_start_time) return true;
+    return a.scheduled_start_time === b.scheduled_start_time;
+  }
+
+  function formatTime(hhmm) {
+    if (!hhmm) return '';
+    const [h, m] = hhmm.split(':').map(Number);
+    const period = h >= 12 ? 'PM' : 'AM';
+    const hour12 = ((h + 11) % 12) + 1;
+    return hour12 + ':' + String(m).padStart(2, '0') + ' ' + period;
+  }
+
+  // Flags every job involved in a same-assignee/same-day(/same-time)
+  // collision. Unassigned jobs are skipped entirely — "double-booking"
+  // isn't a meaningful concept until someone's actually assigned. Flagged,
+  // not blocked — one assignee legitimately can cover two jobs in a day at
+  // different times.
   //
-  // How it works: group every non-cancelled job by "assignee + date", and
-  // if any group ends up with more than one job in it, every job id in
-  // that group gets added to the returned conflicts Set. Callers just
-  // check `conflictIds.has(job.id)` to know whether to show the warning.
+  // Callers just check `conflictIds.has(job.id)` to know whether to show
+  // the warning.
   function computeConflictIds(jobList) {
     const byKey = new Map();
     jobList.forEach((job) => {
-      if (job.status === 'cancelled') return;
+      if (job.status === 'cancelled' || !job.assignee) return;
       const key = job.assignee + '__' + job.scheduled_for;
       if (!byKey.has(key)) byKey.set(key, []);
-      byKey.get(key).push(job.id);
+      byKey.get(key).push(job);
     });
     const conflicts = new Set();
-    byKey.forEach((ids) => { if (ids.length > 1) ids.forEach((id) => conflicts.add(id)); });
+    byKey.forEach((dayJobs) => {
+      for (let i = 0; i < dayJobs.length; i++) {
+        for (let j = i + 1; j < dayJobs.length; j++) {
+          if (sameTimeSlot(dayJobs[i], dayJobs[j])) {
+            conflicts.add(dayJobs[i].id);
+            conflicts.add(dayJobs[j].id);
+          }
+        }
+      }
+    });
     return conflicts;
   }
 
@@ -105,6 +134,35 @@ import { assigneeLabel } from '../shared-data/jobPresentation.js';
   // different company signs in.
   function accountJobs() { return jobs.filter((j) => j.account_id === ACCOUNT_ID); }
   function accountClients() { return clients.filter((c) => c.account_id === ACCOUNT_ID); }
+
+  // Appointment confirmation is a new, optional field — jobs seeded before
+  // it existed (or synced from a source that doesn't set it) won't have it
+  // at all. Reading through this everywhere, instead of job.appointment_confirmation_status
+  // directly, means "no value yet" reliably reads as "Needs confirmation"
+  // rather than as undefined/blank.
+  function confirmationStatus(job) {
+    return CONFIRMATION_VALUES.includes(job.appointment_confirmation_status) ? job.appointment_confirmation_status : 'pending';
+  }
+
+  function confirmationBadgeHtml(job) {
+    const status = confirmationStatus(job);
+    return '<span class="badge confirm-badge confirm-' + status + '">' + CONFIRMATION_LABELS[status] + '</span>';
+  }
+
+  // Counts + the matching job list for each "Needs attention" chip. Kept
+  // as one function so the chip counts on Home and the filtered list you
+  // get from clicking a chip are always computed the same way.
+  function needsAttentionGroups(aJobs) {
+    const today = REPORTING.isoDate;
+    const weekStart = startOfWeekISO(today);
+    const weekEnd = addDaysISO(weekStart, 6);
+    return {
+      unassigned: aJobs.filter((j) => j.status !== 'cancelled' && !j.assignee),
+      cancelled_week: aJobs.filter((j) => j.status === 'cancelled' && j.scheduled_for >= weekStart && j.scheduled_for <= weekEnd),
+      today: aJobs.filter((j) => j.scheduled_for === today && j.status !== 'cancelled'),
+      awaiting_confirmation: aJobs.filter((j) => j.status !== 'cancelled' && confirmationStatus(j) !== 'confirmed'),
+    };
+  }
 
   const account = accounts.find((a) => a.id === ACCOUNT_ID);
 
@@ -121,8 +179,12 @@ import { assigneeLabel } from '../shared-data/jobPresentation.js';
   const calendarView = el('calendarView');
   const clientsView = el('clientsView');
   const statusGrid = el('statusGrid');
+  const needsAttentionGrid = el('needsAttentionGrid');
   const todayList = el('todayList');
   const upcomingList = el('upcomingList');
+  const homeFilterBanner = el('homeFilterBanner');
+  const homeFilterLabel = el('homeFilterLabel');
+  const homeFilterClearBtn = el('homeFilterClearBtn');
   const modeBtns = Array.from(document.querySelectorAll('.mode-btn'));
   const calLabel = el('calLabel');
   const calPrevBtn = el('calPrevBtn');
@@ -174,9 +236,17 @@ import { assigneeLabel } from '../shared-data/jobPresentation.js';
   const jobClientSel = el('jobClient');
   const jobTitleInput = el('jobTitle');
   const jobDateInput = el('jobDate');
+  const jobStartTimeInput = el('jobStartTime');
   const jobAssigneeSel = el('jobAssignee');
   const jobStatusSel = el('jobStatus');
+  const jobConfirmationSel = el('jobConfirmationStatus');
+  const jobContactMethodSel = el('jobContactMethod');
+  const jobConfirmedByInput = el('jobConfirmedBy');
+  const jobConfirmationNoteInput = el('jobConfirmationNote');
+  const jobConfirmationMeta = el('jobConfirmationMeta');
   const jobConflictWarning = el('jobConflictWarning');
+  const jobNoClientNotice = el('jobNoClientNotice');
+  const jobNoClientAddBtn = el('jobNoClientAddBtn');
   const deleteJobBtn = el('deleteJobBtn');
   const cancelJobBtn = el('cancelJobBtn');
   const saveJobBtn = el('saveJobBtn');
@@ -186,7 +256,12 @@ import { assigneeLabel } from '../shared-data/jobPresentation.js';
   const clientModalCard = el('clientModalCard');
   const clientModalTitle = el('clientModalTitle');
   const clientNameInput = el('clientName');
+  const clientBuildingNumberInput = el('clientBuildingNumber');
+  const clientStreetNameInput = el('clientStreetName');
   const clientCityInput = el('clientCity');
+  const clientStateInput = el('clientState');
+  const clientZipInput = el('clientZip');
+  const clientPhoneInput = el('clientPhone');
   const clientNoticeEl = el('clientNotice');
   const deleteClientBtn = el('deleteClientBtn');
   const cancelClientBtn = el('cancelClientBtn');
@@ -234,6 +309,20 @@ import { assigneeLabel } from '../shared-data/jobPresentation.js';
     return '<span class="conflict-flag">⚠ Assignee double-booked this day</span>';
   }
 
+  // The job site address and the number to call are both properties of
+  // the CLIENT record (a job doesn't have its own address/phone — it
+  // happens at the client's site), so this looks the client up by
+  // job.client_id rather than storing a duplicate copy on every job.
+  function jobContactLinesHtml(job) {
+    const client = clients.find((c) => c.id === job.client_id);
+    const address = client ? clientAddressLine(client) : 'No address on file';
+    const phone = client && client.client_phone ? client.client_phone : 'No phone on file';
+    return (
+      '<div class="muted job-meta">#' + escapeHtml(job.id) + ' · ' + escapeHtml(address) + '</div>' +
+      '<div class="muted job-meta">' + escapeHtml(phone) + '</div>'
+    );
+  }
+
   // Renders one job as a full-width row (used on the Home dashboard, in
   // both the "Today" and "Upcoming work" sections).
   function jobRowHtml(job, isConflict) {
@@ -242,10 +331,11 @@ import { assigneeLabel } from '../shared-data/jobPresentation.js';
         '<div>' +
           '<strong>' + escapeHtml(job.title) + '</strong>' +
           '<div class="muted">' + escapeHtml(clientName(job.client_id, clients)) + ' · ' + escapeHtml(assigneeLabel(job.assignee)) + '</div>' +
+          jobContactLinesHtml(job) +
           (isConflict ? conflictFlagHtml() : '') +
         '</div>' +
-        '<div>' + statusBadge(job.status) +
-          '<div class="muted" style="margin-top:6px">' + formatDate(job.scheduled_for) + '</div>' +
+        '<div style="text-align:right">' + statusBadge(job.status) + ' ' + confirmationBadgeHtml(job) +
+          '<div class="muted" style="margin-top:6px">' + formatDate(job.scheduled_for) + (job.scheduled_start_time ? ' · ' + formatTime(job.scheduled_start_time) : '') + '</div>' +
         '</div>' +
       '</article>'
     );
@@ -256,15 +346,32 @@ import { assigneeLabel } from '../shared-data/jobPresentation.js';
   // input — a job title, a client name — has to be escaped before it
   // goes into innerHTML, or a value like `<script>` typed into a field
   // would actually run as HTML/JS.
+  // Builds "482 Glenwood Ave, Raleigh, NC 27603" from the split address
+  // fields, skipping anything blank rather than printing stray commas.
+  function clientAddressLine(c) {
+    const streetPart = [c.building_number, c.street_name].filter(Boolean).join(' ');
+    const cityStatePart = [c.city, c.state].filter(Boolean).join(', ');
+    const cityStateZip = [cityStatePart, c.zip_code].filter(Boolean).join(' ');
+    return [streetPart, cityStateZip].filter(Boolean).join(', ') || 'No address on file';
+  }
+
   function escapeHtml(str) {
     return String(str).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   }
 
   // ---- Home tab ----
+  const NEEDS_ATTENTION_META = {
+    unassigned: { label: 'Unassigned jobs' },
+    cancelled_week: { label: 'Cancelled this week' },
+    today: { label: 'Scheduled today' },
+    awaiting_confirmation: { label: 'Awaiting confirmation' },
+  };
+
   function renderHome() {
     const aJobs = accountJobs();
     const conflictIds = computeConflictIds(aJobs);
     const today = REPORTING.isoDate;
+    const groups = needsAttentionGroups(aJobs);
 
     // Status summary cards: one per possible status, with a live count.
     statusGrid.innerHTML = STATUS_VALUES.map((status) => {
@@ -272,21 +379,60 @@ import { assigneeLabel } from '../shared-data/jobPresentation.js';
       return '<div class="card"><span class="muted">' + STATUS_LABELS[status] + '</span><div class="metric">' + count + '</div></div>';
     }).join('');
 
-    // "Today": jobs whose scheduled_for is literally today's date.
-    const todays = aJobs.filter((j) => j.scheduled_for === today).sort((a, b) => a.title.localeCompare(b.title));
-    todayList.innerHTML = todays.length
-      ? todays.map((j) => jobRowHtml(j, conflictIds.has(j.id))).join('')
-      : '<div class="empty-state">Nothing scheduled today.</div>';
+    // "Needs attention": one clickable chip per group above. Clicking a
+    // chip narrows Today/Upcoming below to just that group (see
+    // homeFilter); clicking the active chip again, or "Clear filter",
+    // goes back to the normal Today/Upcoming view.
+    if (needsAttentionGrid) {
+      needsAttentionGrid.innerHTML = Object.keys(NEEDS_ATTENTION_META).map((key) => {
+        const count = groups[key].length;
+        return (
+          '<button type="button" class="card needs-attention-card' + (homeFilter === key ? ' is-active' : '') + '" data-filter="' + key + '">' +
+            '<span class="muted">' + NEEDS_ATTENTION_META[key].label + '</span>' +
+            '<div class="metric">' + count + '</div>' +
+          '</button>'
+        );
+      }).join('');
+      Array.from(needsAttentionGrid.querySelectorAll('.needs-attention-card')).forEach((node) => {
+        node.addEventListener('click', () => {
+          homeFilter = homeFilter === node.dataset.filter ? null : node.dataset.filter;
+          renderAll();
+        });
+      });
+    }
 
-    // "Upcoming work": future, not-cancelled jobs, soonest first, capped
-    // at 8 so the dashboard doesn't turn into an endless list.
-    const upcoming = aJobs
-      .filter((j) => j.scheduled_for > today && j.status !== 'cancelled')
-      .sort((a, b) => a.scheduled_for.localeCompare(b.scheduled_for))
-      .slice(0, 8);
-    upcomingList.innerHTML = upcoming.length
-      ? upcoming.map((j) => jobRowHtml(j, conflictIds.has(j.id))).join('')
-      : '<div class="empty-state">No upcoming jobs on the books.</div>';
+    if (homeFilterBanner) {
+      homeFilterBanner.hidden = !homeFilter;
+      if (homeFilter) homeFilterLabel.textContent = 'Showing: ' + NEEDS_ATTENTION_META[homeFilter].label;
+    }
+
+    // When a "Needs attention" chip is active, Today/Upcoming both show
+    // exactly that group's jobs instead of their normal contents — a
+    // contractor can go from "3 jobs need confirmation" to seeing exactly
+    // which 3 jobs in one click, rather than hunting for them.
+    if (homeFilter) {
+      const filtered = groups[homeFilter].slice().sort((a, b) => a.scheduled_for.localeCompare(b.scheduled_for) || a.title.localeCompare(b.title));
+      todayList.innerHTML = filtered.length
+        ? filtered.map((j) => jobRowHtml(j, conflictIds.has(j.id))).join('')
+        : '<div class="empty-state">Nothing matches this filter.</div>';
+      upcomingList.innerHTML = '';
+    } else {
+      // "Today": jobs whose scheduled_for is literally today's date.
+      const todays = aJobs.filter((j) => j.scheduled_for === today).sort((a, b) => a.title.localeCompare(b.title));
+      todayList.innerHTML = todays.length
+        ? todays.map((j) => jobRowHtml(j, conflictIds.has(j.id))).join('')
+        : '<div class="empty-state">Nothing scheduled today.</div>';
+
+      // "Upcoming work": future, not-cancelled jobs, soonest first, capped
+      // at 8 so the dashboard doesn't turn into an endless list.
+      const upcoming = aJobs
+        .filter((j) => j.scheduled_for > today && j.status !== 'cancelled')
+        .sort((a, b) => a.scheduled_for.localeCompare(b.scheduled_for))
+        .slice(0, 8);
+      upcomingList.innerHTML = upcoming.length
+        ? upcoming.map((j) => jobRowHtml(j, conflictIds.has(j.id))).join('')
+        : '<div class="empty-state">No upcoming jobs on the books.</div>';
+    }
 
     // Because we just replaced all this HTML with innerHTML, any click
     // listeners that were attached to the old elements are gone too —
@@ -390,7 +536,9 @@ import { assigneeLabel } from '../shared-data/jobPresentation.js';
     dayAgenda.innerHTML = dayJobs.map((job) =>
       '<div class="agenda-item" data-job-id="' + job.id + '">' +
         '<div><strong>' + escapeHtml(job.title) + '</strong>' +
-          '<div class="muted">' + escapeHtml(clientName(job.client_id, clients)) + ' · ' + escapeHtml(assigneeLabel(job.assignee)) + '</div>' +
+          '<div class="muted">' + escapeHtml(clientName(job.client_id, clients)) + ' · ' + escapeHtml(assigneeLabel(job.assignee)) +
+            (job.scheduled_start_time ? ' · ' + formatTime(job.scheduled_start_time) : '') + '</div>' +
+          jobContactLinesHtml(job) +
           (conflictIds.has(job.id) ? conflictFlagHtml() : '') +
         '</div>' + statusBadge(job.status) +
       '</div>'
@@ -450,7 +598,7 @@ import { assigneeLabel } from '../shared-data/jobPresentation.js';
       const jobCount = aJobs.filter((j) => j.client_id === c.id).length;
       return (
         '<div class="client-row" data-client-id="' + c.id + '">' +
-          '<div><strong>' + escapeHtml(c.name) + '</strong><div class="muted">' + escapeHtml(c.city || 'No city on file') + '</div></div>' +
+          '<div><strong>' + escapeHtml(c.name) + '</strong><div class="muted">' + escapeHtml(clientAddressLine(c)) + '</div></div>' +
           '<div style="display:flex;align-items:center;gap:12px">' +
             '<span class="muted">' + jobCount + ' job' + (jobCount === 1 ? '' : 's') + '</span>' +
             '<button type="button" class="btn-ghost edit-client" data-client-id="' + c.id + '">Edit</button>' +
@@ -487,7 +635,8 @@ import { assigneeLabel } from '../shared-data/jobPresentation.js';
         title: '',
         scheduled_for: prefillDate || REPORTING.isoDate,
         status: 'scheduled',
-        assignee: TEAM_MEMBERS[0],
+        assignee: '',
+        appointment_confirmation_status: 'pending',
       },
     };
     renderAll();
@@ -498,7 +647,10 @@ import { assigneeLabel } from '../shared-data/jobPresentation.js';
   // the array to update (or delete) when Save/Delete is clicked, even
   // though the draft's own `id` field isn't shown/edited in the form.
   function openEditJob(job) {
-    jobModal = { mode: 'edit', originalId: job.id, draft: Object.assign({}, job) };
+    // deleteArmed tracks a two-click "are you sure" confirmation for the
+    // Delete button (see deleteJob below) — starts disarmed every time the
+    // modal opens.
+    jobModal = { mode: 'edit', originalId: job.id, draft: Object.assign({}, job), deleteArmed: false, deleteArmTimer: null };
     renderAll();
   }
 
@@ -514,33 +666,78 @@ import { assigneeLabel } from '../shared-data/jobPresentation.js';
     const { mode, draft } = jobModal;
     jobModalTitle.textContent = mode === 'new' ? 'New job' : 'Edit job';
 
-    jobClientSel.innerHTML = accountClients().map((c) => '<option value="' + c.id + '">' + escapeHtml(c.name) + '</option>').join('');
+    const clientsForAccount = accountClients();
+    jobClientSel.innerHTML = clientsForAccount.map((c) => '<option value="' + c.id + '">' + escapeHtml(c.name) + '</option>').join('');
     jobClientSel.value = draft.client_id;
+
+    // With zero clients, the select above renders empty and there's no
+    // way to fill in a required field — Save would just stay disabled
+    // forever with no explanation. Surface that directly instead of
+    // leaving it a silent dead end, with a way out right there.
+    const hasNoClients = clientsForAccount.length === 0;
+    jobNoClientNotice.hidden = !hasNoClients;
+    jobClientSel.hidden = hasNoClients;
 
     jobTitleInput.value = draft.title;
     jobDateInput.value = draft.scheduled_for;
+    if (jobStartTimeInput) jobStartTimeInput.value = draft.scheduled_start_time || '';
 
-    jobAssigneeSel.innerHTML = TEAM_MEMBERS.map((name) => '<option value="' + name + '">' + escapeHtml(name) + '</option>').join('');
-    jobAssigneeSel.value = draft.assignee;
+    jobAssigneeSel.innerHTML = '<option value="">Unassigned</option>' +
+      TEAM_MEMBERS.map((name) => '<option value="' + name + '">' + escapeHtml(name) + '</option>').join('');
+    jobAssigneeSel.value = draft.assignee || '';
 
     jobStatusSel.innerHTML = STATUS_VALUES.map((s) => '<option value="' + s + '">' + STATUS_LABELS[s] + '</option>').join('');
     jobStatusSel.value = draft.status;
 
+    if (jobConfirmationSel) {
+      jobConfirmationSel.innerHTML = CONFIRMATION_VALUES.map((s) => '<option value="' + s + '">' + CONFIRMATION_LABELS[s] + '</option>').join('');
+      jobConfirmationSel.value = confirmationStatus(draft);
+    }
+    if (jobContactMethodSel) {
+      jobContactMethodSel.innerHTML = '<option value="">—</option>' +
+        CONTACT_METHODS.map((m) => '<option value="' + m + '">' + CONTACT_METHOD_LABELS[m] + '</option>').join('');
+      jobContactMethodSel.value = draft.contact_method || '';
+    }
+    if (jobConfirmedByInput) jobConfirmedByInput.value = draft.confirmed_by || '';
+    if (jobConfirmationNoteInput) jobConfirmationNoteInput.value = draft.confirmation_note || '';
+    if (jobConfirmationMeta) {
+      const bits = [];
+      if (draft.last_contacted_at) bits.push('Last contacted ' + formatDate(draft.last_contacted_at));
+      if (draft.confirmed_at) bits.push('Confirmed ' + formatDate(draft.confirmed_at) + (draft.confirmed_by ? ' by ' + escapeHtml(draft.confirmed_by) : ''));
+      jobConfirmationMeta.textContent = bits.join(' · ');
+      jobConfirmationMeta.hidden = !bits.length;
+    }
+
     deleteJobBtn.hidden = mode !== 'edit';
+    deleteJobBtn.textContent = jobModal.deleteArmed ? 'Click again to delete' : 'Delete';
+    deleteJobBtn.classList.toggle('is-armed', !!jobModal.deleteArmed);
 
     // Live conflict check: would saving this draft as-is create a
-    // same-assignee/same-date collision with some *other* job? We
-    // exclude the job currently being edited (j.id !== jobModal.originalId)
-    // so editing a job doesn't flag itself as conflicting with itself.
-    const wouldConflict = jobs.some((j) =>
-      j.id !== jobModal.originalId &&
-      j.assignee === draft.assignee &&
-      j.scheduled_for === draft.scheduled_for &&
-      j.status !== 'cancelled'
-    );
-    jobConflictWarning.hidden = !wouldConflict;
-    if (wouldConflict) {
-      jobConflictWarning.textContent = '⚠ ' + draft.assignee + ' already has a job on ' + formatDate(draft.scheduled_for);
+    // same-assignee/same-date(/same-time) collision with some *other* job?
+    // We exclude the job currently being edited (j.id !== jobModal.originalId),
+    // so editing a job doesn't flag itself as conflicting with itself, and
+    // skip it entirely for Unassigned since "double-booking" isn't a
+    // meaningful concept until someone's actually assigned.
+    const conflictingJobs = draft.assignee
+      ? jobs.filter((j) =>
+          j.id !== jobModal.originalId &&
+          j.assignee === draft.assignee &&
+          j.scheduled_for === draft.scheduled_for &&
+          j.status !== 'cancelled' &&
+          sameTimeSlot(j, draft)
+        )
+      : [];
+    jobConflictWarning.hidden = conflictingJobs.length === 0;
+    if (conflictingJobs.length > 0) {
+      // Only call out the specific time in the message when every
+      // conflicting job actually shares it — if one of them has no time
+      // recorded, we genuinely don't know whether it's the same slot, just
+      // that we can't rule it out, so the message stays date-only for that.
+      const allSameTime = draft.scheduled_start_time && conflictingJobs.every((j) => j.scheduled_start_time === draft.scheduled_start_time);
+      jobConflictWarning.textContent = '⚠ ' + draft.assignee + ' already has ' +
+        (conflictingJobs.length === 1 ? 'a job' : conflictingJobs.length + ' jobs') +
+        (allSameTime ? ' at ' + formatTime(draft.scheduled_start_time) : '') +
+        ' on ' + formatDate(draft.scheduled_for) + '.';
     }
 
     // Save is disabled until the required fields are actually filled in.
@@ -553,6 +750,9 @@ import { assigneeLabel } from '../shared-data/jobPresentation.js';
   function updateJobDraft(patch) {
     if (!jobModal) return;
     jobModal.draft = Object.assign({}, jobModal.draft, patch);
+    // Editing a field after arming Delete cancels the pending confirm —
+    // you're clearly not about to delete if you're still typing.
+    if (jobModal.deleteArmed) { jobModal.deleteArmed = false; clearTimeout(jobModal.deleteArmTimer); }
     renderJobModal();
   }
 
@@ -560,16 +760,49 @@ import { assigneeLabel } from '../shared-data/jobPresentation.js';
   // (with a freshly generated id) in 'new' mode, or replaces the
   // matching job in place in 'edit' mode. Saves to localStorage and
   // closes the modal afterward.
+  // Auto-stamps last_contacted_at / confirmed_at the first time a job's
+  // confirmation status actually moves into that state, rather than
+  // requiring the user to fill in a date by hand. `previous` is the job's
+  // prior saved state (undefined for a brand-new job), so re-saving with
+  // the same status doesn't keep bumping the timestamp.
+  function withConfirmationStamps(draft, previous) {
+    const next = Object.assign({}, draft);
+    const status = confirmationStatus(next);
+    const wasContacted = previous && previous.last_contacted_at;
+    if (status !== 'pending' && !wasContacted) next.last_contacted_at = REPORTING.isoDate;
+    const wasConfirmed = previous && previous.confirmed_at;
+    if (status === 'confirmed' && !wasConfirmed) next.confirmed_at = REPORTING.isoDate;
+    if (status !== 'confirmed') next.confirmed_at = previous ? previous.confirmed_at : undefined;
+    return next;
+  }
+
   async function saveJob() {
     if (!jobModal) return;
     const { draft, mode, originalId } = jobModal;
     if (!draft.title.trim() || !draft.client_id || !draft.scheduled_for) return;
+    const previous = mode === 'edit' ? jobs.find((j) => j.id === originalId) : null;
+    const stamped = withConfirmationStamps(draft, previous);
+    saveJobBtn.disabled = true;
     if (mode === 'new') {
-      const nextJob = Object.assign({ id: makeId('job'), account_id: ACCOUNT_ID }, draft, { title: draft.title.trim() });
-      jobs.push(LIVE_MODE ? await createJob(nextJob) : nextJob);
+      const nextJob = Object.assign({ id: makeId('job'), account_id: ACCOUNT_ID }, stamped, { title: stamped.title.trim() });
+      try {
+        jobs.push(LIVE_MODE ? await createJob(nextJob) : nextJob);
+      } catch (error) {
+        saveJobBtn.disabled = false;
+        jobConflictWarning.hidden = false;
+        jobConflictWarning.textContent = error.message || 'The job could not be saved. Try again.';
+        return;
+      }
     } else {
-      if (LIVE_MODE) await updateJob(originalId, Object.assign({}, draft, { title: draft.title.trim() }));
-      jobs = jobs.map((j) => (j.id === originalId ? Object.assign({}, j, draft, { title: draft.title.trim() }) : j));
+      try {
+        if (LIVE_MODE) await updateJob(originalId, Object.assign({}, stamped, { title: stamped.title.trim() }));
+      } catch (error) {
+        saveJobBtn.disabled = false;
+        jobConflictWarning.hidden = false;
+        jobConflictWarning.textContent = error.message || 'The job could not be saved. Try again.';
+        return;
+      }
+      jobs = jobs.map((j) => (j.id === originalId ? Object.assign({}, j, stamped, { title: stamped.title.trim() }) : j));
     }
     persist();
     closeJobModal();
@@ -578,9 +811,31 @@ import { assigneeLabel } from '../shared-data/jobPresentation.js';
   // Removes the job being edited from the `jobs` array entirely. Only
   // available in 'edit' mode (there's nothing to delete for a job that
   // hasn't been saved yet).
+  //
+  // Deleting is permanent (no undo), so this is a two-click confirm rather
+  // than deleting on the first click: the first click just "arms" the
+  // button (label flips to "Click again to delete"); the second click
+  // within a few seconds actually deletes. If you don't click again, it
+  // auto-disarms so the button doesn't stay stuck on "confirm" forever.
+  // (Same reasoning as the inline notices elsewhere in this file: a native
+  // confirm() dialog blocks the page and isn't reliable in sandboxed/
+  // embedded previews, so this stays inline instead.)
   async function deleteJob() {
     if (!jobModal || !jobModal.originalId) return;
-    const id = jobModal.originalId;
+    const modalRef = jobModal;
+    if (!modalRef.deleteArmed) {
+      modalRef.deleteArmed = true;
+      renderJobModal();
+      clearTimeout(modalRef.deleteArmTimer);
+      modalRef.deleteArmTimer = window.setTimeout(() => {
+        // Only disarm if this is still the open modal — the user could
+        // have closed it and opened a different job's modal by now.
+        if (jobModal === modalRef) { modalRef.deleteArmed = false; renderJobModal(); }
+      }, 3500);
+      return;
+    }
+    clearTimeout(modalRef.deleteArmTimer);
+    const id = modalRef.originalId;
     if (LIVE_MODE) await deleteLiveJob(id);
     jobs = jobs.filter((j) => j.id !== id);
     persist();
@@ -593,14 +848,16 @@ import { assigneeLabel } from '../shared-data/jobPresentation.js';
   // Mirrors the job modal's new/edit/draft pattern above, just for the
   // (much simpler) client record: name + city.
 
+  const EMPTY_CLIENT_DRAFT = { name: '', building_number: '', street_name: '', city: '', state: '', zip_code: '', client_phone: '' };
+
   function openNewClient() {
-    clientModal = { mode: 'new', draft: { name: '', city: '' } };
+    clientModal = { mode: 'new', draft: Object.assign({}, EMPTY_CLIENT_DRAFT) };
     clientNotice = '';
     renderAll();
   }
 
   function openEditClient(client) {
-    clientModal = { mode: 'edit', originalId: client.id, draft: { name: client.name, city: client.city } };
+    clientModal = { mode: 'edit', originalId: client.id, draft: Object.assign({}, EMPTY_CLIENT_DRAFT, client), deleteArmed: false, deleteArmTimer: null };
     clientNotice = '';
     renderAll();
   }
@@ -613,8 +870,15 @@ import { assigneeLabel } from '../shared-data/jobPresentation.js';
     const { mode, draft } = clientModal;
     clientModalTitle.textContent = mode === 'new' ? 'New client' : 'Edit client';
     clientNameInput.value = draft.name;
+    clientBuildingNumberInput.value = draft.building_number;
+    clientStreetNameInput.value = draft.street_name;
     clientCityInput.value = draft.city;
+    clientStateInput.value = draft.state;
+    clientZipInput.value = draft.zip_code;
+    clientPhoneInput.value = draft.client_phone;
     deleteClientBtn.hidden = mode !== 'edit';
+    deleteClientBtn.textContent = clientModal.deleteArmed ? 'Click again to delete' : 'Delete';
+    deleteClientBtn.classList.toggle('is-armed', !!clientModal.deleteArmed);
     clientNoticeEl.hidden = !clientNotice;
     clientNoticeEl.textContent = clientNotice;
     saveClientBtn.disabled = !draft.name.trim();
@@ -623,6 +887,7 @@ import { assigneeLabel } from '../shared-data/jobPresentation.js';
   function updateClientDraft(patch) {
     if (!clientModal) return;
     clientModal.draft = Object.assign({}, clientModal.draft, patch);
+    if (clientModal.deleteArmed) { clientModal.deleteArmed = false; clearTimeout(clientModal.deleteArmTimer); }
     renderClientModal();
   }
 
@@ -639,32 +904,72 @@ import { assigneeLabel } from '../shared-data/jobPresentation.js';
       renderClientModal();
       return;
     }
+    const cleaned = {
+      name: draft.name.trim(),
+      building_number: draft.building_number.trim(),
+      street_name: draft.street_name.trim(),
+      city: draft.city.trim(),
+      state: draft.state.trim().toUpperCase(),
+      zip_code: draft.zip_code.trim(),
+      client_phone: draft.client_phone.trim(),
+    };
+    saveClientBtn.disabled = true;
     if (mode === 'new') {
-      const nextClient = { id: makeId('client'), account_id: ACCOUNT_ID, name: draft.name.trim(), city: draft.city.trim() };
-      clients.push(LIVE_MODE ? await createFieldflowClient(nextClient) : nextClient);
+      const nextClient = Object.assign({ id: makeId('client'), account_id: ACCOUNT_ID }, cleaned);
+      try {
+        clients.push(LIVE_MODE ? await createFieldflowClient(nextClient) : nextClient);
+      } catch (error) {
+        saveClientBtn.disabled = false;
+        clientNotice = error.message || 'The client could not be saved. Try again.';
+        renderClientModal();
+        return;
+      }
     } else {
-      if (LIVE_MODE) await updateClient(originalId, { name: draft.name.trim(), city: draft.city.trim() });
-      clients = clients.map((c) => (c.id === originalId ? Object.assign({}, c, { name: draft.name.trim(), city: draft.city.trim() }) : c));
+      try {
+        if (LIVE_MODE) await updateClient(originalId, cleaned);
+      } catch (error) {
+        saveClientBtn.disabled = false;
+        clientNotice = error.message || 'The client could not be saved. Try again.';
+        renderClientModal();
+        return;
+      }
+      clients = clients.map((c) => (c.id === originalId ? Object.assign({}, c, cleaned) : c));
     }
     persist();
     closeClientModal();
   }
 
-  // Deleting a client is guarded: if they still have jobs on the
-  // schedule, we refuse and show an inline warning instead of silently
-  // leaving those jobs pointing at a client_id that no longer exists.
-  // (We use an inline message here rather than a browser confirm()/alert()
-  // dialog, since those block the page and aren't reliable inside
-  // embedded/sandboxed previews.)
+  // Deleting a client is guarded two ways:
+  //  1. If they still have jobs on the schedule, we refuse outright and
+  //     show an inline warning instead of silently leaving those jobs
+  //     pointing at a client_id that no longer exists.
+  //  2. Otherwise, deleting is a two-click confirm — same pattern as
+  //     deleteJob() above — since it's permanent and there's no undo.
+  // (We use inline messages/button states here rather than a browser
+  // confirm()/alert() dialog, since those block the page and aren't
+  // reliable inside embedded/sandboxed previews.)
   async function deleteClientFn() {
     if (!clientModal || !clientModal.originalId) return;
-    const id = clientModal.originalId;
+    const modalRef = clientModal;
+    const id = modalRef.originalId;
     const hasJobs = accountJobs().some((j) => j.client_id === id);
     if (hasJobs) {
       clientNotice = 'This client has jobs on the schedule — reassign or delete those jobs first.';
+      modalRef.deleteArmed = false;
+      clearTimeout(modalRef.deleteArmTimer);
       renderClientModal();
       return;
     }
+    if (!modalRef.deleteArmed) {
+      modalRef.deleteArmed = true;
+      renderClientModal();
+      clearTimeout(modalRef.deleteArmTimer);
+      modalRef.deleteArmTimer = window.setTimeout(() => {
+        if (clientModal === modalRef) { modalRef.deleteArmed = false; renderClientModal(); }
+      }, 3500);
+      return;
+    }
+    clearTimeout(modalRef.deleteArmTimer);
     if (LIVE_MODE) await deleteClient(id);
     clients = clients.filter((c) => c.id !== id);
     persist();
@@ -684,6 +989,7 @@ import { assigneeLabel } from '../shared-data/jobPresentation.js';
 
   newJobBtn.addEventListener('click', () => openNewJob());
   newClientBtn.addEventListener('click', () => openNewClient());
+  if (homeFilterClearBtn) homeFilterClearBtn.addEventListener('click', () => { homeFilter = null; renderAll(); });
 
   tabBtns.forEach((btn) => btn.addEventListener('click', () => { tab = btn.dataset.tab; renderAll(); }));
   modeBtns.forEach((btn) => btn.addEventListener('click', () => { calMode = btn.dataset.mode; renderAll(); }));
@@ -707,11 +1013,25 @@ import { assigneeLabel } from '../shared-data/jobPresentation.js';
   jobClientSel.addEventListener('change', (e) => updateJobDraft({ client_id: e.target.value }));
   jobTitleInput.addEventListener('input', (e) => updateJobDraft({ title: e.target.value }));
   jobDateInput.addEventListener('change', (e) => updateJobDraft({ scheduled_for: e.target.value }));
+  if (jobStartTimeInput) jobStartTimeInput.addEventListener('change', (e) => updateJobDraft({ scheduled_start_time: e.target.value }));
   jobAssigneeSel.addEventListener('change', (e) => updateJobDraft({ assignee: e.target.value }));
   jobStatusSel.addEventListener('change', (e) => updateJobDraft({ status: e.target.value }));
+  if (jobConfirmationSel) jobConfirmationSel.addEventListener('change', (e) => updateJobDraft({ appointment_confirmation_status: e.target.value }));
+  if (jobContactMethodSel) jobContactMethodSel.addEventListener('change', (e) => updateJobDraft({ contact_method: e.target.value }));
+  if (jobConfirmedByInput) jobConfirmedByInput.addEventListener('input', (e) => updateJobDraft({ confirmed_by: e.target.value }));
+  if (jobConfirmationNoteInput) jobConfirmationNoteInput.addEventListener('input', (e) => updateJobDraft({ confirmation_note: e.target.value }));
   saveJobBtn.addEventListener('click', saveJob);
   deleteJobBtn.addEventListener('click', deleteJob);
   cancelJobBtn.addEventListener('click', closeJobModal);
+  // "Add a client" inside the no-clients notice: closes New Job and opens
+  // New Client instead. Not trying to keep New Job open underneath and
+  // return to it automatically — that'd mean stacking two modals, not
+  // worth the complexity here. User just reopens New Job afterward and
+  // the client they added is there.
+  jobNoClientAddBtn.addEventListener('click', () => {
+    closeJobModal();
+    openNewClient();
+  });
   // Clicking the dimmed backdrop (but not the card itself) closes the
   // modal, like clicking "outside" a dialog normally does.
   jobModalBackdrop.addEventListener('click', (e) => { if (e.target === jobModalBackdrop) closeJobModal(); });
@@ -722,7 +1042,12 @@ import { assigneeLabel } from '../shared-data/jobPresentation.js';
 
   // Client modal field bindings
   clientNameInput.addEventListener('input', (e) => updateClientDraft({ name: e.target.value }));
+  clientBuildingNumberInput.addEventListener('input', (e) => updateClientDraft({ building_number: e.target.value }));
+  clientStreetNameInput.addEventListener('input', (e) => updateClientDraft({ street_name: e.target.value }));
   clientCityInput.addEventListener('input', (e) => updateClientDraft({ city: e.target.value }));
+  clientStateInput.addEventListener('input', (e) => updateClientDraft({ state: e.target.value }));
+  clientZipInput.addEventListener('input', (e) => updateClientDraft({ zip_code: e.target.value }));
+  clientPhoneInput.addEventListener('input', (e) => updateClientDraft({ client_phone: e.target.value }));
   saveClientBtn.addEventListener('click', saveClientFn);
   deleteClientBtn.addEventListener('click', deleteClientFn);
   cancelClientBtn.addEventListener('click', closeClientModal);
