@@ -90,14 +90,17 @@ if (!isSupabaseConfigured && isMockContractor(currentUser)) {
   // ternaried on a build-time constant, so Vite dead-code-eliminates it
   // (and these strings with it) out of the production bundle entirely -
   // verify-production-bundle.mjs enforces this. The real Supabase
-  // passwords below don't get that protection (isSupabaseConfigured is a
-  // runtime value), which is the accepted tradeoff noted in 310b9a5.
+  // passwords come from .env (VITE_JOHN_TEST_PASSWORD / VITE_SARAH_TEST_
+  // PASSWORD, gitignored) rather than being written here as literals -
+  // they still end up in the built browser bundle (unavoidable for an
+  // auto-submit login button, and the accepted tradeoff noted in 310b9a5),
+  // but this keeps the actual values out of git history.
   const QUICK_SIGN_IN_ACCOUNTS = {
     quickSignInJohn: isSupabaseConfigured
-      ? { email: 'john@fieldflow.demo', password: '8QXSDfbmH-DujdbLQMO0y2s4aA7!' }
+      ? { email: 'john@fieldflow.demo', password: import.meta.env.VITE_JOHN_TEST_PASSWORD }
       : { email: 'john@fieldflow.demo', password: mockUsers.find((user) => user.id === 'john')?.password },
     quickSignInSarah: isSupabaseConfigured
-      ? { email: 'sarah@fieldflow.demo', password: 'G-EJyv4LikxYzMj1Zdyfw2K_aA7!' }
+      ? { email: 'sarah@fieldflow.demo', password: import.meta.env.VITE_SARAH_TEST_PASSWORD }
       : { email: 'sarah@fieldflow.demo', password: mockUsers.find((user) => user.id === 'sarah')?.password },
   };
   Object.entries(QUICK_SIGN_IN_ACCOUNTS).forEach(([buttonId, credentials]) => {
