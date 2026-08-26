@@ -11,6 +11,29 @@ async function signIn(page, email, password) {
   await expect(page.locator('#schedulingApp')).toBeVisible();
 }
 
+// Scheduling no longer has its own "Support Chat" link (superseded by the
+// floating widget everywhere), so tests that need the chatbot's own
+// full-page UI navigate straight there, reproducing what the old link used
+// to do: carry the identity/date query params Scheduling's URL already has
+// post-sign-in (see mockSession.js's buildMockAppLink), plus any local demo
+// edits (e.g. a client added in this test) via the same `demo_state` param
+// mockDataSession.js's buildMockDataLink attaches - window.name alone isn't
+// a reliable cross-origin carrier for these edits in every browser.
+async function openChat(page) {
+  const chatUrl = new URL('http://127.0.0.1:5175/');
+  chatUrl.search = new URL(page.url()).search;
+  const demoState = await page.evaluate(() => {
+    try {
+      const changes = JSON.parse(window.name || '{}')?.fieldflowMockData?.changes;
+      return changes && Object.keys(changes).length ? JSON.stringify({ changes }) : null;
+    } catch {
+      return null;
+    }
+  });
+  if (demoState) chatUrl.searchParams.set('demo_state', demoState);
+  await page.goto(chatUrl.toString());
+}
+
 test('rejects another demo user’s password and supports the reset flow', async ({ page }) => {
   await page.goto(schedulingUrl);
   await page.locator('#mockLoginForm').getByLabel('Email').fill('john@fieldflow.demo');
@@ -39,7 +62,7 @@ test('John sees Northstar data and carries that identity to Analytics and Chatbo
   await expect(page.getByRole('link', { name: 'Support Chat' })).toHaveAttribute('href', /demo_user=john/);
 
   await page.goBack();
-  await page.getByRole('link', { name: 'Support Chat' }).click();
+  await openChat(page);
   await expect(page).toHaveURL(/demo_user=john/);
   await expect(page.locator('#accountSelect')).toHaveValue('acct_northstar');
   await expect(page.locator('#accountSelect')).toBeDisabled();
@@ -71,7 +94,7 @@ test('demo reporting date follows the user across Scheduling, Analytics, and Cha
   await expect(page).toHaveURL(/reporting_date=today/);
   await expect(page.getByText(/Live-date preview — reporting as of/)).toBeVisible();
 
-  await page.getByRole('link', { name: 'Support Chat' }).click();
+  await openChat(page);
   await expect(page).toHaveURL(/reporting_date=today/);
   await expect(page.locator('#chatDemoNotice')).toContainText('Live-date preview');
   await page.getByRole('button', { name: 'Return to demo date' }).click();
@@ -95,7 +118,7 @@ test('Scheduling edits follow the same demo account into Analytics and Chatbot',
   await page.locator('#clientCity').fill('Raleigh');
   await page.getByRole('button', { name: 'Save' }).click();
   await page.getByRole('button', { name: 'Home' }).click();
-  await page.getByRole('link', { name: 'Support Chat' }).click();
+  await openChat(page);
   await page.locator('#chatInput').fill('Tell me about Integration Client');
   await page.getByRole('button', { name: /^Send/ }).click();
   await expect(page.locator('#messageList')).toContainText('Integration Client is in Raleigh');
@@ -171,7 +194,7 @@ test('new account creates an empty company context and supports keyboard navigat
   await expect(page.locator('#schedulingApp')).toBeVisible();
   await expect(page.locator('#accountLine')).toContainText('Avery Plumbing');
 
-  await page.getByRole('link', { name: 'Support Chat' }).click();
+  await openChat(page);
   await expect(page.locator('#chatApp')).toBeVisible();
   await expect(page.locator('#messageList')).toContainText('Your account has no jobs yet');
   await page.locator('#chatInput').fill("What's my plan?");

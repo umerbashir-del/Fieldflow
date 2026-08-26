@@ -252,24 +252,9 @@ import { assigneeLabel } from '../shared-data/jobPresentation.js';
       analyticsLink.href = buildMockDataLink(analyticsLink.href);
     });
   }
-  const chatLink = el('chatLink');
-  if (chatLink) {
-    const link = new URL(APP_URLS.chatbot);
-    const query = new URLSearchParams(window.location.search);
-    link.searchParams.set('account_id', ACCOUNT_ID);
-    ['demo_user', 'demo_name', 'demo_email', 'demo_company'].forEach((name) => {
-      if (query.get(name)) link.searchParams.set(name, query.get(name));
-    });
-    chatLink.href = withReportingDate(link.toString(), REPORTING);
-    chatLink.addEventListener('click', () => {
-      chatLink.href = buildMockDataLink(chatLink.href);
-    });
-  }
-
   function refreshMockDataLinks() {
     if (LIVE_MODE) return;
     if (analyticsLink) analyticsLink.href = buildMockDataLink(analyticsLink.href);
-    if (chatLink) chatLink.href = buildMockDataLink(chatLink.href);
   }
 
   // Job modal elements — the popup used for both "New job" and "Edit job".

@@ -1,5 +1,5 @@
 import { clearMockDataSession } from '../shared-data/mockDataSession.js';
-import { authenticateMockUser, buildMockAppLink, createMockAccount, isDemoModeAvailable, isMockContractor, mockUserFromSearch } from '../shared-data/mockSession.js';
+import { authenticateMockUser, buildMockAppLink, createMockAccount, isDemoModeAvailable, isMockContractor, mockUserFromSearch, mockUsers } from '../shared-data/mockSession.js';
 import { getSignedInAccount, isSupabaseConfigured, sendPasswordReset, signIn, signOut, signUpBusiness } from '../shared-data/supabase.js';
 import { friendlyAuthError, passwordResetConfirmation } from '../shared-data/authMessages.js';
 
@@ -85,13 +85,20 @@ if (!isSupabaseConfigured && isMockContractor(currentUser)) {
     event.preventDefault();
     attemptSignIn(email.value, password.value);
   });
+  // Demo-mode passwords come from mockUsers (shared-data/mockSession.js)
+  // rather than being written here as literals: that array is itself
+  // ternaried on a build-time constant, so Vite dead-code-eliminates it
+  // (and these strings with it) out of the production bundle entirely -
+  // verify-production-bundle.mjs enforces this. The real Supabase
+  // passwords below don't get that protection (isSupabaseConfigured is a
+  // runtime value), which is the accepted tradeoff noted in 310b9a5.
   const QUICK_SIGN_IN_ACCOUNTS = {
     quickSignInJohn: isSupabaseConfigured
       ? { email: 'john@fieldflow.demo', password: '8QXSDfbmH-DujdbLQMO0y2s4aA7!' }
-      : { email: 'john@fieldflow.demo', password: 'john-demo-password' },
+      : { email: 'john@fieldflow.demo', password: mockUsers.find((user) => user.id === 'john')?.password },
     quickSignInSarah: isSupabaseConfigured
       ? { email: 'sarah@fieldflow.demo', password: 'G-EJyv4LikxYzMj1Zdyfw2K_aA7!' }
-      : { email: 'sarah@fieldflow.demo', password: 'sarah-demo-password' },
+      : { email: 'sarah@fieldflow.demo', password: mockUsers.find((user) => user.id === 'sarah')?.password },
   };
   Object.entries(QUICK_SIGN_IN_ACCOUNTS).forEach(([buttonId, credentials]) => {
     document.getElementById(buttonId)?.addEventListener('click', () => attemptSignIn(credentials.email, credentials.password));
