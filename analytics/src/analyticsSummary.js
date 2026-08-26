@@ -39,18 +39,30 @@ export function toIsoDate(date) {
   return date.toISOString().slice(0, 10);
 }
 
-export function buildAnalyticsSummary(jobs, accountId, timeframe, referenceDate = new Date()) {
+function validCustomPeriod(customRange) {
+  if (!customRange?.start || !customRange?.end) return null;
+  const start = toUtcDate(customRange.start);
+  const end = new Date(toUtcDate(customRange.end).getTime() + DAY);
+  const days = Math.round((end - start) / DAY);
+  if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime()) || days < 1 || days > 90) return null;
+  return { start, end, days };
+}
+
+export function buildAnalyticsSummary(jobs, accountId, timeframe, referenceDate = new Date(), customRange) {
   const thisWeekStart = startOfWeek(referenceDate);
   const periods = {
-    this_week: { weeks: 1, start: thisWeekStart, label: 'This week', jobsLabel: 'Jobs this week', comparisonLabel: 'Previous week', granularity: 'day' },
-    last_week: { weeks: 1, start: new Date(thisWeekStart.getTime() - 7 * DAY), label: 'Last week', jobsLabel: 'Jobs last week', comparisonLabel: 'Previous week', granularity: 'day' },
-    last_two_weeks: { weeks: 2, start: new Date(thisWeekStart.getTime() - 7 * DAY), label: 'Last 2 weeks', jobsLabel: 'Jobs last 2 weeks', comparisonLabel: 'Previous 2 weeks', granularity: 'week' },
-    last_three_weeks: { weeks: 3, start: new Date(thisWeekStart.getTime() - 14 * DAY), label: 'Last 3 weeks', jobsLabel: 'Jobs last 3 weeks', comparisonLabel: 'Previous 3 weeks', granularity: 'week' },
-    last_four_weeks: { weeks: 4, start: new Date(thisWeekStart.getTime() - 3 * 7 * DAY), label: 'Last 4 weeks', jobsLabel: 'Jobs last 4 weeks', comparisonLabel: 'Previous 4 weeks', granularity: 'week' },
+    this_week: { days: 7, start: thisWeekStart, label: 'This week', jobsLabel: 'Jobs this week', comparisonLabel: 'Previous week', granularity: 'day' },
+    last_week: { days: 7, start: new Date(thisWeekStart.getTime() - 7 * DAY), label: 'Last week', jobsLabel: 'Jobs last week', comparisonLabel: 'Previous week', granularity: 'day' },
+    last_two_weeks: { days: 14, start: new Date(thisWeekStart.getTime() - 7 * DAY), label: 'Last 2 weeks', jobsLabel: 'Jobs last 2 weeks', comparisonLabel: 'Previous 2 weeks', granularity: 'week' },
+    last_three_weeks: { days: 21, start: new Date(thisWeekStart.getTime() - 14 * DAY), label: 'Last 3 weeks', jobsLabel: 'Jobs last 3 weeks', comparisonLabel: 'Previous 3 weeks', granularity: 'week' },
+    last_four_weeks: { days: 28, start: new Date(thisWeekStart.getTime() - 3 * 7 * DAY), label: 'Last 4 weeks', jobsLabel: 'Jobs last 4 weeks', comparisonLabel: 'Previous 4 weeks', granularity: 'week' },
   };
-  const selectedPeriod = periods[timeframe] ?? periods.this_week;
-  const selectedEnd = new Date(selectedPeriod.start.getTime() + selectedPeriod.weeks * 7 * DAY);
-  const comparisonStart = new Date(selectedPeriod.start.getTime() - selectedPeriod.weeks * 7 * DAY);
+  const customPeriod = timeframe === 'custom_range' ? validCustomPeriod(customRange) : null;
+  const selectedPeriod = customPeriod
+    ? { days: customPeriod.days, start: customPeriod.start, label: 'Custom range', jobsLabel: 'Jobs in selected range', comparisonLabel: 'Previous matching period', granularity: customPeriod.days <= 14 ? 'day' : 'week' }
+    : periods[timeframe] ?? periods.this_week;
+  const selectedEnd = customPeriod?.end ?? new Date(selectedPeriod.start.getTime() + selectedPeriod.days * DAY);
+  const comparisonStart = new Date(selectedPeriod.start.getTime() - selectedPeriod.days * DAY);
   const accountJobs = jobs.filter((job) => job.account_id === accountId);
   const selectedJobs = accountJobs.filter((job) => isInRange(job, selectedPeriod.start, selectedEnd));
   const comparisonJobs = accountJobs.filter((job) => isInRange(job, comparisonStart, selectedPeriod.start));
@@ -65,13 +77,14 @@ export function buildAnalyticsSummary(jobs, accountId, timeframe, referenceDate 
   const newClients = [...selectedClientIds].filter((clientId) => !priorClientIds.has(clientId)).length;
   const repeatClients = [...selectedClientIds].filter((clientId) => priorClientIds.has(clientId)).length;
   const trend = selectedPeriod.granularity === 'day'
-    ? Array.from({ length: 7 }, (_, index) => {
+    ? Array.from({ length: selectedPeriod.days }, (_, index) => {
       const dayStart = new Date(selectedPeriod.start.getTime() + index * DAY);
       return { label: dayLabel(dayStart), detail: fullDateLabel(dayStart), jobs: accountJobs.filter((job) => isInRange(job, dayStart, new Date(dayStart.getTime() + DAY))).length };
     })
-    : Array.from({ length: selectedPeriod.weeks }, (_, index) => {
+    : Array.from({ length: Math.ceil(selectedPeriod.days / 7) }, (_, index) => {
       const weekStart = new Date(selectedPeriod.start.getTime() + index * 7 * DAY);
-      return { label: weekLabel(weekStart), detail: rangeLabel(weekStart, new Date(weekStart.getTime() + 7 * DAY)), jobs: accountJobs.filter((job) => isInRange(job, weekStart, new Date(weekStart.getTime() + 7 * DAY))).length };
+      const weekEnd = new Date(Math.min(weekStart.getTime() + 7 * DAY, selectedEnd.getTime()));
+      return { label: weekLabel(weekStart), detail: rangeLabel(weekStart, weekEnd), jobs: accountJobs.filter((job) => isInRange(job, weekStart, weekEnd)).length };
     });
 
   return {

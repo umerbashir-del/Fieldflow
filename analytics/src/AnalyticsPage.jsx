@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { getAccountById, getClientsForAccount, getJobsForAccount, getOperationsSession, getSignedInAccount, isSupabaseConfigured, signOut } from '../../shared-data/supabase.js';
 import { buildMockAppLink, isMockContractor, mockUserFromSearch } from '../../shared-data/mockSession.js';
 import { buildMockDataLink, loadMockAccountData } from '../../shared-data/mockDataSession.js';
-import { buildAnalyticsInsights, buildAnalyticsSummary, buildSchedulingLink, changePresentation, chatSummaryText } from './analyticsSummary.js';
+import { buildAnalyticsInsights, buildAnalyticsSummary, buildSchedulingLink, changePresentation, chatSummaryText, toIsoDate } from './analyticsSummary.js';
 import SignInPage from './SignInPage.jsx';
 import { APP_URLS } from '../../shared-data/appConfig.js';
 import { formatReportingDate, reportingDateFromAccount, toggleReportingDateInCurrentUrl, withReportingDate } from '../../shared-data/reportingDate.js';
@@ -38,8 +38,15 @@ function formatCurrency(value) {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(value);
 }
 
+function defaultCustomRange(referenceDate) {
+  const end = new Date(Date.UTC(referenceDate.getUTCFullYear(), referenceDate.getUTCMonth(), referenceDate.getUTCDate()));
+  const start = new Date(end.getTime() - 6 * 24 * 60 * 60 * 1000);
+  return { start: toIsoDate(start), end: toIsoDate(end) };
+}
+
 export default function AnalyticsPage() {
   const [timeframe, setTimeframe] = useState('this_week');
+  const [customRange, setCustomRange] = useState({ start: '', end: '' });
   const [copyStatus, setCopyStatus] = useState('');
   const [hoveredPoint, setHoveredPoint] = useState(null);
   const [visibleInsights, setVisibleInsights] = useState(() => new Set(INSIGHT_OPTIONS.map((option) => option.id)));
@@ -109,7 +116,19 @@ export default function AnalyticsPage() {
     ? reportingDateFromAccount(account, window.location.search)
     : reportingDateFromAccount({ demo_reporting_date: '2026-08-19' }, window.location.search);
   const referenceDate = reporting.date;
-  const summary = buildAnalyticsSummary(accountJobs, accountId, timeframe, referenceDate);
+  const customRangeDays = customRange.start && customRange.end
+    ? Math.round((new Date(`${customRange.end}T00:00:00Z`) - new Date(`${customRange.start}T00:00:00Z`)) / (24 * 60 * 60 * 1000)) + 1
+    : null;
+  const customRangeError = timeframe !== 'custom_range'
+    ? ''
+    : !customRange.start || !customRange.end
+      ? 'Choose a start and end date.'
+      : customRange.end < customRange.start
+        ? 'The end date must be on or after the start date.'
+        : customRangeDays > 90
+          ? 'Choose a range of 90 days or fewer.'
+          : '';
+  const summary = buildAnalyticsSummary(accountJobs, accountId, timeframe, referenceDate, customRange);
   const { selectedPeriod, selectedEnd, selectedRangeLabel, comparisonRangeLabel, selectedJobs, comparisonJobs, change, hasCompleteComparison, newClients, repeatClients, trend } = summary;
   const changeStatus = changePresentation({
     selectedJobs: selectedJobs.length,
@@ -175,15 +194,25 @@ export default function AnalyticsPage() {
         <div className="header-row">
           <p className="subtitle">{isOperationsView ? 'Read-only Operations view. ' : ''}A quick look at how your business is doing.{!isSupabaseConfigured && !isDemoOps ? ' Demo edits stay in this browser tab until sign-out.' : ''}</p>
           <label className="timeframe-control">Timeframe
-            <select title="Updates every card and chart to the selected date range." value={timeframe} onChange={(event) => setTimeframe(event.target.value)}>
+            <select title="Updates every card and chart to the selected date range." value={timeframe} onChange={(event) => {
+              const nextTimeframe = event.target.value;
+              setTimeframe(nextTimeframe);
+              if (nextTimeframe === 'custom_range' && (!customRange.start || !customRange.end)) setCustomRange(defaultCustomRange(referenceDate));
+            }}>
               <option value="this_week">This week</option>
               <option value="last_week">Last week</option>
               <option value="last_two_weeks">Last 2 weeks</option>
               <option value="last_three_weeks">Last 3 weeks</option>
               <option value="last_four_weeks">Last 4 weeks</option>
+              <option value="custom_range">Custom date range</option>
             </select>
           </label>
         </div>
+        {timeframe === 'custom_range' && <div className="custom-range" aria-label="Custom reporting date range">
+          <label>Start date<input type="date" value={customRange.start} onChange={(event) => setCustomRange((current) => ({ ...current, start: event.target.value }))} /></label>
+          <label>End date<input type="date" value={customRange.end} onChange={(event) => setCustomRange((current) => ({ ...current, end: event.target.value }))} /></label>
+          <p>{customRangeError || 'Every card and chart will use this exact range and compare it with the preceding matching period.'}</p>
+        </div>}
         {isSupabaseConfigured && <button className="sign-out-button" type="button" onClick={async () => { await signOut(); await loadLiveData(); }}>Sign out</button>}
       </header>
 
@@ -206,7 +235,7 @@ export default function AnalyticsPage() {
         <article className="card" title={`Counts every job scheduled from ${comparisonRangeLabel}.`}>
           <p className="card-label">{comparisonRangeLabel}</p>
           <p className="metric">{comparisonJobs.length}</p>
-          <p className="helper">Previous {selectedPeriod.weeks} week{selectedPeriod.weeks === 1 ? '' : 's'}</p>
+          <p className="helper">Matching previous period</p>
         </article>
         <article className="card" title={`Calculated from ${selectedJobs.length} jobs in the selected period and ${comparisonJobs.length} jobs in the previous period.`}>
           <p className="card-label">Change vs. previous period</p>
@@ -328,9 +357,9 @@ export default function AnalyticsPage() {
             return <g key={value}><line className="grid-line" x1={chartLeft} x2={chartWidth - chartRight} y1={y} y2={y} /><text className="axis-label" x={chartLeft - 12} y={y + 4}>{Math.round(value)}</text></g>;
           })}
           <path className="trend-line" d={linePath} />
-          {chartPoints.map((point, index) => <g key={trend[index].label} onMouseEnter={() => setHoveredPoint(index)} onMouseLeave={() => setHoveredPoint(null)}><circle className="trend-point" cx={point.x} cy={point.y} r="5" /><circle className="trend-hit-area" cx={point.x} cy={point.y} r="16" tabIndex="0" aria-label={`${trend[index].detail}: ${trend[index].jobs} scheduled jobs`} onFocus={() => setHoveredPoint(index)} onBlur={() => setHoveredPoint(null)} /><text className="point-label" x={point.x} y={point.y - 13}>{trend[index].jobs}</text><text className="axis-label" x={point.x} y={chartHeight - 32} textAnchor="middle">{trend[index].label}</text></g>)}
+          {chartPoints.map((point, index) => <g key={`${trend[index].detail}-${index}`} onMouseEnter={() => setHoveredPoint(index)} onMouseLeave={() => setHoveredPoint(null)}><circle className="trend-point" cx={point.x} cy={point.y} r="5" /><circle className="trend-hit-area" cx={point.x} cy={point.y} r="16" tabIndex="0" aria-label={`${trend[index].detail}: ${trend[index].jobs} scheduled jobs`} onFocus={() => setHoveredPoint(index)} onBlur={() => setHoveredPoint(null)} /><text className="point-label" x={point.x} y={point.y - 13}>{trend[index].jobs}</text><text className="axis-label" x={point.x} y={chartHeight - 32} textAnchor="middle">{trend[index].label}</text></g>)}
           {activePoint && <g className="chart-tooltip" pointerEvents="none" transform={`translate(${tooltipX} ${tooltipY})`}><rect width={tooltipWidth} height={tooltipHeight} rx="6" /><text x="10" y="19">{activeTrend.detail}</text><text x="10" y="37" className="tooltip-value">{activeTrend.jobs} scheduled job{activeTrend.jobs === 1 ? '' : 's'}</text></g>}
-          <text className="chart-axis-title" x={chartLeft + plotWidth / 2} y={chartHeight - 6} textAnchor="middle">{selectedPeriod.granularity === 'day' ? 'Day of week' : 'Week beginning'}</text>
+          <text className="chart-axis-title" x={chartLeft + plotWidth / 2} y={chartHeight - 6} textAnchor="middle">{selectedPeriod.granularity === 'day' ? 'Day' : 'Week beginning'}</text>
           <text className="chart-axis-title" x="15" y={chartTop + plotHeight / 2} textAnchor="middle" transform={`rotate(-90 15 ${chartTop + plotHeight / 2})`}>Scheduled jobs</text>
         </svg>
       </section>
