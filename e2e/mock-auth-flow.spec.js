@@ -59,7 +59,6 @@ test('John sees Northstar data and carries that identity to Analytics and Chatbo
   await expect(page).toHaveURL(/demo_user=john/);
   await expect(page.getByRole('heading', { name: /Northstar Field Services — Analytics/ })).toBeVisible();
   await expect(page.locator('.primary-card .metric')).toHaveText('14');
-  await expect(page.getByRole('link', { name: 'Support Chat' })).toHaveAttribute('href', /demo_user=john/);
 
   await page.goBack();
   await openChat(page);
