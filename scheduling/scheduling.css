@@ -54,6 +54,8 @@ input, select { width: 100%; padding: 12px; border: 1px solid var(--ff-color-bor
    ================================================================ */
 .topbar-actions { display: flex; align-items: center; gap: 10px; }
 .demo-notice { margin: 12px 0 0; color: var(--muted); font-size: .85rem; }
+.data-loading-notice { color: var(--ff-color-accent-600); font-size: .85rem; font-weight: 700; margin: 12px 0 0; }
+.data-loading-notice[hidden] { display: none; }
 .notice-link { background: transparent; border: 0; color: var(--primary); cursor: pointer; font: inherit; font-weight: 700; padding: 0; text-decoration: underline; }
 
 .tabs { display: flex; gap: 6px; margin: 20px 0 24px; border-bottom: 1px solid #dbe6de; }
