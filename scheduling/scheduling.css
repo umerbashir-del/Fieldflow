@@ -15,6 +15,11 @@ body { margin: 0; position: relative; }
 .mock-login-card h1 { margin: 8px 0 12px; }
 .mock-login-details { background: var(--ff-color-accent-100); border: 1px solid var(--ff-color-taupe-400); border-radius: 8px; color: var(--ff-color-accent-600); display: grid; font-size: .84rem; gap: 5px; margin-top: 20px; padding: 12px; }
 .mock-login-details code { background: var(--ff-color-surface); border-radius: 3px; color: var(--ff-color-brand-700); padding: 1px 4px; }
+.mock-login-quick { display: grid; gap: 10px; margin-top: 18px; }
+.quick-signin-btn { background: var(--ff-color-surface); border: 1px solid var(--ff-color-brand-700); color: var(--ff-color-brand-700); }
+.quick-signin-btn:hover { background: var(--ff-color-accent-100); }
+.quick-signin-btn:disabled { cursor: not-allowed; opacity: .6; }
+.quick-signin-divider { color: #7c8a80; font-size: .8rem; margin: 16px 0 0; text-align: center; }
 .mock-login-form { display: grid; gap: 15px; margin-top: 22px; }
 .mock-login-form label { color: #4c5968; display: grid; font-size: .85rem; font-weight: 700; gap: 7px; }
 .mock-login-form input { border: 1px solid #bfcfc4; border-radius: 8px; font: inherit; padding: 11px; }
@@ -75,6 +80,7 @@ input, select { width: 100%; padding: 12px; border: 1px solid var(--ff-color-bor
 .confirm-reschedule_needed { background: #f7efd9; color: #7c5d24; }
 
 .needs-attention-card { text-align: left; cursor: pointer; font: inherit; }
+.needs-attention-card .metric { color: #000; }
 .needs-attention-card:hover { border-color: var(--ff-color-brand-700); }
 .needs-attention-card.is-active { border-color: var(--ff-color-brand-700); box-shadow: 0 0 0 2px var(--ff-color-accent-100); }
 

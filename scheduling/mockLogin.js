@@ -86,6 +86,17 @@ if (!isSupabaseConfigured && isMockContractor(currentUser)) {
     event.preventDefault();
     attemptSignIn(email.value, password.value);
   });
+  const QUICK_SIGN_IN_ACCOUNTS = {
+    quickSignInJohn: isSupabaseConfigured
+      ? { email: 'john@fieldflow.demo', password: '8QXSDfbmH-DujdbLQMO0y2s4aA7!' }
+      : { email: 'john@fieldflow.demo', password: 'john-demo-password' },
+    quickSignInSarah: isSupabaseConfigured
+      ? { email: 'sarah@fieldflow.demo', password: 'G-EJyv4LikxYzMj1Zdyfw2K_aA7!' }
+      : { email: 'sarah@fieldflow.demo', password: 'sarah-demo-password' },
+  };
+  Object.entries(QUICK_SIGN_IN_ACCOUNTS).forEach(([buttonId, credentials]) => {
+    document.getElementById(buttonId)?.addEventListener('click', () => attemptSignIn(credentials.email, credentials.password));
+  });
   document.querySelectorAll('[data-auth-mode]').forEach((button) => button.addEventListener('click', () => showForm(button.dataset.authMode)));
   signUpForm.addEventListener('submit', async (event) => {
     event.preventDefault();
