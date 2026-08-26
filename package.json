@@ -15,6 +15,7 @@
     "seed:supabase": "node scripts/seed-supabase.mjs",
     "prepare:demo-data": "node scripts/expand-canonical-demo-jobs.mjs",
     "enrich:demo-metrics": "node scripts/enrich-synthetic-job-metrics.mjs",
+    "generate:demo-activity": "node scripts/generate-synthetic-activity.mjs",
     "verify:supabase": "node scripts/verify-supabase.mjs",
     "provision:test-sarah": "node scripts/provision-sarah-test-user.mjs",
     "verify:test-sarah": "node scripts/verify-sarah-login.mjs",

@@ -164,6 +164,29 @@ export async function getClientsForAccount(accountId) {
   return data;
 }
 
+export async function getJobActivityForAccount(accountId) {
+  const request = requireSupabase().from('job_activity').select('*').eq('account_id', accountId).order('occurred_at', { ascending: false }).limit(20);
+  const { data, error } = await withAbortableRequest(request, 'Job activity request');
+  if (error && isMissingJobActivityTable(error)) return [];
+  if (error) throw error;
+  return data;
+}
+
+export function isMissingJobActivityTable(error) {
+  const text = `${error?.code ?? ''} ${error?.message ?? ''}`.toLowerCase();
+  return text.includes('42p01') || text.includes('pgrst205') || text.includes('job_activity');
+}
+
+export function subscribeToAccountChanges(accountId, callback) {
+  const client = requireSupabase();
+  const channel = client.channel(`fieldflow-account-${accountId}`)
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'jobs', filter: `account_id=eq.${accountId}` }, callback)
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'clients', filter: `account_id=eq.${accountId}` }, callback)
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'job_activity', filter: `account_id=eq.${accountId}` }, callback)
+    .subscribe();
+  return () => client.removeChannel(channel);
+}
+
 // Shared repository functions for Scheduling and Chatbot. They always use the
 // signed-in user's RLS-scoped Supabase client; the browser never chooses a
 // privileged account or secret key.

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { getAccountById, getClientsForAccount, getJobsForAccount, getOperationsSession, getSignedInAccount, isSupabaseConfigured, signOut } from '../../shared-data/supabase.js';
+import { getAccountById, getClientsForAccount, getJobActivityForAccount, getJobsForAccount, getOperationsSession, getSignedInAccount, isSupabaseConfigured, signOut, subscribeToAccountChanges } from '../../shared-data/supabase.js';
 import { buildMockAppLink, isMockContractor, mockUserFromSearch } from '../../shared-data/mockSession.js';
 import { buildMockDataLink, loadMockAccountData } from '../../shared-data/mockDataSession.js';
 import { buildAnalyticsInsights, buildAnalyticsSummary, buildSchedulingLink, changePresentation, chatSummaryText, toIsoDate } from './analyticsSummary.js';
@@ -7,13 +7,14 @@ import SignInPage from './SignInPage.jsx';
 import { APP_URLS } from '../../shared-data/appConfig.js';
 import { formatReportingDate, reportingDateFromAccount, toggleReportingDateInCurrentUrl, withReportingDate } from '../../shared-data/reportingDate.js';
 
-const [demoAccounts, demoClients, demoJobs] = __FIELDFLOW_DEMO__
+const [demoAccounts, demoClients, demoJobs, demoActivity] = __FIELDFLOW_DEMO__
   ? await Promise.all([
       import('../../shared-data/accounts.json').then((module) => module.default),
       import('../../shared-data/clients.json').then((module) => module.default),
       import('../../shared-data/jobs.json').then((module) => module.default),
+      import('../../shared-data/job-activity.json').then((module) => module.default),
     ])
-  : [[], [], []];
+  : [[], [], [], []];
 
 const DEMO_ACCOUNT_ID = 'acct_northstar';
 const SCHEDULING_URL = APP_URLS.scheduling;
@@ -25,7 +26,7 @@ const INSIGHT_OPTIONS = [
   { id: 'workload', label: 'Technician workload' },
   { id: 'clients', label: 'Client activity and top clients' },
   { id: 'performance', label: 'Revenue and service performance' },
-  { id: 'recent', label: 'Latest scheduled work' },
+  { id: 'recent', label: 'Recent activity' },
 ];
 
 function formatJobDate(isoDate) {
@@ -47,17 +48,18 @@ function defaultCustomRange(referenceDate) {
 export default function AnalyticsPage() {
   const [timeframe, setTimeframe] = useState('this_week');
   const [customRange, setCustomRange] = useState({ start: '', end: '' });
+  const [inactiveDays, setInactiveDays] = useState(30);
   const [copyStatus, setCopyStatus] = useState('');
   const [hoveredPoint, setHoveredPoint] = useState(null);
   const [visibleInsights, setVisibleInsights] = useState(() => new Set(INSIGHT_OPTIONS.map((option) => option.id)));
-  const [sessionState, setSessionState] = useState({ loading: isSupabaseConfigured, account: null, clients: [], jobs: [], user: null, isOps: false, error: '' });
+  const [sessionState, setSessionState] = useState({ loading: isSupabaseConfigured, account: null, clients: [], jobs: [], activities: [], user: null, isOps: false, error: '' });
 
   const loadLiveData = async () => {
     setSessionState((current) => ({ ...current, loading: true, error: '' }));
     try {
       const context = await getSignedInAccount();
       if (!context?.user) {
-        setSessionState({ loading: false, account: null, clients: [], jobs: [], user: null, isOps: false, error: '' });
+        setSessionState({ loading: false, account: null, clients: [], jobs: [], activities: [], user: null, isOps: false, error: '' });
         return;
       }
       if (!context.account) {
@@ -66,15 +68,15 @@ export default function AnalyticsPage() {
         if (operations?.staff && requested) {
           const operationsAccount = await getAccountById(requested);
           if (!operationsAccount) throw new Error('The requested company could not be found.');
-          const [operationsJobs, operationsClients] = await Promise.all([getJobsForAccount(operationsAccount.id), getClientsForAccount(operationsAccount.id)]);
-          setSessionState({ loading: false, account: operationsAccount, clients: operationsClients, jobs: operationsJobs, user: context.user, isOps: true, error: '' });
+          const [operationsJobs, operationsClients, operationsActivities] = await Promise.all([getJobsForAccount(operationsAccount.id), getClientsForAccount(operationsAccount.id), getJobActivityForAccount(operationsAccount.id)]);
+          setSessionState({ loading: false, account: operationsAccount, clients: operationsClients, jobs: operationsJobs, activities: operationsActivities, user: context.user, isOps: true, error: '' });
           return;
         }
-        setSessionState({ loading: false, account: null, clients: [], jobs: [], user: context.user, isOps: false, error: 'This login is not assigned to a FieldFlow company yet.' });
+        setSessionState({ loading: false, account: null, clients: [], jobs: [], activities: [], user: context.user, isOps: false, error: 'This login is not assigned to a FieldFlow company yet.' });
         return;
       }
-      const [liveJobs, liveClients] = await Promise.all([getJobsForAccount(context.account.id), getClientsForAccount(context.account.id)]);
-      setSessionState({ loading: false, account: context.account, clients: liveClients, jobs: liveJobs, user: context.user, isOps: false, error: '' });
+      const [liveJobs, liveClients, liveActivities] = await Promise.all([getJobsForAccount(context.account.id), getClientsForAccount(context.account.id), getJobActivityForAccount(context.account.id)]);
+      setSessionState({ loading: false, account: context.account, clients: liveClients, jobs: liveJobs, activities: liveActivities, user: context.user, isOps: false, error: '' });
     } catch (error) {
       const message = String(error?.message ?? '').toLowerCase();
       const friendly = message.includes('jwt') || message.includes('session') || message.includes('401')
@@ -84,13 +86,22 @@ export default function AnalyticsPage() {
         : typeof navigator !== 'undefined' && !navigator.onLine
         ? 'You appear to be offline. Check your connection and try again.'
         : 'We couldn’t load your data. Check your connection and try again.';
-      setSessionState({ loading: false, account: null, clients: [], jobs: [], user: null, isOps: false, error: friendly });
+      setSessionState({ loading: false, account: null, clients: [], jobs: [], activities: [], user: null, isOps: false, error: friendly });
     }
   };
 
   useEffect(() => {
     if (isSupabaseConfigured) loadLiveData();
   }, []);
+  useEffect(() => {
+    if (!isSupabaseConfigured || !sessionState.account?.id) return undefined;
+    let timer;
+    const unsubscribe = subscribeToAccountChanges(sessionState.account.id, () => { clearTimeout(timer); timer = setTimeout(loadLiveData, 400); });
+    return () => {
+      clearTimeout(timer);
+      unsubscribe();
+    };
+  }, [sessionState.account?.id]);
 
   const mockUser = mockUserFromSearch(window.location.search);
   const requestedAccountId = new URLSearchParams(window.location.search).get('account_id');
@@ -111,6 +122,7 @@ export default function AnalyticsPage() {
   const mockAccountData = isSupabaseConfigured ? null : loadMockAccountData(demoAccountId, { clients: demoClients, jobs: demoJobs });
   const accountJobs = isSupabaseConfigured ? sessionState.jobs : mockAccountData.jobs;
   const accountClients = isSupabaseConfigured ? sessionState.clients : mockAccountData.clients;
+  const accountActivities = isSupabaseConfigured ? sessionState.activities : demoActivity;
   const accountId = account?.id ?? (isSupabaseConfigured ? DEMO_ACCOUNT_ID : demoAccountId);
   const reporting = isSupabaseConfigured
     ? reportingDateFromAccount(account, window.location.search)
@@ -138,7 +150,7 @@ export default function AnalyticsPage() {
     comparisonRangeLabel,
   });
   const totalClients = newClients + repeatClients;
-  const insights = buildAnalyticsInsights({ jobs: accountJobs, clients: accountClients, accountId, summary, referenceDate });
+  const insights = buildAnalyticsInsights({ jobs: accountJobs, clients: accountClients, activities: accountActivities, accountId, summary, referenceDate, inactiveDays });
   const isInsightVisible = (insightId) => visibleInsights.has(insightId);
   const toggleInsight = (insightId) => setVisibleInsights((current) => {
     const next = new Set(current);
@@ -301,6 +313,7 @@ export default function AnalyticsPage() {
         <div>
           <p className="eyebrow">Client mix</p>
           <h2 id="client-heading">Who this period’s work came from</h2>
+          <label className="inactive-control">Inactive after<select value={inactiveDays} onChange={(event) => setInactiveDays(Number(event.target.value))}><option value="30">30 days</option><option value="60">60 days</option><option value="90">90 days</option></select></label>
         </div>
         <div className="client-mix">
           <div
@@ -324,7 +337,7 @@ export default function AnalyticsPage() {
 
       {isInsightVisible('performance') && <section className="insights-grid" aria-label="Revenue and service performance">
         <article className="card insight-card">
-          <p className="eyebrow">Completed-work value</p><h2>{insights.performance.invoicedJobs ? formatCurrency(insights.performance.invoiceTotal) : 'No invoice values yet'}</h2>
+          <p className="eyebrow">Completed-work invoice value</p><h2>{insights.performance.invoicedJobs ? formatCurrency(insights.performance.invoiceTotal) : 'No invoice values yet'}</h2>
           <p className="helper">{insights.performance.invoicedJobs ? `${insights.performance.invoicedJobs} completed job${insights.performance.invoicedJobs === 1 ? '' : 's'} with recorded invoice values. Average: ${formatCurrency(insights.performance.averageInvoice)}.` : 'Add invoice totals to completed jobs to see this measure.'}</p>
           <div className="performance-stats">
             <span><strong>{insights.performance.averageActualMinutes === null ? '—' : `${insights.performance.averageActualMinutes} min`}</strong>Average actual duration</span>
@@ -332,16 +345,23 @@ export default function AnalyticsPage() {
           </div>
         </article>
         <article className="card insight-card">
-          <p className="eyebrow">Service categories</p><h2>Work by category</h2>
-          {insights.performance.categoryPerformance.length ? <ul className="category-list">{insights.performance.categoryPerformance.map((item) => <li key={item.category}><div><span>{item.category}</span><small>{item.jobs} job{item.jobs === 1 ? '' : 's'}</small></div><strong>{item.invoiceTotal ? formatCurrency(item.invoiceTotal) : '—'}</strong></li>)}</ul> : <p className="helper">No service categories are recorded for this period.</p>}
+          <p className="eyebrow">Completed-work value</p><h2>Invoice trend</h2>
+          <div className="revenue-bars" role="img" aria-label="Completed-work invoice value over the selected period">
+            {insights.performance.revenueTrend.map((point) => <div key={point.detail} title={`${point.detail}: ${formatCurrency(point.value)}`}><strong>{point.value ? formatCurrency(point.value) : '—'}</strong><i style={{ height: `${Math.max(4, (point.value / Math.max(...insights.performance.revenueTrend.map((item) => item.value), 1)) * 100)}%` }} /><small>{point.label}</small></div>)}
+          </div>
         </article>
       </section>}
 
+      {isInsightVisible('performance') && <section className="card insight-card list-card" aria-label="Service categories">
+          <p className="eyebrow">Service categories</p><h2>Work by category</h2>
+          {insights.performance.categoryPerformance.length ? <ul className="category-list">{insights.performance.categoryPerformance.map((item) => <li key={item.category}><div><span>{item.category}</span><small>{item.jobs} job{item.jobs === 1 ? '' : 's'}</small></div><strong>{item.invoiceTotal ? formatCurrency(item.invoiceTotal) : '—'}</strong></li>)}</ul> : <p className="helper">No service categories are recorded for this period.</p>}
+      </section>}
+
       {isInsightVisible('recent') && <section className="card insight-card list-card" aria-labelledby="recent-heading">
-        <div><p className="eyebrow">Latest scheduled work</p><h2 id="recent-heading">Most recently scheduled jobs</h2></div>
-        {insights.recentScheduledJobs.length ? <ul className="insight-list">
-          {insights.recentScheduledJobs.map((job) => <li key={job.id}><div><strong>{job.clientName}</strong><span>{job.assigneeLabel} · {job.status.replace('_', ' ')}</span></div><time dateTime={job.scheduled_for}>{formatJobDate(job.scheduled_for)}</time></li>)}
-        </ul> : <p className="helper">There are no jobs for this company yet.</p>}
+        <div><p className="eyebrow">Recent activity</p><h2 id="recent-heading">Latest job updates</h2></div>
+        {insights.recentActivity.length ? <ul className="insight-list">
+          {insights.recentActivity.map((activity) => <li key={activity.id}><div><strong>{activity.clientName}</strong><span>{activity.detail}</span></div><time dateTime={activity.occurred_at}>{new Date(activity.occurred_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' })}</time></li>)}
+        </ul> : <p className="helper">No recorded job activity yet.</p>}
       </section>}
 
       <section className="card trend-card" aria-labelledby="trend-heading">

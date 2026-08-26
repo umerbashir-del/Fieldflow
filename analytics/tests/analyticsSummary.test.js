@@ -234,6 +234,43 @@ test('gives insight views safe empty values for a company with no work', () => {
   assert.equal(insights.performance.averageRating, null);
 });
 
+test('does not let cancelled or future work keep a client active', () => {
+  const clientRecords = [
+    { id: 'past-client', account_id: ACCOUNT_ID, name: 'Past client' },
+    { id: 'future-client', account_id: ACCOUNT_ID, name: 'Future client' },
+    { id: 'cancelled-client', account_id: ACCOUNT_ID, name: 'Cancelled client' },
+  ];
+  const clientJobs = [
+    { id: 'past-job', account_id: ACCOUNT_ID, client_id: 'past-client', scheduled_for: '2026-06-01', status: 'completed' },
+    { id: 'future-job', account_id: ACCOUNT_ID, client_id: 'future-client', scheduled_for: '2026-09-01', status: 'scheduled' },
+    { id: 'cancelled-job', account_id: ACCOUNT_ID, client_id: 'cancelled-client', scheduled_for: '2026-06-01', status: 'cancelled' },
+  ];
+  const summary = buildAnalyticsSummary(clientJobs, ACCOUNT_ID, 'this_week', REFERENCE_DATE);
+  const insights = buildAnalyticsInsights({ jobs: clientJobs, clients: clientRecords, accountId: ACCOUNT_ID, summary, referenceDate: REFERENCE_DATE, inactiveDays: 30 });
+
+  assert.deepEqual(insights.inactiveClients.map((client) => client.id), ['past-client']);
+});
+
+test('uses completed invoice values only and reads real activity in reverse date order', () => {
+  const clientRecords = [{ id: 'client-a', account_id: ACCOUNT_ID, name: 'Avery Plumbing' }];
+  const clientJobs = [
+    { id: 'complete', account_id: ACCOUNT_ID, client_id: 'client-a', scheduled_for: '2026-08-18', status: 'completed', invoice_total: 240 },
+    { id: 'scheduled', account_id: ACCOUNT_ID, client_id: 'client-a', scheduled_for: '2026-08-19', status: 'scheduled', invoice_total: 900 },
+    { id: 'cancelled', account_id: ACCOUNT_ID, client_id: 'client-a', scheduled_for: '2026-08-20', status: 'cancelled', invoice_total: 700 },
+  ];
+  const activities = [
+    { id: 'older', account_id: ACCOUNT_ID, job_id: 'complete', occurred_at: '2026-08-18T12:00:00Z', detail: 'Job marked completed' },
+    { id: 'newer', account_id: ACCOUNT_ID, job_id: 'scheduled', occurred_at: '2026-08-19T14:00:00Z', detail: 'Job rescheduled' },
+    { id: 'future', account_id: ACCOUNT_ID, job_id: 'scheduled', occurred_at: '2026-09-01T14:00:00Z', detail: 'Future activity' },
+  ];
+  const summary = buildAnalyticsSummary(clientJobs, ACCOUNT_ID, 'this_week', REFERENCE_DATE);
+  const insights = buildAnalyticsInsights({ jobs: clientJobs, clients: clientRecords, activities, accountId: ACCOUNT_ID, summary, referenceDate: REFERENCE_DATE });
+
+  assert.equal(insights.performance.invoiceTotal, 240);
+  assert.deepEqual(insights.recentActivity.map((activity) => activity.id), ['newer', 'older']);
+  assert.ok(insights.performance.revenueTrend.every((point) => point.value <= 240));
+});
+
 test('describes positive, negative, unchanged, and unavailable comparisons in plain language', () => {
   assert.equal(changePresentation({ selectedJobs: 14, comparisonJobs: 11, change: 27, hasCompleteComparison: true, comparisonRangeLabel: 'Previous week' }).value, 'Up 27%');
   assert.equal(changePresentation({ selectedJobs: 10, comparisonJobs: 14, change: -29, hasCompleteComparison: true, comparisonRangeLabel: 'Previous week' }).value, 'Down 29%');

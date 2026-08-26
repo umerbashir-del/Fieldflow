@@ -72,6 +72,11 @@ h2 { font-size: 1.25rem; margin: 6px 0 0; }
 .category-list span { font-size: .9rem; font-weight: 700; }
 .category-list small { color: var(--ff-color-muted); font-size: .78rem; }
 .category-list strong { color: var(--ff-color-accent-600); font-size: .88rem; }
+.revenue-bars { align-items: end; display: flex; gap: 8px; height: 190px; margin-top: 18px; overflow-x: auto; }
+.revenue-bars > div { align-items: center; display: flex; flex: 1 0 42px; flex-direction: column; height: 100%; justify-content: end; min-width: 42px; }
+.revenue-bars strong { color: var(--ff-color-muted); font-size: .68rem; margin-bottom: 6px; white-space: nowrap; }
+.revenue-bars i { background: var(--ff-color-terracotta-500); border-radius: 5px 5px 0 0; display: block; max-width: 34px; width: 100%; }
+.revenue-bars small { color: var(--ff-color-muted); font-size: .7rem; margin-top: 6px; }
 .client-card, .trend-card { display: flex; justify-content: space-between; gap: 24px; margin-top: 18px; }
 .client-mix { align-items: center; display: flex; gap: 28px; }
 .donut { align-items: center; background: conic-gradient(var(--ff-color-terracotta-500) 0 var(--new-client-share), var(--ff-color-sage-400) var(--new-client-share) 100%); border-radius: 50%; display: flex; flex-direction: column; height: 126px; justify-content: center; position: relative; width: 126px; }
@@ -80,6 +85,8 @@ h2 { font-size: 1.25rem; margin: 6px 0 0; }
 .donut span { color: var(--ff-color-brand-700); font-size: 1.7rem; font-weight: 750; letter-spacing: -.05em; line-height: 1; }
 .donut small { color: var(--ff-color-muted); font-size: .72rem; margin-top: 3px; }
 .donut-legend { display: grid; gap: 10px; min-width: 148px; }
+.inactive-control { color: var(--ff-color-muted); display: inline-flex; font-size: .76rem; font-weight: 700; gap: 7px; margin-top: 14px; text-transform: uppercase; }
+.inactive-control select { font-size: .78rem; padding: 3px 24px 3px 6px; width: auto; }
 .donut-legend p { align-items: center; color: var(--ff-color-muted); display: flex; font-size: .9rem; gap: 8px; margin: 0; }
 .donut-legend strong { color: var(--ff-color-text); margin-left: auto; }
 .legend-dot { border-radius: 50%; display: inline-block; height: 10px; width: 10px; }
