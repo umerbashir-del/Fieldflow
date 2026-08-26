@@ -75,6 +75,7 @@ input, select { width: 100%; padding: 12px; border: 1px solid var(--ff-color-bor
 .confirm-reschedule_needed { background: #f7efd9; color: #7c5d24; }
 
 .needs-attention-card { text-align: left; cursor: pointer; font: inherit; }
+.needs-attention-card .metric { color: #000; }
 .needs-attention-card:hover { border-color: var(--ff-color-brand-700); }
 .needs-attention-card.is-active { border-color: var(--ff-color-brand-700); box-shadow: 0 0 0 2px var(--ff-color-accent-100); }
 
