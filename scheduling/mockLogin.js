@@ -13,7 +13,6 @@ const signInForm = document.getElementById('mockLoginForm');
 const signUpForm = document.getElementById('mockSignUpForm');
 const resetForm = document.getElementById('mockResetForm');
 const resetMessage = document.getElementById('mockResetMessage');
-
 if (isSupabaseConfigured) {
   document.getElementById('contractorLoginEyebrow').textContent = 'FieldFlow';
   document.getElementById('contractorLoginDescription').textContent = 'Use your registered FieldFlow email and password. Your company access is assigned securely after sign-in.';
@@ -55,12 +54,11 @@ if (!isSupabaseConfigured && isMockContractor(currentUser)) {
   if (currentUser?.role === 'ops') {
     error.textContent = 'Operations staff use the Operations Dashboard, not Scheduling.';
   }
-  form.addEventListener('submit', async (event) => {
-    event.preventDefault();
+  async function attemptSignIn(emailValue, passwordValue) {
     error.textContent = '';
     try {
       if (isSupabaseConfigured) {
-        await signIn(email.value, password.value);
+        await signIn(emailValue, passwordValue);
         const context = await getSignedInAccount();
         if (!context?.account) {
           await signOut();
@@ -68,13 +66,18 @@ if (!isSupabaseConfigured && isMockContractor(currentUser)) {
         }
         window.location.reload();
       } else {
-        const user = authenticateMockUser(email.value, password.value);
+        const user = authenticateMockUser(emailValue, passwordValue);
         if (!isMockContractor(user)) throw new Error('Operations staff use the Operations Dashboard, not Scheduling.');
         window.location.assign(buildMockAppLink(window.location.href, user));
       }
     } catch (signInError) {
       error.textContent = friendlyAuthError(signInError);
     }
+  }
+
+  form.addEventListener('submit', (event) => {
+    event.preventDefault();
+    attemptSignIn(email.value, password.value);
   });
   document.querySelectorAll('[data-auth-mode]').forEach((button) => button.addEventListener('click', () => showForm(button.dataset.authMode)));
   signUpForm.addEventListener('submit', async (event) => {

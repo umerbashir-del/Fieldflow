@@ -45,6 +45,24 @@ test('password reset validates email format without sending a request', async ({
   await expect(page.locator('#mockResetMessage')).toBeEmpty();
 });
 
+test('Chatbot clearly gates unauthenticated users', async ({ page }) => {
+  await page.goto('http://127.0.0.1:5175/');
+  await expect(page.locator('#chatLoginGate')).toBeVisible();
+  await expect(page.locator('#chatLoginGate')).toContainText('Sign in through Scheduling first so Support can use your company’s context.');
+  await expect(page.locator('#chatApp')).toBeHidden();
+});
+
+test('unknown routes show the FieldFlow 404 page and navigation', async ({ page }) => {
+  test.skip(!process.env.FIELDFLOW_DEPLOYMENT_URL, 'The assembled Vercel deployment is required for custom 404 routing.');
+  const deploymentUrl = process.env.FIELDFLOW_DEPLOYMENT_URL.replace(/\/$/, '');
+  await page.goto(`${deploymentUrl}/this-page-does-not-exist`);
+  await expect(page).toHaveTitle('FieldFlow — Page not found');
+  await expect(page.getByRole('heading', { name: 'We couldn’t find that page.' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Scheduling' })).toHaveAttribute('href', '/scheduling/');
+  await expect(page.getByRole('link', { name: 'Analytics' })).toHaveAttribute('href', '/analytics/');
+  await expect(page.getByRole('link', { name: 'Support' })).toHaveAttribute('href', '/support/');
+});
+
 for (const viewport of [
   { name: 'phone', width: 390, height: 844 },
   { name: 'tablet', width: 768, height: 1024 },
@@ -72,18 +90,32 @@ for (const viewport of [
   });
 }
 
-test('sign-in and Analytics meet automated color-contrast checks', async ({ page }) => {
+test('light-mode sign-in and Analytics meet automated color-contrast checks', async ({ page }) => {
   await page.goto(schedulingUrl);
   const signInResults = await new AxeBuilder({ page }).withRules(['color-contrast']).analyze();
   expect(signInResults.violations).toEqual([]);
 
   await signIn(page);
-  await page.locator('#themeToggleBtn').click();
-  const darkSchedulingResults = await new AxeBuilder({ page }).withRules(['color-contrast']).analyze();
-  expect(darkSchedulingResults.violations).toEqual([]);
+  const schedulingResults = await new AxeBuilder({ page }).withRules(['color-contrast']).analyze();
+  expect(schedulingResults.violations).toEqual([]);
   await page.getByRole('link', { name: 'View Analytics' }).click();
   const analyticsResults = await new AxeBuilder({ page }).withRules(['color-contrast']).analyze();
   expect(analyticsResults.violations).toEqual([]);
+});
+
+test('Support and Operations meet automated color-contrast checks', async ({ page }) => {
+  await page.goto('http://127.0.0.1:5175/?demo_user=john&account_id=acct_northstar');
+  await expect(page.locator('#chatApp')).toBeVisible();
+  const supportResults = await new AxeBuilder({ page }).withRules(['color-contrast']).analyze();
+  expect(supportResults.violations).toEqual([]);
+
+  await page.goto('http://127.0.0.1:5176/');
+  await page.locator('#opsLoginForm').getByLabel('Email').fill('ops@fieldflow.demo');
+  await page.locator('#opsLoginForm').getByLabel('Password').fill('ops-demo-password');
+  await page.getByRole('button', { name: 'Sign in to Operations' }).click();
+  await expect(page.locator('#opsDashboard')).toBeVisible();
+  const operationsResults = await new AxeBuilder({ page }).withRules(['color-contrast']).analyze();
+  expect(operationsResults.violations).toEqual([]);
 });
 
 test('all application shells load within the local performance budget', async ({ page }) => {

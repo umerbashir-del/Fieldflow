@@ -60,10 +60,28 @@ export function getAnswer(rawQuery, accountContext) {
   if (!query) {
     return { text: 'Ask me something like “How do I create a job?” or “What’s my plan?”' };
   }
-  if (!accountId || !account) {
+  const isOps = Boolean(accountContext?.isOps);
+  if (!isOps && (!accountId || !account)) {
     return { text: 'Sign in through Scheduling so I can safely load your company context.' };
   }
   const lower = query.toLowerCase();
+
+  // Operations staff aren't scoped to one company, so none of the
+  // per-account lookups below (job/client details, schedule, plan) apply
+  // to them — they only get general FAQ/how-to help here, plus a pointer
+  // to the Operations Dashboard for anything account-specific.
+  if (isOps) {
+    const opsFaqMatch = matchFaq(lower);
+    if (opsFaqMatch) return { text: opsFaqMatch.answer, source: opsFaqMatch.source };
+    const [opsDocHit] = searchDocs(lower);
+    if (opsDocHit) {
+      return {
+        text: 'I can help with general FieldFlow questions. For account-specific details, use the Accounts tab in the Operations Dashboard.',
+        source: 'FieldFlow help',
+      };
+    }
+    return { text: NO_ANSWER_TEXT };
+  }
 
   if (isBusinessSummaryQuestion(lower)) {
     const summary = buildAnalyticsSummary(scopedJobs, accountId, 'this_week', referenceDate);
@@ -152,5 +170,9 @@ export function getAnswer(rawQuery, accountContext) {
     };
   }
 
-  return { text: "I don't have documentation on that yet. Try asking how to create a job, what job statuses mean, how account scoping works, or what your plan is." };
+  return { text: NO_ANSWER_TEXT };
 }
+
+// Exported so callers (e.g. chatbot.js) can detect this exact fallback and
+// decide whether to try an external API before showing it to the user.
+export const NO_ANSWER_TEXT = "I don't have documentation on that yet. Try asking how to create a job, what job statuses mean, how account scoping works, or what your plan is.";

@@ -12,7 +12,7 @@ export default defineConfig(({ command }) => ({
   define: { __FIELDFLOW_DEMO__: command !== 'build', __FIELDFLOW_PRODUCTION__: command === 'build' },
   envDir: path.resolve(__dirname, '..'),
   server: {
-    port: 5175,
+    port: process.env.PORT ? Number(process.env.PORT) : undefined,
     fs: { allow: [path.resolve(__dirname, '..')] },
   },
 }));

@@ -1,11 +1,48 @@
 import { accounts, clients, jobs } from './data.js';
-import { getAnswer } from './model.js';
+import { getAnswer, NO_ANSWER_TEXT } from './model.js';
+import { askApi } from './apiFallback.js';
 import { buildMockAppLink, isMockContractor, mockUserFromSearch } from '../shared-data/mockSession.js';
 import { buildMockDataLink, clearMockDataSession, loadMockAccountData } from '../shared-data/mockDataSession.js';
 import { APP_URLS } from '../shared-data/appConfig.js';
-import { getAccountData, getSignedInAccount, isSupabaseConfigured, signOut } from '../shared-data/supabase.js';
+import { getAccountData, getOperationsData, getOperationsSession, getSignedInAccount, isSupabaseConfigured, signOut, supabase } from '../shared-data/supabase.js';
 import { formatReportingDate, reportingDateFromAccount, toggleReportingDateInCurrentUrl, withReportingDate } from '../shared-data/reportingDate.js';
 import { assigneeLabel } from '../shared-data/jobPresentation.js';
+
+// When embedded via embed.js on another app's page (Scheduling, Operations),
+// the host page bridges its already-signed-in Supabase session into this
+// iframe via postMessage: each origin/port has its own separate browser
+// storage in local dev, so without this the widget can't see a session the
+// host page already has, and asks the visitor to sign in a second time.
+// Registered first, before anything below reads the current session.
+if (isSupabaseConfigured) {
+  window.addEventListener('message', async (event) => {
+    const trustedOrigins = new Set([APP_URLS.scheduling, APP_URLS.analytics]
+      .map((url) => {
+        try { return new URL(url).origin; } catch { return null; }
+      })
+      .filter(Boolean));
+    if (event.source !== window.parent || !trustedOrigins.has(event.origin)) return;
+    if (event.data?.type === 'fieldflow-session-clear') {
+      const { data: { session: existing } } = await supabase.auth.getSession();
+      if (existing) {
+        await supabase.auth.signOut();
+        window.location.reload();
+      }
+      return;
+    }
+    if (event.data?.type !== 'fieldflow-session' || !event.data.accessToken || !event.data.refreshToken) return;
+    // Compare tokens, not just "is anyone signed in": this iframe's own
+    // origin may still hold an unrelated session from a previous visit, and
+    // the host page's currently-active account must always win over that.
+    const { data: { session: existing } } = await supabase.auth.getSession();
+    if (existing?.access_token === event.data.accessToken) return;
+    const { error: setSessionError } = await supabase.auth.setSession({
+      access_token: event.data.accessToken,
+      refresh_token: event.data.refreshToken,
+    });
+    if (!setSessionError) window.location.reload();
+  });
+}
 
 const STORAGE_KEY = 'fieldflow_chatbot_account_v1';
 
@@ -24,17 +61,43 @@ const STATUS_LABEL = {
   cancelled: 'Cancelled',
 };
 
+const OPS_ACCOUNT = { id: 'ops', name: 'FieldFlow Operations', plan: null };
+const loadingState = document.getElementById('chatLoading');
+const chatGate = document.getElementById('chatLoginGate');
+const chatApp = document.getElementById('chatApp');
+const chatRetryButton = document.getElementById('chatRetryButton');
 const mockUser = mockUserFromSearch(window.location.search);
-const liveContext = isSupabaseConfigured ? await getSignedInAccount() : null;
-const activeAccount = isSupabaseConfigured
-  ? liveContext?.account
-  : mockUser && (accounts.find((account) => account.id === mockUser.account_id) ?? { id: mockUser.account_id, name: mockUser.company_name ?? 'Your new business', plan: 'Starter' });
-const liveData = isSupabaseConfigured && activeAccount ? await getAccountData(activeAccount.id) : null;
+let liveContext = null;
+let liveOpsContext = null;
+let isOpsUser = mockUser?.role === 'ops';
+let activeAccount = null;
+let liveData = null;
+let liveOpsData = null;
+let loadError = '';
+try {
+  liveContext = isSupabaseConfigured ? await getSignedInAccount() : null;
+  // A staff membership takes priority when one login has both roles.
+  liveOpsContext = isSupabaseConfigured ? await getOperationsSession().catch(() => null) : null;
+  isOpsUser = isSupabaseConfigured ? Boolean(liveOpsContext?.staff) : mockUser?.role === 'ops';
+  activeAccount = isSupabaseConfigured
+    ? (isOpsUser ? OPS_ACCOUNT : liveContext?.account)
+    : (isOpsUser ? OPS_ACCOUNT : mockUser && (accounts.find((account) => account.id === mockUser.account_id) ?? { id: mockUser.account_id, name: mockUser.company_name ?? 'Your new business', plan: 'Starter' }));
+  liveData = isSupabaseConfigured && activeAccount && !isOpsUser ? await getAccountData(activeAccount.id) : null;
+  liveOpsData = isSupabaseConfigured && isOpsUser ? await getOperationsData().catch(() => null) : null;
+} catch (error) {
+  const message = String(error?.message ?? '').toLowerCase();
+  loadError = message.includes('jwt') || message.includes('session') || message.includes('401')
+    ? 'Your session expired. Please sign in again.'
+    : message.includes('permission') || message.includes('row-level')
+    ? 'You don’t have access to this company’s data.'
+    : typeof navigator !== 'undefined' && !navigator.onLine
+    ? 'You appear to be offline. Check your connection and try again.'
+    : 'We couldn’t load your company data. Check your connection and try again.';
+}
 const reporting = isSupabaseConfigured
   ? reportingDateFromAccount(activeAccount, window.location.search)
   : reportingDateFromAccount({ demo_reporting_date: '2026-08-19' }, window.location.search);
-const chatGate = document.getElementById('chatLoginGate');
-const chatApp = document.getElementById('chatApp');
+loadingState.hidden = true;
 document.getElementById('chatGateSchedulingLink').href = APP_URLS.scheduling;
 const reportingNotice = document.getElementById('chatDemoNotice');
 if (activeAccount && reporting.storedDate) {
@@ -48,7 +111,54 @@ if (activeAccount && reporting.storedDate) {
   reportingNotice.append(dateModeButton);
 }
 
-if (isSupabaseConfigured ? !activeAccount : !isMockContractor(mockUser)) {
+// The floating launcher/widget shell wraps both the sign-in gate and the
+// chat app, so it behaves the same whether the visitor is signed in or
+// not — the launcher always opens the panel, which shows whichever of the
+// two sections below is currently unhidden. This has to live outside
+// startChat() (which only runs once signed in) so the launcher still works
+// for a signed-out visitor.
+const launcher = document.getElementById('ffLauncher');
+const widget = document.getElementById('ffWidget');
+const closeBtn = document.getElementById('ffClose');
+
+// When loaded inside another app's page via embed.js, this page runs
+// inside an iframe with ?embed=1: the host page supplies its own launcher
+// button, so this page skips its own and stays permanently "open," and its
+// close button asks the host to hide the iframe instead of toggling itself.
+const isEmbedded = new URLSearchParams(window.location.search).get('embed') === '1';
+if (isEmbedded) document.body.classList.add('ff-embed');
+
+function openWidget() {
+  widget.classList.add('is-open');
+  launcher.classList.add('is-hidden');
+  document.getElementById('chatInput')?.focus();
+}
+
+function closeWidget() {
+  if (isEmbedded) {
+    if (document.referrer) window.parent.postMessage({ type: 'fieldflow-chat-close' }, new URL(document.referrer).origin);
+    return;
+  }
+  widget.classList.remove('is-open');
+  launcher.classList.remove('is-hidden');
+}
+
+launcher.addEventListener('click', openWidget);
+closeBtn.addEventListener('click', closeWidget);
+// Open by default even outside an iframe: visiting this page's own URL
+// directly (e.g. the "Support Chat" link from Scheduling) is itself the
+// equivalent of clicking a launcher elsewhere, so there's no reason to
+// make a visitor click twice. The close button still collapses it back
+// to just the launcher, which reopens it the same way.
+openWidget();
+
+if (loadError) {
+  chatGate.querySelector('h1').textContent = 'Support is temporarily unavailable';
+  chatGate.querySelector('p:not(.ff-eyebrow)').textContent = loadError;
+  chatGate.hidden = false;
+  chatRetryButton.hidden = loadError.includes('session');
+  chatRetryButton.addEventListener('click', () => window.location.reload());
+} else if (isSupabaseConfigured ? !activeAccount : !isMockContractor(mockUser) && !isOpsUser) {
   chatGate.hidden = false;
 } else {
   chatApp.hidden = false;
@@ -61,6 +171,18 @@ let typing = false;
 const messages = [
   { role: 'bot', text: "Hi, I'm the FieldFlow assistant. Ask me setup or how-to questions, or ask about your account." },
 ];
+
+// A new company starts with no activity. Say so up front instead of making
+// the owner guess whether Support loaded the correct account.
+const initialData = isSupabaseConfigured
+  ? (isOpsUser ? liveOpsData : liveData)
+  : (isOpsUser ? { clients, jobs } : loadMockAccountData(activeAccount.id, { clients, jobs }));
+if (!isOpsUser && !(initialData?.jobs ?? []).length) {
+  messages.push({
+    role: 'bot',
+    text: 'Your account has no jobs yet. Create your first job in Scheduling when you are ready.',
+  });
+}
 
 function saveAccount() {
   try { localStorage.setItem(STORAGE_KEY, accountId); } catch (e) { /* ignore blocked storage */ }
@@ -157,7 +279,7 @@ function escapeHtml(text) {
   return div.innerHTML;
 }
 
-function sendMessage(text) {
+async function sendMessage(text) {
   const trimmed = text.trim();
   if (!trimmed || typing) return;
   messages.push({ role: 'user', text: trimmed });
@@ -165,17 +287,25 @@ function sendMessage(text) {
   typing = true;
   renderMessages();
 
-  window.setTimeout(() => {
-    const data = isSupabaseConfigured ? liveData : loadMockAccountData(activeAccount.id, { clients, jobs });
-    const result = getAnswer(trimmed, {
-      account: activeAccount,
-      ...data,
-      referenceDate: reporting.date,
-    });
-    typing = false;
-    messages.push({ role: 'bot', text: result.text, source: result.source, jobs: result.jobs });
-    renderMessages();
-  }, 650);
+  await new Promise((resolve) => window.setTimeout(resolve, 650));
+
+  const data = isSupabaseConfigured
+    ? (isOpsUser ? liveOpsData : liveData)
+    : (isOpsUser ? { clients, jobs } : loadMockAccountData(activeAccount.id, { clients, jobs }));
+  let result = getAnswer(trimmed, {
+    account: activeAccount,
+    ...data,
+    referenceDate: reporting.date,
+    isOps: isOpsUser,
+  });
+  if (result.text === NO_ANSWER_TEXT) {
+    const apiResult = await askApi(trimmed, activeAccount.id);
+    if (apiResult) result = apiResult;
+  }
+
+  typing = false;
+  messages.push({ role: 'bot', text: result.text, source: result.source, jobs: result.jobs });
+  renderMessages();
 }
 
 chatForm.addEventListener('submit', (e) => {

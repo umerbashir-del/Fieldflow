@@ -4,72 +4,179 @@
    earthy palette and accessibility tokens. */
 
 * { box-sizing: border-box; }
-body { margin: 0; }
+body {
+  margin: 0;
+  /* The launcher and widget are both position:fixed, so they're taken out
+     of normal document flow and never contribute to body's height on
+     their own — without this, body collapses to 0px tall (only fixed
+     elements would render), which real browsers show fine but automated
+     visibility checks (this page has no other content) treat as hidden. */
+  min-height: 100vh;
+  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+  color: var(--ff-color-text);
+}
 [hidden] { display: none !important; }
 
 @keyframes ff-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
 @keyframes ff-dot { 0%, 60%, 100% { transform: translateY(0); opacity: .4; } 30% { transform: translateY(-4px); opacity: 1; } }
+@keyframes ff-pop { from { opacity: 0; transform: translateY(16px) scale(.96); } to { opacity: 1; transform: none; } }
+@keyframes ff-spin { to { transform: rotate(360deg); } }
 
-.ff-shell {
-  min-height: 100vh;
-  background: radial-gradient(120% 90% at 50% 0%, #f2e6df 0%, var(--ff-color-page) 58%);
-  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
-  color: var(--ff-color-text);
+/* --- Floating launcher button --- */
+.ff-launcher {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  width: 60px;
+  height: 60px;
+  border: 0;
+  border-radius: 50%;
+  background: linear-gradient(145deg, var(--ff-color-terracotta-500), var(--ff-color-accent-600));
+  box-shadow: 0 10px 30px -8px rgba(150, 70, 40, .6);
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 32px 20px;
+  cursor: pointer;
+  z-index: 999998;
+  transition: transform .15s, box-shadow .15s, opacity .15s, visibility .15s;
+}
+.ff-launcher img { width: 32px; height: 32px; object-fit: contain; }
+.ff-launcher:hover { transform: scale(1.06); box-shadow: 0 14px 34px -8px rgba(150, 70, 40, .7); }
+.ff-launcher:active { transform: scale(.97); }
+.ff-launcher.is-hidden { opacity: 0; visibility: hidden; pointer-events: none; transform: scale(.8); }
+
+/* --- Floating widget panel --- */
+.ff-widget {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 999999;
+  width: min(400px, calc(100vw - 32px));
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(16px) scale(.96);
+  transform-origin: bottom right;
+  transition: opacity .18s ease, transform .18s ease, visibility .18s;
+}
+.ff-widget.is-open {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+}
+
+/* The widget wraps either the sign-in gate or the chat app — chatbot.js
+   toggles which one is hidden — so ff-shell just holds whichever is
+   showing inside the floating panel. */
+.ff-shell {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
 }
 
 .ff-card {
   width: 100%;
-  max-width: 680px;
+  height: min(640px, calc(100vh - 48px));
   background: var(--ff-color-surface);
   border: 1px solid var(--ff-color-border);
-  border-radius: 24px;
+  border-radius: 20px;
   box-shadow: 0 24px 60px -24px rgba(150, 70, 40, 0.28), 0 4px 16px rgba(60, 40, 25, 0.05);
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  max-height: 92vh;
+  animation: ff-pop .2s cubic-bezier(.2,.7,.3,1) both;
 }
 
-.ff-gate { max-width: 480px; padding: 32px; border: 1px solid var(--ff-color-border); border-radius: 24px; background: var(--ff-color-surface); box-shadow: var(--ff-shadow-card); }
+.ff-gate {
+  width: 100%;
+  padding: 32px;
+  border: 1px solid var(--ff-color-border);
+  border-radius: 20px;
+  background: var(--ff-color-surface);
+  box-shadow: var(--ff-shadow-card);
+  animation: ff-pop .2s cubic-bezier(.2,.7,.3,1) both;
+}
+.ff-loading { max-width: 480px; padding: 36px; border: 1px solid var(--ff-color-border); border-radius: 20px; background: var(--ff-color-surface); box-shadow: var(--ff-shadow-card); text-align: center; }
+.ff-loading h1 { margin: 10px 0 8px; font-size: 1.35rem; }
+.ff-loading > p:last-child { color: var(--ff-color-muted); margin: 0; }
+.ff-spinner { width: 30px; height: 30px; margin: 0 auto 18px; border: 3px solid var(--ff-color-border); border-top-color: var(--ff-color-terracotta-500); border-radius: 50%; animation: ff-spin .8s linear infinite; }
 .ff-gate h1 { margin: 6px 0 12px; }
 .ff-gate p:not(.ff-eyebrow) { color: var(--ff-color-muted); line-height: 1.5; }
 .ff-gate-link { display: inline-block; margin-top: 8px; padding: 10px 14px; border-radius: 10px; background: var(--ff-color-brand-700); color: #fff; font-weight: 700; text-decoration: none; }
 
+/* Overlay close button: sits on the floating panel itself (not inside the
+   header) since it needs to work whether the sign-in gate or the chat app
+   is currently shown. */
+.ff-close-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 2;
+  width: 30px; height: 30px;
+  border: 1px solid var(--ff-color-border); border-radius: 9px;
+  background: var(--ff-color-surface); color: var(--ff-color-muted);
+  font-size: .82rem; line-height: 1; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background .15s, color .15s;
+}
+.ff-close-btn:hover { background: var(--ff-color-accent-100); color: var(--ff-color-accent-600); }
+
+@media (max-width: 480px) {
+  .ff-widget { right: 12px; bottom: 12px; width: calc(100vw - 24px); }
+  .ff-card { height: min(640px, calc(100vh - 24px)); }
+}
+
+/* --- Embedded mode: rendered inside embed.js's iframe on another app's
+   page, which already has its own launcher button, so this page's own
+   launcher is hidden and the panel fills the iframe instead of floating. */
+body.ff-embed { background: transparent; }
+body.ff-embed .ff-launcher { display: none; }
+body.ff-embed .ff-widget {
+  position: static;
+  width: 100%;
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+}
+body.ff-embed .ff-card,
+body.ff-embed .ff-gate { height: 100vh; border-radius: 0; }
+/* The widget's own sign-out button navigates this iframe to the
+   scheduling app's full page - fine standalone, broken embedded (it
+   would take over the small chat panel). Each host page already has its
+   own working sign-out; the session-bridge in chatbot.js already clears
+   this iframe's session when the host signs out, so this button would
+   just be a confusing, redundant, broken control here. */
+body.ff-embed .ff-sign-out { display: none; }
+
 /* --- Header --- */
 .ff-header {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 16px;
-  padding: 20px 24px;
+  padding: 20px 44px 20px 24px;
   border-bottom: 1px solid var(--ff-color-border);
   background: linear-gradient(180deg, var(--ff-color-surface), #f8f1eb);
 }
-.ff-header-left { display: flex; align-items: center; gap: 14px; min-width: 0; }
+.ff-header-left { display: flex; align-items: center; gap: 10px; min-width: 0; }
 .ff-avatar {
   position: relative;
   flex-shrink: 0;
-  width: 46px; height: 46px;
-  border-radius: 14px;
+  width: 44px; height: 44px;
+  border-radius: 13px;
   background: linear-gradient(145deg, var(--ff-color-terracotta-500), var(--ff-color-accent-600));
   display: flex; align-items: center; justify-content: center;
   box-shadow: 0 6px 16px -6px rgba(150, 70, 40, .6);
   overflow: hidden;
 }
-.ff-avatar img { width: 38px; height: 38px; object-fit: contain; }
+.ff-avatar img { width: 34px; height: 34px; object-fit: contain; }
 .ff-status-dot {
   position: absolute; right: -2px; bottom: -2px;
-  width: 13px; height: 13px; border-radius: 999px;
-  background: var(--ff-color-forest-700); border: 2.5px solid var(--ff-color-surface);
+  width: 12px; height: 12px; border-radius: 999px;
+  background: var(--ff-color-forest-700); border: 2px solid var(--ff-color-surface);
 }
 .ff-header-text { min-width: 0; }
 .ff-eyebrow { margin: 0; font-size: .68rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--ff-color-accent-600); }
-.ff-title { margin: 2px 0 0; font-size: 1.18rem; font-weight: 700; line-height: 1.1; }
-.ff-subtitle { margin: 3px 0 0; font-size: .78rem; color: var(--ff-color-muted); }
+.ff-title { margin: 2px 0 0; font-size: 1.05rem; font-weight: 700; line-height: 1.1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .ff-demo-notice { margin: 5px 0 0; font-size: .7rem; color: var(--ff-color-muted); }
 .ff-date-mode { background: transparent; border: 0; color: var(--ff-color-brand-600); cursor: pointer; font: inherit; font-weight: 700; padding: 0; text-decoration: underline; }
 .ff-sign-out { border: 1px solid var(--ff-color-border); background: var(--ff-color-surface); border-radius: 9px; color: var(--ff-color-brand-700); cursor: pointer; font: inherit; font-size: .76rem; font-weight: 700; padding: 8px 10px; }
@@ -77,8 +184,10 @@ body { margin: 0; }
 .ff-app-links a { color: var(--ff-color-brand-600); text-decoration: none; }
 .ff-app-links a:hover { text-decoration: underline; }
 
+.ff-header-right { display: flex; align-items: flex-start; gap: 10px; flex-shrink: 0; }
+
 .ff-account-picker { display: flex; flex-direction: column; gap: 5px; flex-shrink: 0; }
-.ff-account-picker > span { font-size: .62rem; font-weight: 700; letter-spacing: .09em; text-transform: uppercase; color: #9a8a7c; }
+.ff-account-picker > span { font-size: .62rem; font-weight: 700; letter-spacing: .09em; text-transform: uppercase; color: var(--ff-color-muted); }
 .ff-select-wrap { position: relative; }
 .ff-select-wrap select {
   appearance: none; -webkit-appearance: none;
@@ -86,11 +195,11 @@ body { margin: 0; }
   border: 1px solid var(--ff-color-border); border-radius: 10px;
   background: var(--ff-color-brand-100);
   font: inherit; font-size: .82rem; font-weight: 600; color: var(--ff-color-text);
-  cursor: pointer; min-width: 210px;
+  cursor: pointer; min-width: 108px; max-width: 140px;
 }
 .ff-select-caret {
   position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
-  pointer-events: none; color: #8a7a6c; font-size: .7rem;
+  pointer-events: none; color: var(--ff-color-muted); font-size: .7rem;
 }
 
 /* --- Messages --- */

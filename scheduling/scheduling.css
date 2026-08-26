@@ -43,7 +43,6 @@ input, select { width: 100%; padding: 12px; border: 1px solid var(--ff-color-bor
    in the real repo — kept in this same file here for a single
    double-clickable deliverable).
    ================================================================ */
-
 .topbar-actions { display: flex; align-items: center; gap: 10px; }
 .demo-notice { margin: 12px 0 0; color: var(--muted); font-size: .85rem; }
 .notice-link { background: transparent; border: 0; color: var(--primary); cursor: pointer; font: inherit; font-weight: 700; padding: 0; text-decoration: underline; }
@@ -56,7 +55,6 @@ input, select { width: 100%; padding: 12px; border: 1px solid var(--ff-color-bor
 .badge-in_progress { background: #f7efd9; color: #7c5d24; }
 .badge-completed { background: #e7ebe2; color: #424b37; }
 .badge-cancelled { background: #f7ecec; color: #713e43; }
-
 .job-meta { font-size: .82rem; margin-top: 2px; }
 .confirm-badge { margin-left: 6px; }
 .confirm-pending { background: #f7ecec; color: #713e43; }

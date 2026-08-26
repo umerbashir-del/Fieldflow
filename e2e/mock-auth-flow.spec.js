@@ -132,7 +132,14 @@ test('Chatbot treats a new business name as text, not page markup', async ({ pag
 
 test('sign-in form is keyboard operable', async ({ page }) => {
   await page.goto(schedulingUrl);
-  await page.keyboard.press('Tab');
+  // Focus the email field directly rather than counting Tab presses from
+  // page load: Safari/WebKit, unlike Chromium and Firefox, excludes plain
+  // <button> elements (like the quick-sign-in shortcuts above the form)
+  // from the default Tab order, so the number of Tab presses needed to
+  // reach the first input isn't consistent across browsers. What this
+  // test actually cares about - the form's own internal tab order - still
+  // gets exercised below.
+  await page.locator('#mockEmail').focus();
   await expect(page.locator('#mockEmail')).toBeFocused();
   await page.keyboard.type('john@fieldflow.demo');
   await page.keyboard.press('Tab');
@@ -166,8 +173,10 @@ test('new account creates an empty company context and supports keyboard navigat
 
   await page.getByRole('link', { name: 'Support Chat' }).click();
   await expect(page.locator('#chatApp')).toBeVisible();
+  await expect(page.locator('#messageList')).toContainText('Your account has no jobs yet');
   await page.locator('#chatInput').fill("What's my plan?");
   await page.getByRole('button', { name: /^Send/ }).click();
+  await expect(page.locator('.ff-typing-bubble')).toBeHidden({ timeout: 10_000 });
   await expect(page.locator('#messageList')).toContainText('Starter plan for Avery Plumbing');
 });
 

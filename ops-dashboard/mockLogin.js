@@ -10,6 +10,7 @@ const password = document.getElementById('opsPassword');
 const error = document.getElementById('opsLoginError');
 const resetForm = document.getElementById('opsResetForm');
 const resetMessage = document.getElementById('opsResetMessage');
+const retryButton = document.getElementById('opsRetryButton');
 
 if (isSupabaseConfigured) {
   document.getElementById('operationsLoginEyebrow').textContent = 'FieldFlow';
@@ -35,22 +36,22 @@ function signedInOpsUser() {
   return user?.role === 'ops' ? user : null;
 }
 
-const liveContext = isSupabaseConfigured ? await getOperationsSession() : null;
+let liveContext = null;
+let liveLoadError = '';
 
 function showDashboard() {
   gate.hidden = true;
   dashboard.hidden = false;
 }
 
-if (isSupabaseConfigured ? Boolean(liveContext?.staff) : signedInOpsUser()) {
+if (!isSupabaseConfigured && signedInOpsUser()) {
   showDashboard();
 } else {
-  form.addEventListener('submit', async (event) => {
-    event.preventDefault();
+  async function attemptSignIn(emailValue, passwordValue) {
     error.textContent = '';
     try {
       if (isSupabaseConfigured) {
-        await signIn(email.value, password.value);
+        await signIn(emailValue, passwordValue);
         const context = await getOperationsSession();
         if (!context?.staff) {
           await signOut();
@@ -58,7 +59,7 @@ if (isSupabaseConfigured ? Boolean(liveContext?.staff) : signedInOpsUser()) {
         }
         window.location.reload();
       } else {
-        const user = authenticateMockUser(email.value, password.value);
+        const user = authenticateMockUser(emailValue, passwordValue);
         if (user.role !== 'ops') throw new Error('This sign-in is for FieldFlow Operations staff. Use Scheduling for contractor accounts.');
         const url = new URL(window.location.href);
         url.searchParams.set('demo_user', user.id);
@@ -67,6 +68,11 @@ if (isSupabaseConfigured ? Boolean(liveContext?.staff) : signedInOpsUser()) {
     } catch (signInError) {
       error.textContent = friendlyAuthError(signInError);
     }
+  }
+
+  form.addEventListener('submit', (event) => {
+    event.preventDefault();
+    attemptSignIn(email.value, password.value);
   });
   document.querySelectorAll('[data-ops-auth-mode]').forEach((button) => button.addEventListener('click', () => showForm(button.dataset.opsAuthMode)));
   resetForm.addEventListener('submit', async (event) => {
@@ -80,6 +86,24 @@ if (isSupabaseConfigured ? Boolean(liveContext?.staff) : signedInOpsUser()) {
     } catch (resetError) {
       resetMessage.textContent = friendlyAuthError(resetError);
     }
+  });
+}
+
+if (isSupabaseConfigured) {
+  getOperationsSession().then((context) => {
+    liveContext = context;
+    if (context?.staff) showDashboard();
+  }).catch((loadError) => {
+    const message = String(loadError?.message ?? '').toLowerCase();
+    liveLoadError = message.includes('jwt') || message.includes('session') || message.includes('401')
+      ? 'Your session expired. Please sign in again.'
+      : typeof navigator !== 'undefined' && !navigator.onLine
+      ? 'You appear to be offline. Check your connection and try again.'
+      : 'We couldn’t load your data. Check your connection and try again.';
+    error.textContent = `${liveLoadError} You can try signing in again.`;
+    document.getElementById('operationsLoginDescription').textContent = liveLoadError;
+    retryButton.hidden = liveLoadError.includes('session');
+    retryButton.addEventListener('click', () => window.location.reload(), { once: true });
   });
 }
 
