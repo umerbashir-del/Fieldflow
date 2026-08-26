@@ -1131,10 +1131,20 @@ import { assigneeLabel } from '../shared-data/jobPresentation.js';
   // makes navigation responsive even when Supabase is momentarily slow.
   if (LIVE_MODE) {
     schedulingDataLoading.hidden = false;
+    newJobBtn.disabled = true;
+    newClientBtn.disabled = true;
+    newJobBtn.title = 'Jobs are loading';
+    newClientBtn.title = 'Clients are loading';
+    appRoot.setAttribute('aria-busy', 'true');
     loadSchedulingData().then((data) => {
       clients = data.clients;
       jobs = data.jobs;
       schedulingDataLoading.hidden = true;
+      newJobBtn.disabled = false;
+      newClientBtn.disabled = false;
+      newJobBtn.removeAttribute('title');
+      newClientBtn.removeAttribute('title');
+      appRoot.setAttribute('aria-busy', 'false');
       renderAll();
     }).catch(() => {
       showSchedulingLoadError(LIVE_LOAD_ERROR || 'We couldn’t load your data. Check your connection and try again.');
