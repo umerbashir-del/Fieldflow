@@ -1,9 +1,14 @@
-import sharedAccounts from '../shared-data/accounts.json';
-import sharedClients from '../shared-data/clients.json';
-import sharedJobs from '../shared-data/jobs.json';
 import { isMockContractor, mockUserFromSearch } from '../shared-data/mockSession.js';
 import { getAccountData, getSignedInAccount, isSupabaseConfigured } from '../shared-data/supabase.js';
 import { reportingDateFromAccount } from '../shared-data/reportingDate.js';
+
+const [sharedAccounts, sharedClients, sharedJobs] = __FIELDFLOW_DEMO__
+  ? await Promise.all([
+      import('../shared-data/accounts.json').then((module) => module.default),
+      import('../shared-data/clients.json').then((module) => module.default),
+      import('../shared-data/jobs.json').then((module) => module.default),
+    ])
+  : [[], [], []];
 
 const mockUser = mockUserFromSearch(window.location.search);
 let liveContext = null;

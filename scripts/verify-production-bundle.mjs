@@ -33,6 +33,7 @@ const banned = [
   env.SARAH_TEST_PASSWORD,
   env.OPERATIONS_TEST_PASSWORD,
 ].filter(Boolean);
+const syntheticRecordMarkers = ['client_arcade', 'sj_0061', 'cli2_harvesttable'];
 
 const violations = [];
 for (const file of await filesUnder(deployRoot)) {
@@ -41,7 +42,10 @@ for (const file of await filesUnder(deployRoot)) {
   for (const value of banned) {
     if (content.includes(value)) violations.push(path.relative(root, file));
   }
+  for (const marker of syntheticRecordMarkers) {
+    if (content.includes(marker)) violations.push(path.relative(root, file));
+  }
 }
 
 if (violations.length) throw new Error(`Production bundle contains a banned value in: ${[...new Set(violations)].join(', ')}`);
-console.log('Production bundle verified: no private credentials, demo passwords, or FieldFlow localhost links.');
+console.log('Production bundle verified: no private credentials, demo datasets, demo passwords, or FieldFlow localhost links.');

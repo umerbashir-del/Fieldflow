@@ -3,7 +3,7 @@
 // { query, accountId } and returns { text, source? } to enable this path.
 // Until that function exists, invoke() rejects and callers should keep
 // showing the local fallback message.
-import { supabase } from './supabaseClient.js';
+import { supabase } from '../shared-data/supabase.js';
 
 export async function askApi(query, accountId) {
   if (!supabase) return null;
