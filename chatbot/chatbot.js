@@ -287,7 +287,9 @@ async function sendMessage(text) {
   typing = true;
   renderMessages();
 
-  await new Promise((resolve) => window.setTimeout(resolve, 650));
+  // Keep a small visual response in the local demo, but do not make live
+  // customers wait after their company data has already loaded.
+  if (!isSupabaseConfigured) await new Promise((resolve) => window.setTimeout(resolve, 150));
 
   const data = isSupabaseConfigured
     ? (isOpsUser ? liveOpsData : liveData)

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { getAccountById, getClientsForAccount, getJobActivityForAccount, getJobsForAccount, getOperationsSession, getSignedInAccount, isSupabaseConfigured, signOut, subscribeToAccountChanges } from '../../shared-data/supabase.js';
+import { getAccountById, getAnalyticsSummary, getClientsForAccount, getJobActivityForAccount, getJobsForAccount, getOperationsSession, getSignedInAccount, isSupabaseConfigured, signOut, subscribeToAccountChanges } from '../../shared-data/supabase.js';
 import { buildMockAppLink, isMockContractor, mockUserFromSearch } from '../../shared-data/mockSession.js';
 import { buildMockDataLink, loadMockAccountData } from '../../shared-data/mockDataSession.js';
 import { buildAnalyticsInsights, buildAnalyticsSummary, buildSchedulingLink, changePresentation, chatSummaryText, toIsoDate } from './analyticsSummary.js';
@@ -53,6 +53,7 @@ export default function AnalyticsPage() {
   const [hoveredPoint, setHoveredPoint] = useState(null);
   const [visibleInsights, setVisibleInsights] = useState(() => new Set(INSIGHT_OPTIONS.map((option) => option.id)));
   const [sessionState, setSessionState] = useState({ loading: isSupabaseConfigured, account: null, clients: [], jobs: [], activities: [], user: null, isOps: false, error: '' });
+  const [serverSummary, setServerSummary] = useState(null);
 
   const loadLiveData = async () => {
     setSessionState((current) => ({ ...current, loading: true, error: '' }));
@@ -102,6 +103,21 @@ export default function AnalyticsPage() {
       unsubscribe();
     };
   }, [sessionState.account?.id]);
+  const liveReporting = reportingDateFromAccount(sessionState.account, window.location.search);
+  const liveSummaryPeriod = sessionState.account
+    ? buildAnalyticsSummary([], sessionState.account.id, timeframe, liveReporting.date, customRange)
+    : null;
+  const liveSummaryStart = liveSummaryPeriod ? toIsoDate(liveSummaryPeriod.selectedPeriod.start) : '';
+  const liveSummaryEnd = liveSummaryPeriod ? toIsoDate(liveSummaryPeriod.selectedEnd) : '';
+  useEffect(() => {
+    if (!isSupabaseConfigured || !sessionState.account?.id || !liveSummaryStart || !liveSummaryEnd) return undefined;
+    let active = true;
+    setServerSummary(null);
+    getAnalyticsSummary(sessionState.account.id, liveSummaryStart, liveSummaryEnd)
+      .then((result) => { if (active) setServerSummary(result); })
+      .catch(() => { if (active) setServerSummary(null); });
+    return () => { active = false; };
+  }, [sessionState.account?.id, liveSummaryStart, liveSummaryEnd]);
 
   const mockUser = mockUserFromSearch(window.location.search);
   const requestedAccountId = new URLSearchParams(window.location.search).get('account_id');
@@ -142,14 +158,19 @@ export default function AnalyticsPage() {
           : '';
   const summary = buildAnalyticsSummary(accountJobs, accountId, timeframe, referenceDate, customRange);
   const { selectedPeriod, selectedEnd, selectedRangeLabel, comparisonRangeLabel, selectedJobs, comparisonJobs, change, hasCompleteComparison, newClients, repeatClients, trend } = summary;
+  const selectedJobsCount = serverSummary?.selected_jobs ?? selectedJobs.length;
+  const comparisonJobsCount = serverSummary?.previous_jobs ?? comparisonJobs.length;
+  const summaryChange = serverSummary?.change_percent ?? change;
+  const newClientsCount = serverSummary?.new_clients ?? newClients;
+  const repeatClientsCount = serverSummary?.repeat_clients ?? repeatClients;
   const changeStatus = changePresentation({
-    selectedJobs: selectedJobs.length,
-    comparisonJobs: comparisonJobs.length,
-    change,
+    selectedJobs: selectedJobsCount,
+    comparisonJobs: comparisonJobsCount,
+    change: summaryChange,
     hasCompleteComparison,
     comparisonRangeLabel,
   });
-  const totalClients = newClients + repeatClients;
+  const totalClients = newClientsCount + repeatClientsCount;
   const insights = buildAnalyticsInsights({ jobs: accountJobs, clients: accountClients, activities: accountActivities, accountId, summary, referenceDate, inactiveDays });
   const isInsightVisible = (insightId) => visibleInsights.has(insightId);
   const toggleInsight = (insightId) => setVisibleInsights((current) => {
@@ -158,7 +179,7 @@ export default function AnalyticsPage() {
     else next.add(insightId);
     return next;
   });
-  const newClientShare = totalClients === 0 ? 0 : (newClients / totalClients) * 100;
+  const newClientShare = totalClients === 0 ? 0 : (newClientsCount / totalClients) * 100;
   const newClientPercent = Math.round(newClientShare);
   const repeatClientPercent = totalClients === 0 ? 0 : 100 - newClientPercent;
   const schedulingLinkUrl = new URL(buildSchedulingLink(SCHEDULING_URL, accountId, selectedPeriod.start, selectedEnd));
@@ -241,21 +262,21 @@ export default function AnalyticsPage() {
       <section className="summary-grid" aria-label="Weekly job summary">
         <article className="card primary-card" title={`Counts every job scheduled from ${selectedRangeLabel}.`}>
           <p className="card-label">{selectedRangeLabel}</p>
-          <p className="metric">{selectedJobs.length}</p>
+          <p className="metric">{selectedJobsCount}</p>
           <p className="helper">Selected period</p>
         </article>
         <article className="card" title={`Counts every job scheduled from ${comparisonRangeLabel}.`}>
           <p className="card-label">{comparisonRangeLabel}</p>
-          <p className="metric">{comparisonJobs.length}</p>
+          <p className="metric">{comparisonJobsCount}</p>
           <p className="helper">Matching previous period</p>
         </article>
-        <article className="card" title={`Calculated from ${selectedJobs.length} jobs in the selected period and ${comparisonJobs.length} jobs in the previous period.`}>
+        <article className="card" title={`Calculated from ${selectedJobsCount} jobs in the selected period and ${comparisonJobsCount} jobs in the previous period.`}>
           <p className="card-label">Change vs. previous period</p>
           <p className={`metric metric-status ${changeStatus.tone}`}>{changeStatus.value}</p>
           <p className="helper">{changeStatus.detail}</p>
         </article>
       </section>
-      {selectedJobs.length === 0 && <p className="empty-state">No jobs are scheduled in this period yet. <a href={schedulingLink}>View Scheduling to create or review a job.</a></p>}
+      {selectedJobsCount === 0 && <p className="empty-state">No jobs are scheduled in this period yet. <a href={schedulingLink}>View Scheduling to create or review a job.</a></p>}
 
       <details className="insight-picker">
         <summary>Customize dashboard</summary>
@@ -319,16 +340,16 @@ export default function AnalyticsPage() {
           <div
             className="donut"
             role="img"
-            aria-label={`${newClients} new clients and ${repeatClients} repeat clients for ${selectedPeriod.label.toLowerCase()}`}
-            title={`${newClients} new clients (${newClientPercent}%) and ${repeatClients} repeat clients (${repeatClientPercent}%).`}
+            aria-label={`${newClientsCount} new clients and ${repeatClientsCount} repeat clients for ${selectedPeriod.label.toLowerCase()}`}
+            title={`${newClientsCount} new clients (${newClientPercent}%) and ${repeatClientsCount} repeat clients (${repeatClientPercent}%).`}
             style={{ '--new-client-share': `${newClientShare}%` }}
           >
             <span>{totalClients}</span>
             <small>clients</small>
           </div>
           <div className="donut-legend">
-            <p title={`${newClients} of ${totalClients} clients (${newClientPercent}%) had no job before this selected period.`}><i className="legend-dot new" aria-hidden="true" />New clients <strong>{newClients}</strong></p>
-            <p title={`${repeatClients} of ${totalClients} clients (${repeatClientPercent}%) had a job before this selected period.`}><i className="legend-dot repeat" aria-hidden="true" />Repeat clients <strong>{repeatClients}</strong></p>
+            <p title={`${newClientsCount} of ${totalClients} clients (${newClientPercent}%) had no job before this selected period.`}><i className="legend-dot new" aria-hidden="true" />New clients <strong>{newClientsCount}</strong></p>
+            <p title={`${repeatClientsCount} of ${totalClients} clients (${repeatClientPercent}%) had a job before this selected period.`}><i className="legend-dot repeat" aria-hidden="true" />Repeat clients <strong>{repeatClientsCount}</strong></p>
             <p title={`Clients with prior jobs but no work in ${selectedRangeLabel}.`}><i className="legend-dot inactive" aria-hidden="true" />Inactive clients <strong>{insights.inactiveClients.length}</strong></p>
           </div>
         </div>

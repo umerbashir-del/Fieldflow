@@ -1,4 +1,4 @@
-import { ACCOUNT_ID, accounts, CONFIRMATION_LABELS, CONFIRMATION_VALUES, CONTACT_METHOD_LABELS, CONTACT_METHODS, IS_CONTRACTOR_SESSION, LIVE_MODE, REPORTING, seedClients, seedJobs, STATUS_LABELS, STATUS_VALUES, TEAM_MEMBERS } from './data.js';
+import { ACCOUNT_ID, accounts, CONFIRMATION_LABELS, CONFIRMATION_VALUES, CONTACT_METHOD_LABELS, CONTACT_METHODS, IS_CONTRACTOR_SESSION, LIVE_LOAD_ERROR, LIVE_MODE, REPORTING, seedClients, seedJobs, STATUS_LABELS, STATUS_VALUES, TEAM_MEMBERS } from './data.js';
 import { clientName, formatDate } from './formatters.js';
 import { addDaysISO, addMonthsISO, isSameMonth, monthDay, monthYearLabel, startOfMonthISO, startOfWeekISO, weekdayShort } from './date-utils.js';
 import { buildMockDataLink, loadMockAccountData, saveMockAccountData } from '../shared-data/mockDataSession.js';
@@ -13,6 +13,49 @@ import { assigneeLabel } from '../shared-data/jobPresentation.js';
   // The sign-in screen loads this module too. Do not initialize or retain
   // any company data unless a contractor demo session is present.
   if (!IS_CONTRACTOR_SESSION) return;
+
+  const appRoot = document.getElementById('schedulingApp');
+
+  function userFacingDataError(error, fallback) {
+    const message = String(error?.message ?? error ?? '').toLowerCase();
+    if (message.includes('timed out') || message.includes('failed to fetch') || message.includes('network') || (typeof navigator !== 'undefined' && !navigator.onLine)) {
+      return 'We couldn’t reach FieldFlow. Check your connection and try again.';
+    }
+    if (message.includes('permission') || message.includes('row-level') || message.includes('403')) {
+      return 'You don’t have permission to change this company’s schedule.';
+    }
+    if (message.includes('session') || message.includes('jwt') || message.includes('401')) {
+      return 'Your session expired. Please sign in again.';
+    }
+    return fallback;
+  }
+
+  function showSchedulingLoadError(message) {
+    const state = document.createElement('section');
+    const content = document.createElement('div');
+    const title = document.createElement('h1');
+    const detail = document.createElement('p');
+    const retry = document.createElement('button');
+    state.className = 'app-state app-error-state';
+    state.setAttribute('role', 'alert');
+    title.textContent = 'We couldn’t load your schedule';
+    detail.textContent = message;
+    retry.type = 'button';
+    retry.className = 'retry-button';
+    retry.textContent = 'Try again';
+    retry.addEventListener('click', () => window.location.reload());
+    content.append(title, detail, retry);
+    state.append(content);
+    appRoot.replaceChildren(state);
+    appRoot.classList.add('is-ready');
+    appRoot.hidden = false;
+    appRoot.setAttribute('aria-busy', 'false');
+  }
+
+  if (LIVE_LOAD_ERROR) {
+    showSchedulingLoadError(LIVE_LOAD_ERROR);
+    return;
+  }
 
   // Key used to save app state in the browser's localStorage, so your
   // data survives a page refresh.
@@ -790,7 +833,7 @@ import { assigneeLabel } from '../shared-data/jobPresentation.js';
       } catch (error) {
         saveJobBtn.disabled = false;
         jobConflictWarning.hidden = false;
-        jobConflictWarning.textContent = error.message || 'The job could not be saved. Try again.';
+        jobConflictWarning.textContent = userFacingDataError(error, 'The job could not be saved. Try again.');
         return;
       }
     } else {
@@ -799,7 +842,7 @@ import { assigneeLabel } from '../shared-data/jobPresentation.js';
       } catch (error) {
         saveJobBtn.disabled = false;
         jobConflictWarning.hidden = false;
-        jobConflictWarning.textContent = error.message || 'The job could not be saved. Try again.';
+        jobConflictWarning.textContent = userFacingDataError(error, 'The job could not be saved. Try again.');
         return;
       }
       jobs = jobs.map((j) => (j.id === originalId ? Object.assign({}, j, stamped, { title: stamped.title.trim() }) : j));
@@ -836,7 +879,15 @@ import { assigneeLabel } from '../shared-data/jobPresentation.js';
     }
     clearTimeout(modalRef.deleteArmTimer);
     const id = modalRef.originalId;
-    if (LIVE_MODE) await deleteLiveJob(id);
+    try {
+      if (LIVE_MODE) await deleteLiveJob(id);
+    } catch (error) {
+      modalRef.deleteArmed = false;
+      jobConflictWarning.hidden = false;
+      jobConflictWarning.textContent = userFacingDataError(error, 'The job could not be deleted. Try again.');
+      renderJobModal();
+      return;
+    }
     jobs = jobs.filter((j) => j.id !== id);
     persist();
     closeJobModal();
@@ -920,7 +971,7 @@ import { assigneeLabel } from '../shared-data/jobPresentation.js';
         clients.push(LIVE_MODE ? await createFieldflowClient(nextClient) : nextClient);
       } catch (error) {
         saveClientBtn.disabled = false;
-        clientNotice = error.message || 'The client could not be saved. Try again.';
+        clientNotice = userFacingDataError(error, 'The client could not be saved. Try again.');
         renderClientModal();
         return;
       }
@@ -929,7 +980,7 @@ import { assigneeLabel } from '../shared-data/jobPresentation.js';
         if (LIVE_MODE) await updateClient(originalId, cleaned);
       } catch (error) {
         saveClientBtn.disabled = false;
-        clientNotice = error.message || 'The client could not be saved. Try again.';
+        clientNotice = userFacingDataError(error, 'The client could not be saved. Try again.');
         renderClientModal();
         return;
       }
@@ -970,7 +1021,14 @@ import { assigneeLabel } from '../shared-data/jobPresentation.js';
       return;
     }
     clearTimeout(modalRef.deleteArmTimer);
-    if (LIVE_MODE) await deleteClient(id);
+    try {
+      if (LIVE_MODE) await deleteClient(id);
+    } catch (error) {
+      modalRef.deleteArmed = false;
+      clientNotice = userFacingDataError(error, 'The client could not be deleted. Try again.');
+      renderClientModal();
+      return;
+    }
     clients = clients.filter((c) => c.id !== id);
     persist();
     closeClientModal();
@@ -1063,4 +1121,6 @@ import { assigneeLabel } from '../shared-data/jobPresentation.js';
   // Draw the initial screen once all the state, DOM refs, and event
   // listeners above are set up.
   renderAll();
+  appRoot.classList.add('is-ready');
+  appRoot.setAttribute('aria-busy', 'false');
 })();

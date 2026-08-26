@@ -11,6 +11,18 @@ export const supabase = isSupabaseConfigured
   : null;
 
 const REQUEST_TIMEOUT_MS = 10000;
+const COMPANY_DATA_CACHE_MS = 15_000;
+const companyDataCache = new Map();
+const JOB_FIELDS = 'id, account_id, client_id, title, scheduled_for, status, assignee, scheduled_start_time, appointment_confirmation_status, contact_method, confirmed_by, confirmation_note, last_contacted_at, confirmed_at, job_category, estimated_duration_minutes, actual_duration_minutes, invoice_total, completed_at, lead_source, technician_id, customer_satisfaction_rating';
+const CLIENT_FIELDS = 'id, account_id, name, building_number, street_name, city, state, zip_code, client_phone';
+
+function copyCompanyData(data) {
+  return { jobs: data.jobs.map((job) => ({ ...job })), clients: data.clients.map((client) => ({ ...client })) };
+}
+
+function clearCompanyDataCache() {
+  companyDataCache.clear();
+}
 
 function withRequestTimeout(promise, label = 'Supabase request') {
   let timer;
@@ -118,23 +130,50 @@ export function getOperationsSession() {
   return withRequestTimeout(loadOperationsSession(), 'Operations connection');
 }
 
+export async function getOperationsSummaries() {
+  const client = requireSupabase();
+  const request = client.rpc('get_operations_account_summaries');
+  const { data, error } = await withAbortableRequest(request, 'Operations summary request');
+  if (error) throw error;
+  return data;
+}
+
+// Operations Support can answer cross-company questions. It is opened only by
+// authorized staff, unlike the Operations dashboard home screen, which uses
+// the compact summary request above.
 export async function getOperationsData() {
   const client = requireSupabase();
   const request = Promise.all([
-    client.from('accounts').select('*').order('name'),
-    client.from('clients').select('*').order('name'),
-    client.from('jobs').select('*').order('scheduled_for', { ascending: false }),
+    client.from('accounts').select('id, name, plan, demo_reporting_date').order('name'),
+    client.from('clients').select(CLIENT_FIELDS).order('name'),
+    client.from('jobs').select(JOB_FIELDS).order('scheduled_for', { ascending: false }),
   ]);
-  const [accountResult, clientResult, jobResult] = await withRequestTimeout(request, 'Operations data request');
+  const [accountResult, clientResult, jobResult] = await withRequestTimeout(request, 'Operations Support data request');
   const error = accountResult.error || clientResult.error || jobResult.error;
   if (error) throw error;
   return { accounts: accountResult.data, clients: clientResult.data, jobs: jobResult.data };
 }
 
+export async function getOperationsAccountDetail(accountId) {
+  const [account, data] = await Promise.all([getAccountById(accountId), getAccountData(accountId)]);
+  return { account, ...data };
+}
+
+export async function getAnalyticsSummary(accountId, periodStart, periodEnd) {
+  const request = requireSupabase().rpc('get_analytics_summary', {
+    requested_account_id: accountId,
+    period_start: periodStart,
+    period_end: periodEnd,
+  });
+  const { data, error } = await withAbortableRequest(request, 'Analytics summary request');
+  if (error) throw error;
+  return data?.[0] ?? null;
+}
+
 export async function getJobsForAccount(accountId) {
   const request = requireSupabase()
     .from('jobs')
-    .select('*')
+    .select(JOB_FIELDS)
     .eq('account_id', accountId)
     .order('scheduled_for', { ascending: true });
   const { data, error } = await withAbortableRequest(request, 'Jobs request');
@@ -145,7 +184,7 @@ export async function getJobsForAccount(accountId) {
 export async function getAccountById(accountId) {
   const request = requireSupabase()
     .from('accounts')
-    .select('*')
+    .select('id, name, plan, demo_reporting_date')
     .eq('id', accountId)
     .maybeSingle();
   const { data, error } = await withAbortableRequest(request, 'Account request');
@@ -156,7 +195,7 @@ export async function getAccountById(accountId) {
 export async function getClientsForAccount(accountId) {
   const request = requireSupabase()
     .from('clients')
-    .select('*')
+    .select(CLIENT_FIELDS)
     .eq('account_id', accountId)
     .order('name', { ascending: true });
   const { data, error } = await withAbortableRequest(request, 'Clients request');
@@ -191,11 +230,15 @@ export function subscribeToAccountChanges(accountId, callback) {
 // signed-in user's RLS-scoped Supabase client; the browser never chooses a
 // privileged account or secret key.
 export async function getAccountData(accountId) {
+  const cached = companyDataCache.get(accountId);
+  if (cached && Date.now() - cached.savedAt < COMPANY_DATA_CACHE_MS) return copyCompanyData(cached.data);
   const [jobs, clients] = await Promise.all([
     getJobsForAccount(accountId),
     getClientsForAccount(accountId),
   ]);
-  return { jobs, clients };
+  const data = { jobs, clients };
+  companyDataCache.set(accountId, { savedAt: Date.now(), data });
+  return copyCompanyData(data);
 }
 
 export async function createJob(job) {
@@ -206,6 +249,7 @@ export async function createJob(job) {
     .single();
   const { data, error } = await withAbortableRequest(request, 'Create job request');
   if (error) throw error;
+  clearCompanyDataCache();
   return data;
 }
 
@@ -218,6 +262,7 @@ export async function updateJob(jobId, changes) {
     .single();
   const { data, error } = await withAbortableRequest(request, 'Update job request');
   if (error) throw error;
+  clearCompanyDataCache();
   return data;
 }
 
@@ -225,6 +270,7 @@ export async function deleteJob(jobId) {
   const request = requireSupabase().from('jobs').delete().eq('id', jobId);
   const { error } = await withAbortableRequest(request, 'Delete job request');
   if (error) throw error;
+  clearCompanyDataCache();
 }
 
 export async function createFieldflowClient(client) {
@@ -235,6 +281,7 @@ export async function createFieldflowClient(client) {
     .single();
   const { data, error } = await withAbortableRequest(request, 'Create client request');
   if (error) throw error;
+  clearCompanyDataCache();
   return data;
 }
 
@@ -247,6 +294,7 @@ export async function updateClient(clientId, changes) {
     .single();
   const { data, error } = await withAbortableRequest(request, 'Update client request');
   if (error) throw error;
+  clearCompanyDataCache();
   return data;
 }
 
@@ -254,4 +302,5 @@ export async function deleteClient(clientId) {
   const request = requireSupabase().from('clients').delete().eq('id', clientId);
   const { error } = await withAbortableRequest(request, 'Delete client request');
   if (error) throw error;
+  clearCompanyDataCache();
 }
