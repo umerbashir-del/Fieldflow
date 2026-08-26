@@ -79,12 +79,13 @@ export function buildAnalyticsSummary(jobs, accountId, timeframe, referenceDate 
   const trend = selectedPeriod.granularity === 'day'
     ? Array.from({ length: selectedPeriod.days }, (_, index) => {
       const dayStart = new Date(selectedPeriod.start.getTime() + index * DAY);
-      return { label: dayLabel(dayStart), detail: fullDateLabel(dayStart), jobs: accountJobs.filter((job) => isInRange(job, dayStart, new Date(dayStart.getTime() + DAY))).length };
+      const dayEnd = new Date(dayStart.getTime() + DAY);
+      return { label: dayLabel(dayStart), detail: fullDateLabel(dayStart), start: dayStart, end: dayEnd, jobs: accountJobs.filter((job) => isInRange(job, dayStart, dayEnd)).length };
     })
     : Array.from({ length: Math.ceil(selectedPeriod.days / 7) }, (_, index) => {
       const weekStart = new Date(selectedPeriod.start.getTime() + index * 7 * DAY);
       const weekEnd = new Date(Math.min(weekStart.getTime() + 7 * DAY, selectedEnd.getTime()));
-      return { label: weekLabel(weekStart), detail: rangeLabel(weekStart, weekEnd), jobs: accountJobs.filter((job) => isInRange(job, weekStart, weekEnd)).length };
+      return { label: weekLabel(weekStart), detail: rangeLabel(weekStart, weekEnd), start: weekStart, end: weekEnd, jobs: accountJobs.filter((job) => isInRange(job, weekStart, weekEnd)).length };
     });
 
   return {
@@ -142,7 +143,7 @@ const STATUS_LABELS = {
   cancelled: 'Cancelled',
 };
 
-export function buildAnalyticsInsights({ jobs, clients, accountId, summary, referenceDate }) {
+export function buildAnalyticsInsights({ jobs, clients, activities = [], accountId, summary, referenceDate, inactiveDays = 30 }) {
   const accountJobs = jobs.filter((job) => job.account_id === accountId);
   const accountClients = clients.filter((client) => client.account_id === accountId);
   const clientNames = new Map(accountClients.map((client) => [client.id, client.name]));
@@ -178,9 +179,13 @@ export function buildAnalyticsInsights({ jobs, clients, accountId, summary, refe
     .map(([clientId, jobs]) => ({ clientId, name: clientNames.get(clientId) ?? 'Unknown client', jobs }))
     .sort((first, second) => second.jobs - first.jobs || first.name.localeCompare(second.name))
     .slice(0, 5);
+  const referenceDay = new Date(Date.UTC(referenceDate.getUTCFullYear(), referenceDate.getUTCMonth(), referenceDate.getUTCDate() + 1));
+  const inactivityCutoff = new Date(Date.UTC(referenceDate.getUTCFullYear(), referenceDate.getUTCMonth(), referenceDate.getUTCDate() - inactiveDays));
   const inactiveClients = accountClients.filter((client) => {
-    if (selectedClientIds.has(client.id)) return false;
-    return accountJobs.some((job) => job.client_id === client.id && toUtcDate(job.scheduled_for) < selectedStart);
+    const latestJob = accountJobs
+      .filter((job) => job.client_id === client.id && job.status !== 'cancelled' && toUtcDate(job.scheduled_for) < referenceDay)
+      .reduce((latest, job) => !latest || toUtcDate(job.scheduled_for) > latest ? toUtcDate(job.scheduled_for) : latest, null);
+    return latestJob !== null && latestJob < inactivityCutoff;
   });
   const recentScheduledJobs = [...accountJobs]
     .sort((first, second) => second.scheduled_for.localeCompare(first.scheduled_for))
@@ -204,6 +209,18 @@ export function buildAnalyticsInsights({ jobs, clients, accountId, summary, refe
   }, new Map()).values()]
     .map((item) => ({ ...item, invoiceTotal: Number(item.invoiceTotal.toFixed(2)) }))
     .sort((first, second) => second.invoiceTotal - first.invoiceTotal || second.jobs - first.jobs || first.category.localeCompare(second.category));
+  const revenueTrend = summary.trend.map((point) => {
+    const pointStart = point.start ?? selectedStart;
+    const pointEnd = point.end ?? selectedStart;
+    const value = accountJobs.filter((job) => job.status === 'completed' && isInRange(job, pointStart, pointEnd))
+      .reduce((total, job) => total + (Number.isFinite(Number(job.invoice_total)) ? Number(job.invoice_total) : 0), 0);
+    return { ...point, value: Number(value.toFixed(2)) };
+  });
+  const jobById = new Map(accountJobs.map((job) => [job.id, job]));
+  const activityCutoff = new Date(Date.UTC(referenceDate.getUTCFullYear(), referenceDate.getUTCMonth(), referenceDate.getUTCDate() + 1));
+  const recentActivity = activities.filter((activity) => activity.account_id === accountId && new Date(activity.occurred_at) < activityCutoff)
+    .sort((first, second) => second.occurred_at.localeCompare(first.occurred_at)).slice(0, 5)
+    .map((activity) => ({ ...activity, clientName: clientNames.get(jobById.get(activity.job_id)?.client_id) ?? 'Unknown client' }));
 
   return {
     statusBreakdown,
@@ -214,6 +231,8 @@ export function buildAnalyticsInsights({ jobs, clients, accountId, summary, refe
     topClients,
     inactiveClients,
     recentScheduledJobs,
+    recentActivity,
+    inactiveDays,
     performance: {
       completedJobs: completedJobs.length,
       invoicedJobs: invoicedJobs.length,
@@ -224,6 +243,7 @@ export function buildAnalyticsInsights({ jobs, clients, accountId, summary, refe
       averageRating,
       ratedJobs: ratedJobs.length,
       categoryPerformance,
+      revenueTrend,
     },
   };
 }
