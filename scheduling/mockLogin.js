@@ -1,6 +1,7 @@
 import { clearMockDataSession } from '../shared-data/mockDataSession.js';
 import { authenticateMockUser, buildMockAppLink, createMockAccount, isDemoModeAvailable, isMockContractor, mockUserFromSearch } from '../shared-data/mockSession.js';
-import { getSignedInAccount, isSupabaseConfigured, sendPasswordReset, signIn, signOut, signUpBusiness } from '../shared-data/supabase.js';
+import { isSupabaseConfigured, sendPasswordReset, signIn, signOut, signUpBusiness } from '../shared-data/supabase.js';
+import { loadSchedulingSession, refreshSchedulingSession } from './data.js';
 import { friendlyAuthError, passwordResetConfirmation } from '../shared-data/authMessages.js';
 
 const gate = document.getElementById('mockLoginGate');
@@ -62,7 +63,7 @@ if (!isSupabaseConfigured && isMockContractor(currentUser)) {
     try {
       if (isSupabaseConfigured) {
         await signIn(emailValue, passwordValue);
-        const context = await getSignedInAccount();
+        const context = await refreshSchedulingSession();
         if (!context?.account) {
           await signOut();
           throw new Error('This login is not assigned to a contractor company.');
@@ -133,7 +134,7 @@ if (!isSupabaseConfigured && isMockContractor(currentUser)) {
 }
 
 if (isSupabaseConfigured) {
-  getSignedInAccount().then((context) => {
+  loadSchedulingSession().then((context) => {
     liveContext = context;
     if (context?.user && !context?.account) {
       error.textContent = 'Your login is not assigned to a company yet. Ask your FieldFlow administrator for access.';

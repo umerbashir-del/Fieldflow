@@ -11,36 +11,71 @@ const [sharedAccounts, sharedClients, sharedJobs] = __FIELDFLOW_DEMO__
   : [[], [], []];
 
 const mockUser = mockUserFromSearch(window.location.search);
-let liveContext = null;
-let liveData = { clients: [], jobs: [] };
-export let LIVE_LOAD_ERROR = '';
-
-if (isSupabaseConfigured) {
-  try {
-    liveContext = await getSignedInAccount();
-    if (liveContext?.account) liveData = await getAccountData(liveContext.account.id);
-  } catch (error) {
-    LIVE_LOAD_ERROR = 'We couldn’t load your data. Check your connection and try again.';
-  }
-}
-
 export const LIVE_MODE = isSupabaseConfigured;
-export const IS_CONTRACTOR_SESSION = isSupabaseConfigured ? Boolean(liveContext?.account) : isMockContractor(mockUser);
-export const ACCOUNT_ID = isSupabaseConfigured ? liveContext?.account?.id ?? null : (IS_CONTRACTOR_SESSION ? mockUser.account_id : null);
-export const ACTIVE_ACCOUNT = isSupabaseConfigured ? liveContext?.account ?? null : sharedAccounts.find((account) => account.id === ACCOUNT_ID) ?? null;
-export const REPORTING = isSupabaseConfigured
-  ? reportingDateFromAccount(ACTIVE_ACCOUNT, window.location.search)
-  : reportingDateFromAccount({ demo_reporting_date: '2026-08-19' }, window.location.search);
+const demoSession = isMockContractor(mockUser);
+const demoAccountId = demoSession ? mockUser.account_id : null;
+const demoAccount = sharedAccounts.find((account) => account.id === demoAccountId) ?? null;
 
-export const accounts = isSupabaseConfigured
-  ? (liveContext?.account ? [liveContext.account] : [])
+export let LIVE_LOAD_ERROR = '';
+export let IS_CONTRACTOR_SESSION = LIVE_MODE ? false : demoSession;
+export let ACCOUNT_ID = LIVE_MODE ? null : demoAccountId;
+export let ACTIVE_ACCOUNT = LIVE_MODE ? null : demoAccount;
+export let REPORTING = LIVE_MODE
+  ? reportingDateFromAccount(null, window.location.search)
+  : reportingDateFromAccount({ demo_reporting_date: '2026-08-19' }, window.location.search);
+export let accounts = LIVE_MODE
+  ? []
   : mockUser?.company_name && !sharedAccounts.some((account) => account.id === mockUser.account_id)
   ? [...sharedAccounts, { id: mockUser.account_id, name: mockUser.company_name, plan: 'Starter' }]
   : sharedAccounts;
+export let seedClients = LIVE_MODE ? [] : (ACCOUNT_ID ? sharedClients.filter((client) => client.account_id === ACCOUNT_ID) : []);
+export let seedJobs = LIVE_MODE ? [] : (ACCOUNT_ID ? sharedJobs.filter((job) => job.account_id === ACCOUNT_ID) : []);
 
-export const seedClients = isSupabaseConfigured ? liveData.clients : (ACCOUNT_ID ? sharedClients.filter((client) => client.account_id === ACCOUNT_ID) : []);
+let liveContextPromise = null;
+let liveDataPromise = null;
 
-export const seedJobs = isSupabaseConfigured ? liveData.jobs : (ACCOUNT_ID ? sharedJobs.filter((job) => job.account_id === ACCOUNT_ID) : []);
+// The account is needed before Scheduling can open, but jobs and clients
+// are deliberately loaded later so users see the app shell immediately.
+export function loadSchedulingSession() {
+  if (!LIVE_MODE) return Promise.resolve({ account: ACTIVE_ACCOUNT, user: mockUser });
+  if (!liveContextPromise) {
+    liveContextPromise = getSignedInAccount().then((context) => {
+      IS_CONTRACTOR_SESSION = Boolean(context?.account);
+      ACCOUNT_ID = context?.account?.id ?? null;
+      ACTIVE_ACCOUNT = context?.account ?? null;
+      REPORTING = reportingDateFromAccount(ACTIVE_ACCOUNT, window.location.search);
+      accounts = ACTIVE_ACCOUNT ? [ACTIVE_ACCOUNT] : [];
+      return context;
+    });
+  }
+  return liveContextPromise;
+}
+
+export function refreshSchedulingSession() {
+  liveContextPromise = null;
+  liveDataPromise = null;
+  LIVE_LOAD_ERROR = '';
+  return loadSchedulingSession();
+}
+
+export function loadSchedulingData() {
+  if (!LIVE_MODE) return Promise.resolve({ clients: seedClients, jobs: seedJobs });
+  if (!liveDataPromise) {
+    liveDataPromise = loadSchedulingSession()
+      .then((context) => context?.account ? getAccountData(context.account.id) : { clients: [], jobs: [] })
+      .then((data) => {
+        seedClients = data.clients;
+        seedJobs = data.jobs;
+        return data;
+      })
+      .catch((error) => {
+        LIVE_LOAD_ERROR = 'We couldn’t load your data. Check your connection and try again.';
+        throw error;
+      });
+  }
+  return liveDataPromise;
+}
+
 
 // Not part of the real shared schema yet — local-only helper lists for
 // the UI's assignee/status pickers.
