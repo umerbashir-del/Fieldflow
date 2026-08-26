@@ -23,6 +23,15 @@ body { margin: 0; position: relative; }
 .auth-link { background: transparent; border: 0; color: var(--ff-color-brand-600); font-size: .86rem; padding: 2px 0; text-align: left; text-decoration: underline; }
 .mock-login-form h2 { font-size: 1.25rem; margin: 0; }
 main { max-width: 1040px; margin: 0 auto; padding: 48px 24px; }
+.app-state { align-items: center; background: var(--ff-color-surface); border: 1px solid var(--ff-color-border); border-radius: 16px; box-shadow: var(--ff-shadow-card); display: flex; gap: 16px; justify-content: center; margin: 8vh auto; max-width: 560px; padding: 32px; text-align: left; }
+.app-state h1 { font-size: 1.35rem; margin: 0 0 6px; }
+.app-state p { color: var(--ff-color-muted); margin: 0; }
+#schedulingLoading { display: none; min-height: 180px; }
+#schedulingApp:not(.is-ready) #schedulingLoading { display: flex; }
+#schedulingApp:not(.is-ready) > :not(#schedulingLoading) { display: none !important; }
+.loading-spinner { animation: fieldflow-spin .8s linear infinite; border: 3px solid var(--ff-color-accent-100); border-radius: 50%; border-top-color: var(--ff-color-brand-700); flex: 0 0 auto; height: 30px; width: 30px; }
+.app-state .retry-button { margin-top: 16px; }
+@keyframes fieldflow-spin { to { transform: rotate(360deg); } }
 header, .topbar { display: flex; justify-content: space-between; gap: 20px; align-items: start; margin-bottom: 32px; }
 h1 { margin: 0 0 6px; font-size: clamp(2rem, 4vw, 3rem); }
 h2 { margin-top: 0; }

@@ -42,7 +42,14 @@
       </form>
     </div>
   </section>
-  <main id="schedulingApp" hidden>
+  <main id="schedulingApp" hidden aria-busy="true">
+    <section class="app-state app-loading-state" id="schedulingLoading" role="status" aria-live="polite">
+      <span class="loading-spinner" aria-hidden="true"></span>
+      <div>
+        <h1>Loading your schedule…</h1>
+        <p>Loading your clients and jobs.</p>
+      </div>
+    </section>
     <div class="topbar">
       <div>
         <p class="eyebrow">FieldFlow · Scheduling</p>

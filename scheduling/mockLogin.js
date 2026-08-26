@@ -13,6 +13,7 @@ const signInForm = document.getElementById('mockLoginForm');
 const signUpForm = document.getElementById('mockSignUpForm');
 const resetForm = document.getElementById('mockResetForm');
 const resetMessage = document.getElementById('mockResetMessage');
+const signInButton = form.querySelector('button[type="submit"]');
 if (isSupabaseConfigured) {
   document.getElementById('contractorLoginEyebrow').textContent = 'FieldFlow';
   document.getElementById('contractorLoginDescription').textContent = 'Use your registered FieldFlow email and password. Your company access is assigned securely after sign-in.';
@@ -56,6 +57,8 @@ if (!isSupabaseConfigured && isMockContractor(currentUser)) {
   }
   async function attemptSignIn(emailValue, passwordValue) {
     error.textContent = '';
+    signInButton.disabled = true;
+    signInButton.textContent = 'Signing in…';
     try {
       if (isSupabaseConfigured) {
         await signIn(emailValue, passwordValue);
@@ -72,6 +75,9 @@ if (!isSupabaseConfigured && isMockContractor(currentUser)) {
       }
     } catch (signInError) {
       error.textContent = friendlyAuthError(signInError);
+    } finally {
+      signInButton.disabled = false;
+      signInButton.textContent = 'Sign in';
     }
   }
 
@@ -118,6 +124,11 @@ if (!isSupabaseConfigured && isMockContractor(currentUser)) {
 if (isSupabaseConfigured) {
   getSignedInAccount().then((context) => {
     liveContext = context;
+    if (context?.user && !context?.account) {
+      error.textContent = 'Your login is not assigned to a company yet. Ask your FieldFlow administrator for access.';
+      document.getElementById('contractorLoginDescription').textContent = 'Your account needs a company assignment before Scheduling can open.';
+      return;
+    }
     showContractorApp(context);
   }).catch((loadError) => {
     const message = String(loadError?.message ?? '').toLowerCase();
