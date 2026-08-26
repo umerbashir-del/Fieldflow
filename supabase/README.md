@@ -6,7 +6,7 @@ This folder holds the database setup for FieldFlow. It does not contain credenti
 
 1. Create a Supabase project.
 2. In **Authentication → Providers**, leave Email enabled. For an MVP, create two email/password users in **Authentication → Users**.
-3. Open **SQL Editor** and run the files in [`migrations/`](migrations/) in numeric order. Existing projects that already have migrations 001–006 only need to apply `007_operations_overview.sql` for the optimized Operations screen.
+3. Open **SQL Editor**, paste and run [`migrations/001_initial_schema.sql`](migrations/001_initial_schema.sql), then [`migrations/002_operations_staff_access.sql`](migrations/002_operations_staff_access.sql), in that order.
 4. Copy [`.env.example`](../.env.example) to `.env` and add the Project URL, publishable key, and service-role key. Keep `.env` private.
 5. Run `npm run seed:supabase` from the repository root. This imports only the clean canonical JSON data, not the intentional-error synthetic fixture.
 6. In SQL Editor, add each login to its company. Replace each UUID with the user's UUID from **Authentication → Users**:
@@ -29,7 +29,7 @@ insert into public.operations_staff (user_id)
 values ('OPERATIONS_USER_UUID');
 ```
 
-The Operations migrations give staff read-only access across accounts and provide compact overview totals. They do not grant customer-data write access.
+The second migration gives Operations users read-only access across accounts. It does not grant customer-data write access. Run this only after the first schema migration.
 
 ## How the two-login test works
 

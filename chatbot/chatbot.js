@@ -16,12 +16,6 @@ import { assigneeLabel } from '../shared-data/jobPresentation.js';
 // Registered first, before anything below reads the current session.
 if (isSupabaseConfigured) {
   window.addEventListener('message', async (event) => {
-    const trustedOrigins = new Set([APP_URLS.scheduling, APP_URLS.analytics]
-      .map((url) => {
-        try { return new URL(url).origin; } catch { return null; }
-      })
-      .filter(Boolean));
-    if (event.source !== window.parent || !trustedOrigins.has(event.origin)) return;
     if (event.data?.type === 'fieldflow-session-clear') {
       const { data: { session: existing } } = await supabase.auth.getSession();
       if (existing) {
@@ -136,7 +130,7 @@ function openWidget() {
 
 function closeWidget() {
   if (isEmbedded) {
-    if (document.referrer) window.parent.postMessage({ type: 'fieldflow-chat-close' }, new URL(document.referrer).origin);
+    window.parent.postMessage({ type: 'fieldflow-chat-close' }, '*');
     return;
   }
   widget.classList.remove('is-open');

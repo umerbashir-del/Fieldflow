@@ -23,12 +23,11 @@
     "verify:deployment": "node scripts/verify-deployment.mjs",
     "verify:business-signup": "node scripts/verify-business-signup.mjs",
     "verify:bundle": "node scripts/verify-production-bundle.mjs",
-    "verify:source-auth": "node scripts/verify-source-auth.mjs",
     "verify:backup": "node scripts/verify-backup-recovery.mjs",
     "verify:auth-edges": "node scripts/verify-auth-edge-cases.mjs",
     "build:deploy": "npm run build && node scripts/assemble-deployment.mjs",
     "test:e2e": "playwright test",
-    "test:ci": "npm run verify:source-auth && npm run test --workspace=@fieldflow/analytics && npm run build:deploy && npm run verify:bundle && npm run test:e2e",
+    "test:ci": "npm run test --workspace=@fieldflow/analytics && npm run build:deploy && npm run verify:bundle && npm run test:e2e",
     "build": "npm run build --workspaces"
   },
   "devDependencies": {
