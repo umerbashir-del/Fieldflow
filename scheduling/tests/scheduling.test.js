@@ -170,6 +170,156 @@ test('creating a job with zero clients shows the "Add a client" recovery path, n
   assert.equal((await p.textContent('#clientModalTitle')).trim(), 'New client');
 });
 
+test('"Needs attention" chips count unassigned, cancelled-this-week, today, and awaiting-confirmation jobs', async () => {
+  const client = makeClient('c1');
+  const jobs = [
+    makeJob('j1', 'c1', { title: 'Unassigned', assignee: '' }), // unassigned + awaiting confirmation
+    makeJob('j2', 'c1', { title: 'Cancelled', status: 'cancelled' }), // cancelled this week, excluded elsewhere
+    makeJob('j3', 'c1', { title: 'Already confirmed', appointment_confirmation_status: 'confirmed' }), // NOT awaiting confirmation
+    makeJob('j4', 'c1', { title: 'Plain job' }), // no confirmation field at all -> defaults to awaiting confirmation
+  ];
+  const p = await freshPage({ clients: [client], jobs });
+
+  const naText = await p.locator('#needsAttentionGrid').innerText();
+  assert.match(naText, /Unassigned jobs\s*\n\s*1/, 'exactly one unassigned job');
+  assert.match(naText, /Cancelled this week\s*\n\s*1/, 'exactly one cancelled-this-week job');
+  assert.match(naText, /Scheduled today\s*\n\s*3/, 'cancelled job excluded from today count');
+  assert.match(naText, /Awaiting confirmation\s*\n\s*2/, 'the confirmed job is excluded, cancelled job is excluded');
+
+  // Clicking a chip narrows Today/Upcoming to just that group.
+  await p.locator('.needs-attention-card', { hasText: 'Unassigned jobs' }).click();
+  assert.equal(await p.locator('#todayList .job').count(), 1, 'filtered list shows only the matching job');
+  assert.equal((await p.textContent('#todayList')).includes('Unassigned'), true);
+  await p.click('#homeFilterClearBtn');
+  assert.equal(await p.isHidden('#homeFilterBanner'), true, 'clearing the filter hides the banner');
+});
+
+test('assigning a technician who already has jobs that day shows a non-blocking count warning', async () => {
+  const client = makeClient('c1');
+  const jobs = [
+    makeJob('j1', 'c1', { title: 'Job A', assignee: 'Jordan Lee' }),
+    makeJob('j2', 'c1', { title: 'Job B', assignee: 'Jordan Lee' }),
+  ];
+  const p = await freshPage({ clients: [client], jobs });
+
+  await p.click('#newJobBtn');
+  await p.fill('#jobTitle', 'Job C');
+  await p.selectOption('#jobAssignee', 'Jordan Lee');
+  const warning = (await p.textContent('#jobConflictWarning')).trim();
+  assert.match(warning, /Jordan Lee already has 2 jobs on/, 'warns with the actual count, not just "a job"');
+  assert.equal(await p.isDisabled('#saveJobBtn'), false, 'the warning is non-blocking — Save stays enabled once the other required fields are filled');
+});
+
+test('job cards show the job ID, the job-site address, and the phone number to call', async () => {
+  const client = makeClient('c1', {
+    name: 'Evergreen Properties', building_number: '482', street_name: 'Glenwood Ave',
+    city: 'Raleigh', state: 'NC', zip_code: '27603', client_phone: '(919) 555-0142',
+  });
+  const job = makeJob('job_abc123', 'c1', { title: 'HVAC inspection' });
+  const p = await freshPage({ clients: [client], jobs: [job] });
+
+  const cardText = await p.locator('.job').first().innerText();
+  assert.equal(cardText.includes('job_abc123'), true, 'shows the job ID');
+  assert.equal(cardText.includes('482 Glenwood Ave, Raleigh, NC 27603'), true, 'shows the job-site address');
+  assert.equal(cardText.includes('(919) 555-0142'), true, 'shows the phone number to call');
+});
+
+test('two jobs for the same tech on the same day but different times are NOT flagged as conflicting', async () => {
+  const client = makeClient('c1');
+  const jobs = [
+    makeJob('j1', 'c1', { title: 'Morning job', assignee: 'Jordan Lee', scheduled_start_time: '09:00' }),
+    makeJob('j2', 'c1', { title: 'Afternoon job', assignee: 'Jordan Lee', scheduled_start_time: '14:00' }),
+  ];
+  const p = await freshPage({ clients: [client], jobs });
+
+  assert.equal(await p.locator('.job.is-conflict').count(), 0, 'different exact times are not a real double-booking');
+
+  await p.click('#newJobBtn');
+  await p.fill('#jobTitle', 'Job C');
+  await p.selectOption('#jobAssignee', 'Jordan Lee');
+  await p.fill('#jobStartTime', '11:00');
+  assert.equal(await p.isHidden('#jobConflictWarning'), true, 'a third, non-overlapping time should not warn');
+});
+
+test('same tech, same day, AND same start time triggers the warning and names the time', async () => {
+  const client = makeClient('c1');
+  const jobs = [
+    makeJob('j1', 'c1', { title: 'Morning job', assignee: 'Jordan Lee', scheduled_start_time: '09:00' }),
+  ];
+  const p = await freshPage({ clients: [client], jobs });
+
+  await p.click('#newJobBtn');
+  await p.fill('#jobTitle', 'Job C');
+  await p.selectOption('#jobAssignee', 'Jordan Lee');
+  await p.fill('#jobStartTime', '09:00');
+  const warning = (await p.textContent('#jobConflictWarning')).trim();
+  assert.match(warning, /Jordan Lee already has a job at 9:00 AM on/);
+});
+
+test('confirming an appointment stamps confirmed_at/confirmed_by and updates the badge', async () => {
+  const client = makeClient('c1');
+  const p = await freshPage({ clients: [client], jobs: [] });
+
+  await p.click('#newJobBtn');
+  await p.fill('#jobTitle', 'New job');
+  await p.selectOption('#jobConfirmationStatus', 'confirmed');
+  await p.fill('#jobConfirmedBy', 'Maya Chen');
+  await p.click('#saveJobBtn');
+  await p.locator('#jobModalBackdrop').waitFor({ state: 'hidden' });
+
+  const badge = (await p.locator('.job', { hasText: 'New job' }).locator('.confirm-badge').textContent()).trim();
+  assert.equal(badge, 'Confirmed');
+
+  await p.locator('.job', { hasText: 'New job' }).click();
+  const meta = (await p.textContent('#jobConfirmationMeta')).trim();
+  assert.match(meta, /Confirmed .* by Maya Chen/);
+});
+
+test('a job with none of the new optional fields still renders and edits without errors', async () => {
+  const client = makeClient('c1');
+  // Deliberately no appointment_confirmation_status, contact_method, etc. —
+  // simulates a job synced in before this feature existed.
+  const legacyJob = { id: 'j1', account_id: ACCOUNT_ID, client_id: 'c1', title: 'Legacy job', scheduled_for: TODAY_ISO, status: 'scheduled', assignee: 'Maya Chen' };
+  const errors = [];
+  const p = await freshPage({ clients: [client], jobs: [legacyJob] });
+  p.on('pageerror', (err) => errors.push(err.message));
+
+  const badge = (await p.locator('.job').locator('.confirm-badge').textContent()).trim();
+  assert.equal(badge, 'Needs confirmation', 'missing field defaults to the pending/needs-confirmation state');
+
+  await p.click('.job');
+  assert.equal(await p.locator('#jobConfirmationStatus').inputValue(), 'pending');
+  await p.click('#saveJobBtn'); // re-saving a legacy job should not throw
+  assert.equal(errors.length, 0, 'no page errors while rendering/editing a legacy job');
+});
+
+test('one company cannot see another company\'s Scheduling jobs/clients or needs-attention counts', async () => {
+  const otherAccountId = 'acct_horizon';
+  const seed = {
+    clients: [makeClient('c1')],
+    jobs: [makeJob('j1', 'c1', { title: 'Northstar job' })],
+  };
+  const otherSeed = {
+    clients: [{ id: 'oc1', account_id: otherAccountId, name: 'Other Co Client', building_number: '', street_name: '', city: '', state: '', zip_code: '', client_phone: '' }],
+    jobs: [{ id: 'oj1', account_id: otherAccountId, client_id: 'oc1', title: 'Other company job', scheduled_for: TODAY_ISO, status: 'scheduled', assignee: '' }],
+  };
+  if (page) await page.close();
+  page = await browser.newPage();
+  await page.addInitScript((state) => {
+    window.name = JSON.stringify({ fieldflowMockData: { accounts: { acct_northstar: state.mine, [state.otherId]: state.theirs } } });
+  }, { mine: seed, theirs: otherSeed, otherId: otherAccountId });
+  await page.goto(BASE_URL + DEMO_QUERY); // demo_user=john is scoped to acct_northstar
+  await page.waitForSelector('#schedulingApp:not([hidden])');
+
+  const homeText = await page.textContent('#homeView');
+  assert.equal(homeText.includes('Northstar job'), true, 'own job is visible');
+  assert.equal(homeText.includes('Other company job'), false, 'other account\'s job must not leak into this view');
+
+  // The other account's unassigned job must not inflate this account's count.
+  const naText = await page.locator('#needsAttentionGrid').innerText();
+  assert.match(naText, /Unassigned jobs\s*\n\s*0/, 'other account\'s unassigned job is not counted here');
+});
+
 test('modals stay on-screen after scrolling down a long page', async () => {
   const clients = Array.from({ length: 12 }, (_, i) => makeClient('c' + i));
   const p = await freshPage({ clients, jobs: [] });

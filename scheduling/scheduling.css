@@ -57,6 +57,18 @@ input, select { width: 100%; padding: 12px; border: 1px solid var(--ff-color-bor
 .badge-completed { background: #e7ebe2; color: #424b37; }
 .badge-cancelled { background: #f7ecec; color: #713e43; }
 
+.job-meta { font-size: .82rem; margin-top: 2px; }
+.confirm-badge { margin-left: 6px; }
+.confirm-pending { background: #f7ecec; color: #713e43; }
+.confirm-contacted { background: #f7efd9; color: #7c5d24; }
+.confirm-confirmed { background: #e1f4e7; color: #17613c; }
+.confirm-no_response { background: #f7ecec; color: #713e43; }
+.confirm-reschedule_needed { background: #f7efd9; color: #7c5d24; }
+
+.needs-attention-card { text-align: left; cursor: pointer; font: inherit; }
+.needs-attention-card:hover { border-color: var(--ff-color-brand-700); }
+.needs-attention-card.is-active { border-color: var(--ff-color-brand-700); box-shadow: 0 0 0 2px var(--ff-color-accent-100); }
+
 .conflict-flag { display: inline-flex; align-items: center; gap: 6px; background: #fbe4e4; color: #9c2b2b; border-radius: 999px; padding: 4px 10px; font-size: .75rem; font-weight: 700; margin-top: 6px; }
 .conflict-flag[hidden] { display: none; }
 .job.is-conflict { border-color: #e08a8a; }
