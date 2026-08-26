@@ -11,6 +11,7 @@ const error = document.getElementById('opsLoginError');
 const resetForm = document.getElementById('opsResetForm');
 const resetMessage = document.getElementById('opsResetMessage');
 const retryButton = document.getElementById('opsRetryButton');
+const demoSignInButton = document.getElementById('opsDemoSignIn');
 
 if (isSupabaseConfigured) {
   document.getElementById('operationsLoginEyebrow').textContent = 'FieldFlow';
@@ -24,6 +25,12 @@ if (isSupabaseConfigured) {
   const credentials = document.createElement('span');
   credentials.textContent = 'ops@fieldflow.demo / ops-demo-password';
   demoAccount.replaceChildren(heading, credentials);
+  demoSignInButton.hidden = false;
+  demoSignInButton.addEventListener('click', () => {
+    const url = new URL(window.location.href);
+    url.searchParams.set('demo_user', 'ops');
+    window.location.assign(url.toString());
+  });
 }
 
 function showForm(mode) {
