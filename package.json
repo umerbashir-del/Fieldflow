@@ -14,6 +14,7 @@
     "dev:analytics": "npm run dev --workspace=@fieldflow/analytics",
     "seed:supabase": "node scripts/seed-supabase.mjs",
     "prepare:demo-data": "node scripts/expand-canonical-demo-jobs.mjs",
+    "enrich:demo-metrics": "node scripts/enrich-synthetic-job-metrics.mjs",
     "verify:supabase": "node scripts/verify-supabase.mjs",
     "provision:test-sarah": "node scripts/provision-sarah-test-user.mjs",
     "verify:test-sarah": "node scripts/verify-sarah-login.mjs",
@@ -23,11 +24,14 @@
     "verify:deployment": "node scripts/verify-deployment.mjs",
     "verify:business-signup": "node scripts/verify-business-signup.mjs",
     "verify:bundle": "node scripts/verify-production-bundle.mjs",
+    "verify:source-auth": "node scripts/verify-source-auth.mjs",
+    "verify:support-bridge": "node scripts/verify-support-bridge.mjs",
     "verify:backup": "node scripts/verify-backup-recovery.mjs",
     "verify:auth-edges": "node scripts/verify-auth-edge-cases.mjs",
     "build:deploy": "npm run build && node scripts/assemble-deployment.mjs",
     "test:e2e": "playwright test",
-    "test:ci": "npm run test --workspace=@fieldflow/analytics && npm run build:deploy && npm run verify:bundle && npm run test:e2e",
+    "test:shared": "node --test shared-data/tests/*.test.js",
+    "test:ci": "npm run verify:source-auth && npm run verify:support-bridge && npm run test:shared && npm run test --workspace=@fieldflow/analytics && npm run build:deploy && npm run verify:bundle && npm run test:e2e",
     "build": "npm run build --workspaces"
   },
   "devDependencies": {

@@ -1,9 +1,14 @@
-import accounts from '../shared-data/accounts.json';
-import clients from '../shared-data/clients.json';
-import jobs from '../shared-data/jobs.json';
 import { APP_URLS } from '../shared-data/appConfig.js';
 import { getOperationsData, getOperationsSession, isSupabaseConfigured } from '../shared-data/supabase.js';
 import { formatReportingDate, reportingDateFromAccount, withReportingDate } from '../shared-data/reportingDate.js';
+
+const [accounts, clients, jobs] = __FIELDFLOW_DEMO__
+  ? await Promise.all([
+      import('../shared-data/accounts.json').then((module) => module.default),
+      import('../shared-data/clients.json').then((module) => module.default),
+      import('../shared-data/jobs.json').then((module) => module.default),
+    ])
+  : [[], [], []];
 
 let accountData = accounts;
 let clientData = clients;
