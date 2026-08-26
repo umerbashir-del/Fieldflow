@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { readFile } from 'node:fs/promises';
-import { buildAnalyticsSummary, buildSchedulingLink, buildServerAnalyticsSummary, chatSummaryText } from '../src/analyticsSummary.js';
+import { buildAnalyticsSummary, buildSchedulingLink, chatSummaryText } from '../src/analyticsSummary.js';
 
 const jobs = JSON.parse(await readFile(new URL('../../shared-data/jobs.json', import.meta.url), 'utf8'));
 const accounts = JSON.parse(await readFile(new URL('../../shared-data/accounts.json', import.meta.url), 'utf8'));
@@ -182,41 +182,4 @@ test('calculates a large account dataset within the performance budget', () => {
   assert.equal(summary.selectedJobs.length + summary.comparisonJobs.length > 0, true);
   assert.equal(summary.trend.length, 4);
   assert.ok(performance.now() - started < 500, '10,000-job summary exceeded 500 ms');
-});
-
-test('maps database totals into the Analytics presentation model', () => {
-  const selectedJobs = jobs.filter((job) =>
-    job.account_id === ACCOUNT_ID && job.scheduled_for >= '2026-08-17' && job.scheduled_for < '2026-08-24'
-  );
-  const summary = buildServerAnalyticsSummary({
-    accountId: ACCOUNT_ID,
-    timeframe: 'this_week',
-    referenceDate: REFERENCE_DATE,
-    selectedJobs,
-    earliestJobDate: '2026-07-20',
-    counts: { selected_jobs: '14', previous_jobs: '11', change_percent: 27, new_clients: '5', repeat_clients: '4' },
-  });
-
-  assert.equal(summary.selectedJobCount, 14);
-  assert.equal(summary.comparisonJobCount, 11);
-  assert.equal(summary.change, 27);
-  assert.equal(summary.newClients, 5);
-  assert.equal(summary.repeatClients, 4);
-  assert.equal(summary.hasCompleteComparison, true);
-  assert.equal(summary.trend.reduce((total, point) => total + point.jobs, 0), selectedJobs.length);
-});
-
-test('does not claim a fair server comparison without enough history', () => {
-  const summary = buildServerAnalyticsSummary({
-    accountId: ACCOUNT_ID,
-    timeframe: 'last_three_weeks',
-    referenceDate: REFERENCE_DATE,
-    selectedJobs: [],
-    earliestJobDate: '2026-08-01',
-    counts: { selected_jobs: 0, previous_jobs: 0, change_percent: null, new_clients: 0, repeat_clients: 0 },
-  });
-
-  assert.equal(summary.hasCompleteComparison, false);
-  assert.equal(summary.trend.length, 3);
-  assert.match(chatSummaryText('Northstar Field Services', summary), /not enough earlier data/i);
 });

@@ -15,6 +15,9 @@ body { margin: 0; position: relative; }
 .mock-login-card h1 { margin: 8px 0 12px; }
 .mock-login-details { background: var(--ff-color-accent-100); border: 1px solid var(--ff-color-taupe-400); border-radius: 8px; color: var(--ff-color-accent-600); display: grid; font-size: .84rem; gap: 5px; margin-top: 20px; padding: 12px; }
 .mock-login-details code { background: var(--ff-color-surface); border-radius: 3px; color: var(--ff-color-brand-700); padding: 1px 4px; }
+.quick-signin { display: grid; gap: 8px; margin-top: 14px; }
+.quick-signin-btn { background: var(--ff-color-surface); border: 1px solid var(--ff-color-border); border-radius: 8px; color: var(--ff-color-brand-700); font: inherit; font-weight: 700; font-size: .85rem; padding: 10px 12px; text-align: left; }
+.quick-signin-btn:hover { background: var(--ff-color-accent-100); }
 .mock-login-form { display: grid; gap: 15px; margin-top: 22px; }
 .mock-login-form label { color: #4c5968; display: grid; font-size: .85rem; font-weight: 700; gap: 7px; }
 .mock-login-form input { border: 1px solid #bfcfc4; border-radius: 8px; font: inherit; padding: 11px; }

@@ -631,7 +631,6 @@ import { assigneeLabel } from '../shared-data/jobPresentation.js';
     jobModal = {
       mode: 'new',
       draft: {
-        id: makeId('job'),
         client_id: (accountClients()[0] || {}).id || '',
         title: '',
         scheduled_for: prefillDate || REPORTING.isoDate,

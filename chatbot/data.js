@@ -5,15 +5,10 @@
 // constraint — it only ever runs through the Vite dev server — and account
 // lookup only means something if it's checking real multi-account data, so
 // this imports straight from shared-data/ and docs/ instead of mocking them.
+import accounts from '../shared-data/accounts.json';
+import clients from '../shared-data/clients.json';
+import jobs from '../shared-data/jobs.json';
 import { formatDate, clientName } from '../shared-data/formatters.js';
-
-const [accounts, clients, jobs] = __FIELDFLOW_DEMO__
-  ? await Promise.all([
-      import('../shared-data/accounts.json').then((module) => module.default),
-      import('../shared-data/clients.json').then((module) => module.default),
-      import('../shared-data/jobs.json').then((module) => module.default),
-    ])
-  : [[], [], []];
 
 import apiContractDoc from '../docs/api-contract.md?raw';
 import dataModelDoc from '../docs/data-model.md?raw';

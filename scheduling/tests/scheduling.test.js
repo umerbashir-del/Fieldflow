@@ -21,7 +21,7 @@ const PORT = 5187; // dedicated port so this doesn't collide with a dev server y
 const BASE_URL = `http://localhost:${PORT}/scheduling.html`;
 // A fixed demo login so every test starts already signed in, without
 // having to click through the mock-login form each time.
-const DEMO_QUERY = '?demo_user=john&demo_name=John&demo_email=john@fieldflow.demo&demo_company=Northstar';
+const DEMO_QUERY = '?demo_user=john&demo_name=John&demo_email=john@fieldflow.demo&demo_company=Northstar&reporting_date=today';
 
 let browser;
 let page;
@@ -40,7 +40,7 @@ async function waitForServer(url, timeoutMs = 15000) {
 }
 
 before(async () => {
-  viteProcess = spawn('npx', ['vite', '--port', String(PORT), '--strictPort'], {
+  viteProcess = spawn(process.execPath, [path.join(__dirname, '..', '..', 'node_modules', 'vite', 'bin', 'vite.js'), '--port', String(PORT), '--strictPort'], {
     cwd: path.join(__dirname, '..'),
     stdio: 'ignore', // don't let an undrained pipe buffer block the dev server
   });
@@ -49,7 +49,7 @@ before(async () => {
 });
 
 after(async () => {
-  await browser.close();
+  if (browser) await browser.close();
   if (viteProcess) viteProcess.kill();
 });
 

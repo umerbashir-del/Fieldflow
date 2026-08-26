@@ -1,14 +1,9 @@
+import accounts from '../shared-data/accounts.json';
+import clients from '../shared-data/clients.json';
+import jobs from '../shared-data/jobs.json';
 import { APP_URLS } from '../shared-data/appConfig.js';
-import { getOperationsAccountData, getOperationsData, getOperationsSession, isSupabaseConfigured } from '../shared-data/supabase.js';
+import { getOperationsData, getOperationsSession, isSupabaseConfigured } from '../shared-data/supabase.js';
 import { formatReportingDate, reportingDateFromAccount, withReportingDate } from '../shared-data/reportingDate.js';
-
-const [accounts, clients, jobs] = __FIELDFLOW_DEMO__
-  ? await Promise.all([
-      import('../shared-data/accounts.json').then((module) => module.default),
-      import('../shared-data/clients.json').then((module) => module.default),
-      import('../shared-data/jobs.json').then((module) => module.default),
-    ])
-  : [[], [], []];
 
 let accountData = accounts;
 let clientData = clients;
@@ -36,7 +31,7 @@ if (isSupabaseConfigured) {
 }
 
 const STATUS_LABELS = { scheduled: 'Scheduled', in_progress: 'In progress', completed: 'Completed', cancelled: 'Cancelled' };
-const state = { view: 'overview', selectedAccountId: null, accountSearch: '', statusFilter: 'all', accountDetails: new Map(), detailError: '' };
+const state = { view: 'overview', selectedAccountId: null, accountSearch: '', statusFilter: 'all' };
 const $ = (id) => document.getElementById(id);
 const els = {
   accountCount: $('accountCount'), clientCount: $('clientCount'), jobCount: $('jobCount'), progressCount: $('progressCount'),
@@ -73,33 +68,31 @@ function badgeClass(status) {
   return status === 'in_progress' ? 'warning' : 'healthy';
 }
 
-function accountSummary(account, detail = state.accountDetails.get(account.id)) {
-  const accountClients = detail?.clients ?? clientData.filter((client) => client.account_id === account.id);
-  const accountJobs = detail?.jobs ?? jobData.filter((job) => job.account_id === account.id);
-  const clientCount = account.metrics?.clients ?? accountClients.length;
-  const jobCount = account.metrics?.jobs ?? accountJobs.length;
-  const completed = account.metrics?.completed ?? accountJobs.filter((job) => job.status === 'completed').length;
-  const open = account.metrics?.open ?? accountJobs.filter((job) => job.status === 'scheduled' || job.status === 'in_progress').length;
-  const status = open > 0 ? 'Active' : jobCount > 0 ? 'No open work' : 'No activity';
-  const statusClass = open > 0 ? 'healthy' : jobCount > 0 ? 'warning' : 'cancelled';
-  return { account, clients: accountClients, jobs: accountJobs, clientCount, jobCount, completed, open, status, statusClass };
+function accountSummary(account) {
+  const accountClients = clientData.filter((client) => client.account_id === account.id);
+  const accountJobs = jobData.filter((job) => job.account_id === account.id);
+  const completed = accountJobs.filter((job) => job.status === 'completed').length;
+  const open = accountJobs.filter((job) => job.status === 'scheduled' || job.status === 'in_progress').length;
+  const status = open > 0 ? 'Active' : accountJobs.length > 0 ? 'No open work' : 'No activity';
+  const statusClass = open > 0 ? 'healthy' : accountJobs.length > 0 ? 'warning' : 'cancelled';
+  return { account, clients: accountClients, jobs: accountJobs, completed, open, status, statusClass };
 }
 
 function jobHtml(job, includeAccount = true) {
   const account = accountData.find((item) => item.id === job.account_id);
   const client = clientData.find((item) => item.id === job.client_id);
-  const subtitle = includeAccount ? `${job.account_name ?? account?.name ?? 'Unknown account'} · ${job.client_name ?? client?.name ?? 'Unknown client'}` : formatDate(job.scheduled_for);
+  const subtitle = includeAccount ? `${account?.name ?? 'Unknown account'} · ${client?.name ?? 'Unknown client'}` : formatDate(job.scheduled_for);
   return `<article class="job"><div><div class="job-title">${escapeHtml(job.title || 'Scheduled job')}</div><div class="job-meta">${escapeHtml(subtitle)}</div></div><div><span class="badge ${badgeClass(job.status)}">${escapeHtml(STATUS_LABELS[job.status] ?? job.status)}</span><div class="job-meta">${includeAccount ? formatDate(job.scheduled_for) : ''}</div></div></article>`;
 }
 
 function renderOverview() {
   els.accountCount.textContent = accountData.length;
-  els.clientCount.textContent = accountData.reduce((total, account) => total + accountSummary(account).clientCount, 0);
-  els.jobCount.textContent = accountData.reduce((total, account) => total + accountSummary(account).jobCount, 0);
-  els.progressCount.textContent = accountData.reduce((total, account) => total + (account.metrics?.inProgress ?? jobData.filter((job) => job.account_id === account.id && job.status === 'in_progress').length), 0);
+  els.clientCount.textContent = clientData.length;
+  els.jobCount.textContent = jobData.length;
+  els.progressCount.textContent = jobData.filter((job) => job.status === 'in_progress').length;
   els.accountTable.innerHTML = accountData.map((account) => {
     const summary = accountSummary(account);
-    return `<tr><td><button class="account-table-link" type="button" data-account-id="${escapeHtml(account.id)}">${escapeHtml(account.name)}</button></td><td>${escapeHtml(account.plan)}</td><td>${summary.clientCount}</td><td>${summary.jobCount}</td><td>${summary.completed}</td><td>${summary.open}</td><td><span class="badge ${summary.statusClass}">${summary.status}</span></td></tr>`;
+    return `<tr><td><button class="account-table-link" type="button" data-account-id="${escapeHtml(account.id)}">${escapeHtml(account.name)}</button></td><td>${escapeHtml(account.plan)}</td><td>${summary.clients.length}</td><td>${summary.jobs.length}</td><td>${summary.completed}</td><td>${summary.open}</td><td><span class="badge ${summary.statusClass}">${summary.status}</span></td></tr>`;
   }).join('');
   document.querySelectorAll('.account-table-link').forEach((button) => button.addEventListener('click', () => openAccount(button.dataset.accountId)));
 }
@@ -109,7 +102,7 @@ function renderAccounts() {
   const filtered = accountData.filter((account) => !query || `${account.name} ${account.plan}`.toLowerCase().includes(query));
   els.accountCards.innerHTML = filtered.length ? filtered.map((account) => {
     const summary = accountSummary(account);
-    return `<button class="card account-card" type="button" data-account-id="${escapeHtml(account.id)}"><span class="account-name">${escapeHtml(account.name)}</span><span class="plan">${escapeHtml(account.plan)}</span><span class="account-card-metrics">${summary.clientCount} clients · ${summary.jobCount} jobs</span><span class="badge ${summary.statusClass}">${summary.status}</span></button>`;
+    return `<button class="card account-card" type="button" data-account-id="${escapeHtml(account.id)}"><span class="account-name">${escapeHtml(account.name)}</span><span class="plan">${escapeHtml(account.plan)}</span><span class="account-card-metrics">${summary.clients.length} clients · ${summary.jobs.length} jobs</span><span class="badge ${summary.statusClass}">${summary.status}</span></button>`;
   }).join('') : '<p class="empty">No accounts match that search.</p>';
   document.querySelectorAll('.account-card').forEach((button) => button.addEventListener('click', () => openAccount(button.dataset.accountId)));
 }
@@ -122,13 +115,6 @@ function renderActivity() {
 function renderDetail() {
   const account = accountData.find((item) => item.id === state.selectedAccountId);
   if (!account) return;
-  if (isSupabaseConfigured && !state.accountDetails.has(account.id)) {
-    els.detailContent.innerHTML = state.detailError
-      ? `<div class="error-state"><p>${escapeHtml(state.detailError)}</p><button type="button" id="retryAccountDetail">Try again</button></div>`
-      : '<p role="status">Loading account details…</p>';
-    document.getElementById('retryAccountDetail')?.addEventListener('click', () => openAccount(account.id, true));
-    return;
-  }
   const summary = accountSummary(account);
   const recentJobs = [...summary.jobs].sort((first, second) => second.scheduled_for.localeCompare(first.scheduled_for)).slice(0, 8);
   const analyticsUrl = new URL(APP_URLS.analytics);
@@ -140,7 +126,7 @@ function renderDetail() {
   const reportingNotice = reporting.storedDate
     ? `<p class="muted">${reporting.isDemoDate ? 'Demo data' : 'Live-date preview'} — reporting as of ${escapeHtml(formatReportingDate(reporting.isoDate))}.</p>`
     : '';
-  els.detailContent.innerHTML = `<div class="detail-header"><p class="eyebrow">Account detail</p><h2>${escapeHtml(account.name)}</h2><p class="muted">${escapeHtml(account.plan)} plan · ${summary.status}</p>${reportingNotice}<p><a class="account-analytics-link" href="${withReportingDate(analyticsUrl.toString(), reporting)}">View read-only Analytics</a></p></div><div class="grid detail-metrics"><div class="card"><div class="muted">Clients</div><div class="metric">${summary.clientCount}</div></div><div class="card"><div class="muted">Jobs</div><div class="metric">${summary.jobCount}</div></div><div class="card"><div class="muted">Completed</div><div class="metric">${summary.completed}</div></div><div class="card"><div class="muted">Open work</div><div class="metric">${summary.open}</div></div></div><div class="section"><div class="section-header"><h2>Recent jobs</h2></div><div class="jobs">${recentJobs.length ? recentJobs.map((job) => jobHtml(job, false)).join('') : '<p class="empty">No jobs are available for this account.</p>'}</div></div>`;
+  els.detailContent.innerHTML = `<div class="detail-header"><p class="eyebrow">Account detail</p><h2>${escapeHtml(account.name)}</h2><p class="muted">${escapeHtml(account.plan)} plan · ${summary.status}</p>${reportingNotice}<p><a class="account-analytics-link" href="${withReportingDate(analyticsUrl.toString(), reporting)}">View read-only Analytics</a></p></div><div class="grid detail-metrics"><div class="card"><div class="muted">Clients</div><div class="metric">${summary.clients.length}</div></div><div class="card"><div class="muted">Jobs</div><div class="metric">${summary.jobs.length}</div></div><div class="card"><div class="muted">Completed</div><div class="metric">${summary.completed}</div></div><div class="card"><div class="muted">Open work</div><div class="metric">${summary.open}</div></div></div><div class="section"><div class="section-header"><h2>Recent jobs</h2></div><div class="jobs">${recentJobs.length ? recentJobs.map((job) => jobHtml(job, false)).join('') : '<p class="empty">No jobs are available for this account.</p>'}</div></div>`;
 }
 
 function showView(view) {
@@ -153,19 +139,7 @@ function showView(view) {
   if (view === 'detail') renderDetail();
 }
 
-async function openAccount(accountId, force = false) {
-  state.selectedAccountId = accountId;
-  state.detailError = '';
-  if (force) state.accountDetails.delete(accountId);
-  showView('detail');
-  if (!isSupabaseConfigured || state.accountDetails.has(accountId)) return;
-  try {
-    state.accountDetails.set(accountId, await getOperationsAccountData(accountId));
-  } catch (error) {
-    state.detailError = error.message || 'Account details could not be loaded.';
-  }
-  renderDetail();
-}
+function openAccount(accountId) { state.selectedAccountId = accountId; showView('detail'); }
 els.tabs.forEach((tab) => tab.addEventListener('click', () => showView(tab.dataset.view)));
 els.accountSearch.addEventListener('input', (event) => { state.accountSearch = event.target.value; renderAccounts(); });
 els.statusFilter.addEventListener('change', (event) => { state.statusFilter = event.target.value; renderActivity(); });
