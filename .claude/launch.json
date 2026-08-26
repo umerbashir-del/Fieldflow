@@ -21,6 +21,13 @@
       "runtimeArgs": ["run", "dev", "--prefix", "ops-dashboard"],
       "port": 5176,
       "autoPort": true
+    },
+    {
+      "name": "analytics",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev", "--prefix", "analytics"],
+      "port": 5173,
+      "autoPort": true
     }
   ]
 }

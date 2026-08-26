@@ -19,7 +19,6 @@ const [demoAccounts, demoClients, demoJobs, demoActivity] = __FIELDFLOW_DEMO__
 const DEMO_ACCOUNT_ID = 'acct_northstar';
 const SCHEDULING_URL = APP_URLS.scheduling;
 const OPERATIONS_URL = APP_URLS.operations;
-const CHATBOT_URL = APP_URLS.chatbot;
 const INSIGHT_OPTIONS = [
   { id: 'status', label: 'Job status and completion' },
   { id: 'upcoming', label: 'Upcoming work' },
@@ -192,7 +191,6 @@ export default function AnalyticsPage() {
   const operationsReturnBase = `${OPERATIONS_URL}${isDemoOps ? '?demo_user=ops' : ''}&account_id=${encodeURIComponent(accountId)}`.replace('?&', '?');
   const returnLink = isOperationsView ? withReportingDate(operationsReturnBase, reporting) : schedulingLink;
   const returnLabel = isOperationsView ? 'Back to Operations' : 'Back to Scheduling';
-  const chatLink = isOperationsView ? null : withReportingDate(!isSupabaseConfigured ? buildMockDataLink(buildMockAppLink(CHATBOT_URL, mockUser)) : CHATBOT_URL, reporting);
   const copyChatSummary = async () => {
     await navigator.clipboard.writeText(chatSummaryText(account?.name ?? 'Your business', summary));
     setCopyStatus('Copied — paste this into FieldFlow Chat.');
@@ -256,7 +254,6 @@ export default function AnalyticsPage() {
 
       <div className="scheduler-action">
         <a className="action-link" href={returnLink} title={isDemoOps ? 'Returns to this account in Operations.' : 'Opens Scheduling with this account and selected date range.'}>{returnLabel}</a>
-        {chatLink && <a className="action-link" href={chatLink} title="Opens Support Chat for this company.">Support Chat</a>}
       </div>
 
       <section className="summary-grid" aria-label="Weekly job summary">
