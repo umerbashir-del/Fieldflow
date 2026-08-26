@@ -13,6 +13,11 @@
       <h1>FieldFlow Sign In</h1>
       <p class="muted" id="contractorLoginDescription">Start in Scheduling. Your selected company follows you to connected FieldFlow areas.</p>
       <div class="mock-login-details" id="contractorDemoAccounts"></div>
+      <div class="mock-login-quick" id="mockQuickSignIn">
+        <button type="button" class="quick-signin-btn" id="quickSignInJohn">Sign in as John from Northstar Field Services</button>
+        <button type="button" class="quick-signin-btn" id="quickSignInSarah">Sign in as Sarah from Horizon Electric</button>
+      </div>
+      <p class="quick-signin-divider">or sign in manually</p>
       <form id="mockLoginForm" class="mock-login-form">
         <label>Email<input id="mockEmail" type="email" autocomplete="email" required /></label>
         <label>Password<input id="mockPassword" type="password" autocomplete="current-password" required /></label>
@@ -133,6 +138,10 @@
       <div class="field">
         <label for="jobClient">Client</label>
         <select id="jobClient"></select>
+        <div class="conflict-flag" id="jobNoClientNotice" hidden style="margin-top:6px">
+          <span>No clients yet — add one first.</span>
+          <button type="button" class="btn-ghost" id="jobNoClientAddBtn" style="margin-left:8px;padding:3px 10px">Add a client</button>
+        </div>
       </div>
       <div class="field">
         <label for="jobTitle">Title</label>
