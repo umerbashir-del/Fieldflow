@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { readFile } from 'node:fs/promises';
-import { buildAnalyticsSummary, buildSchedulingLink, chatSummaryText } from '../src/analyticsSummary.js';
+import { buildAnalyticsInsights, buildAnalyticsSummary, buildSchedulingLink, changePresentation, chatSummaryText } from '../src/analyticsSummary.js';
 
 const jobs = JSON.parse(await readFile(new URL('../../shared-data/jobs.json', import.meta.url), 'utf8'));
 const accounts = JSON.parse(await readFile(new URL('../../shared-data/accounts.json', import.meta.url), 'utf8'));
@@ -166,6 +166,49 @@ test('reports a zero-job selected period against a populated comparison period',
   assert.equal(summary.selectedJobs.length, 0);
   assert.equal(summary.comparisonJobs.length, 1);
   assert.equal(summary.change, -100);
+  assert.deepEqual(
+    changePresentation({ selectedJobs: 0, comparisonJobs: 1, change: summary.change, hasCompleteComparison: true, comparisonRangeLabel: 'Previous week' }),
+    { value: 'No jobs scheduled', detail: 'Previous period: 1 job', tone: 'neutral' },
+  );
+});
+
+test('builds selectable job, client, and workload insights from the same account data', () => {
+  const summary = buildAnalyticsSummary(jobs, ACCOUNT_ID, 'this_week', REFERENCE_DATE);
+  const insights = buildAnalyticsInsights({ jobs, clients, accountId: ACCOUNT_ID, summary, referenceDate: REFERENCE_DATE });
+
+  assert.equal(insights.statusBreakdown.reduce((total, item) => total + item.jobs, 0), summary.selectedJobs.length);
+  assert.equal(insights.completionRate, Math.round((insights.statusBreakdown.find((item) => item.status === 'completed').jobs / summary.selectedJobs.length) * 100));
+  assert.ok(insights.busiestPoint.jobs > 0);
+  assert.ok(insights.upcomingJobs.every((job) => job.account_id === ACCOUNT_ID));
+  assert.ok(insights.workload.every((item) => item.assignee));
+  assert.ok(insights.topClients.every((item) => item.name && item.jobs > 0));
+  assert.ok(insights.inactiveClients.every((client) => client.account_id === ACCOUNT_ID));
+  assert.ok(insights.recentScheduledJobs.every((job) => job.account_id === ACCOUNT_ID));
+  assert.ok(insights.performance.completedJobs >= insights.performance.invoicedJobs);
+  assert.ok(insights.performance.invoiceTotal >= 0);
+  assert.ok(insights.performance.categoryPerformance.every((item) => item.category && item.jobs > 0));
+});
+
+test('gives insight views safe empty values for a company with no work', () => {
+  const summary = buildAnalyticsSummary([], ACCOUNT_ID, 'this_week', REFERENCE_DATE);
+  const insights = buildAnalyticsInsights({ jobs: [], clients: [], accountId: ACCOUNT_ID, summary, referenceDate: REFERENCE_DATE });
+
+  assert.deepEqual(insights.statusBreakdown.map((item) => item.jobs), [0, 0, 0, 0]);
+  assert.equal(insights.completionRate, null);
+  assert.equal(insights.busiestPoint, null);
+  assert.deepEqual(insights.upcomingJobs, []);
+  assert.deepEqual(insights.workload, []);
+  assert.deepEqual(insights.topClients, []);
+  assert.equal(insights.performance.invoiceTotal, 0);
+  assert.equal(insights.performance.averageInvoice, null);
+  assert.equal(insights.performance.averageRating, null);
+});
+
+test('describes positive, negative, unchanged, and unavailable comparisons in plain language', () => {
+  assert.equal(changePresentation({ selectedJobs: 14, comparisonJobs: 11, change: 27, hasCompleteComparison: true, comparisonRangeLabel: 'Previous week' }).value, 'Up 27%');
+  assert.equal(changePresentation({ selectedJobs: 10, comparisonJobs: 14, change: -29, hasCompleteComparison: true, comparisonRangeLabel: 'Previous week' }).value, 'Down 29%');
+  assert.equal(changePresentation({ selectedJobs: 10, comparisonJobs: 10, change: 0, hasCompleteComparison: true, comparisonRangeLabel: 'Previous week' }).value, 'No change');
+  assert.equal(changePresentation({ selectedJobs: 4, comparisonJobs: 0, change: null, hasCompleteComparison: false, comparisonRangeLabel: 'Previous week' }).value, 'Comparison unavailable');
 });
 
 test('calculates a large account dataset within the performance budget', () => {

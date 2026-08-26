@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
+import { runAbortableRequest } from './requestSafety.js';
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || import.meta.env.VITE_SUPABASE_ANON_KEY;
@@ -17,6 +18,10 @@ function withRequestTimeout(promise, label = 'Supabase request') {
     timer = setTimeout(() => reject(new Error(`${label} timed out.`)), REQUEST_TIMEOUT_MS);
   });
   return Promise.race([promise, timeout]).finally(() => clearTimeout(timer));
+}
+
+function withAbortableRequest(request, label = 'Supabase request') {
+  return runAbortableRequest((signal) => request.abortSignal(signal), { label, timeoutMs: REQUEST_TIMEOUT_MS });
 }
 
 function requireSupabase() {
@@ -132,7 +137,7 @@ export async function getJobsForAccount(accountId) {
     .select('*')
     .eq('account_id', accountId)
     .order('scheduled_for', { ascending: true });
-  const { data, error } = await withRequestTimeout(request, 'Jobs request');
+  const { data, error } = await withAbortableRequest(request, 'Jobs request');
   if (error) throw error;
   return data;
 }
@@ -143,7 +148,7 @@ export async function getAccountById(accountId) {
     .select('*')
     .eq('id', accountId)
     .maybeSingle();
-  const { data, error } = await withRequestTimeout(request, 'Account request');
+  const { data, error } = await withAbortableRequest(request, 'Account request');
   if (error) throw error;
   return data;
 }
@@ -154,7 +159,7 @@ export async function getClientsForAccount(accountId) {
     .select('*')
     .eq('account_id', accountId)
     .order('name', { ascending: true });
-  const { data, error } = await withRequestTimeout(request, 'Clients request');
+  const { data, error } = await withAbortableRequest(request, 'Clients request');
   if (error) throw error;
   return data;
 }
@@ -176,7 +181,7 @@ export async function createJob(job) {
     .insert(job)
     .select()
     .single();
-  const { data, error } = await withRequestTimeout(request, 'Create job request');
+  const { data, error } = await withAbortableRequest(request, 'Create job request');
   if (error) throw error;
   return data;
 }
@@ -188,14 +193,14 @@ export async function updateJob(jobId, changes) {
     .eq('id', jobId)
     .select()
     .single();
-  const { data, error } = await withRequestTimeout(request, 'Update job request');
+  const { data, error } = await withAbortableRequest(request, 'Update job request');
   if (error) throw error;
   return data;
 }
 
 export async function deleteJob(jobId) {
   const request = requireSupabase().from('jobs').delete().eq('id', jobId);
-  const { error } = await withRequestTimeout(request, 'Delete job request');
+  const { error } = await withAbortableRequest(request, 'Delete job request');
   if (error) throw error;
 }
 
@@ -205,7 +210,7 @@ export async function createFieldflowClient(client) {
     .insert(client)
     .select()
     .single();
-  const { data, error } = await withRequestTimeout(request, 'Create client request');
+  const { data, error } = await withAbortableRequest(request, 'Create client request');
   if (error) throw error;
   return data;
 }
@@ -217,13 +222,13 @@ export async function updateClient(clientId, changes) {
     .eq('id', clientId)
     .select()
     .single();
-  const { data, error } = await withRequestTimeout(request, 'Update client request');
+  const { data, error } = await withAbortableRequest(request, 'Update client request');
   if (error) throw error;
   return data;
 }
 
 export async function deleteClient(clientId) {
   const request = requireSupabase().from('clients').delete().eq('id', clientId);
-  const { error } = await withRequestTimeout(request, 'Delete client request');
+  const { error } = await withAbortableRequest(request, 'Delete client request');
   if (error) throw error;
 }

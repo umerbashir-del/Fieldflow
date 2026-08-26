@@ -6,7 +6,14 @@
     "title": "Harvest Table Bistro service visit",
     "scheduled_for": "2026-01-16",
     "status": "completed",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Repair",
+    "lead_source": "Referral",
+    "estimated_duration_minutes": 60,
+    "actual_duration_minutes": 45,
+    "invoice_total": 365,
+    "completed_at": "2026-01-16T17:00:00Z",
+    "customer_satisfaction_rating": 3
   },
   {
     "id": "sj_0064",
@@ -15,7 +22,14 @@
     "title": "Ridgeline Fitness Studio service visit",
     "scheduled_for": "2026-01-24",
     "status": "cancelled",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Inspection",
+    "lead_source": "Repeat client",
+    "estimated_duration_minutes": 180,
+    "actual_duration_minutes": null,
+    "invoice_total": null,
+    "completed_at": null,
+    "customer_satisfaction_rating": null
   },
   {
     "id": "sj_0060",
@@ -24,7 +38,14 @@
     "title": "Harvest Table Bistro service visit",
     "scheduled_for": "2026-02-03",
     "status": "completed",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Inspection",
+    "lead_source": "Repeat client",
+    "estimated_duration_minutes": 180,
+    "actual_duration_minutes": 195,
+    "invoice_total": 310,
+    "completed_at": "2026-02-03T17:00:00Z",
+    "customer_satisfaction_rating": 5
   },
   {
     "id": "sj_0070",
@@ -33,7 +54,14 @@
     "title": "Bluebird Preschool service visit",
     "scheduled_for": "2026-02-03",
     "status": "completed",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Installation",
+    "lead_source": "Google",
+    "estimated_duration_minutes": 120,
+    "actual_duration_minutes": 105,
+    "invoice_total": 255,
+    "completed_at": "2026-02-03T17:00:00Z",
+    "customer_satisfaction_rating": 3
   },
   {
     "id": "sj_0067",
@@ -42,7 +70,14 @@
     "title": "Ridgeline Fitness Studio service visit",
     "scheduled_for": "2026-03-07",
     "status": "completed",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Installation",
+    "lead_source": "Google",
+    "estimated_duration_minutes": 120,
+    "actual_duration_minutes": 105,
+    "invoice_total": 255,
+    "completed_at": "2026-03-07T17:00:00Z",
+    "customer_satisfaction_rating": 3
   },
   {
     "id": "sj_0069",
@@ -51,7 +86,14 @@
     "title": "Ridgeline Fitness Studio service visit",
     "scheduled_for": "2026-05-13",
     "status": "completed",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Repair",
+    "lead_source": "Referral",
+    "estimated_duration_minutes": 60,
+    "actual_duration_minutes": 75,
+    "invoice_total": 365,
+    "completed_at": "2026-05-13T17:00:00Z",
+    "customer_satisfaction_rating": 5
   },
   {
     "id": "sj_0072",
@@ -60,7 +102,14 @@
     "title": "Bluebird Preschool service visit",
     "scheduled_for": "2026-05-29",
     "status": "completed",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Repair",
+    "lead_source": "Referral",
+    "estimated_duration_minutes": 60,
+    "actual_duration_minutes": 75,
+    "invoice_total": 365,
+    "completed_at": "2026-05-29T17:00:00Z",
+    "customer_satisfaction_rating": 5
   },
   {
     "id": "sj_0073",
@@ -69,7 +118,14 @@
     "title": "Bluebird Preschool service visit",
     "scheduled_for": "2026-06-02",
     "status": "completed",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Maintenance",
+    "lead_source": "Website",
+    "estimated_duration_minutes": 90,
+    "actual_duration_minutes": 75,
+    "invoice_total": 420,
+    "completed_at": "2026-06-02T17:00:00Z",
+    "customer_satisfaction_rating": 3
   },
   {
     "id": "sj_0074",
@@ -78,7 +134,14 @@
     "title": "Cascade Self Storage service visit",
     "scheduled_for": "2026-06-06",
     "status": "completed",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Installation",
+    "lead_source": "Google",
+    "estimated_duration_minutes": 120,
+    "actual_duration_minutes": 120,
+    "invoice_total": 475,
+    "completed_at": "2026-06-06T17:00:00Z",
+    "customer_satisfaction_rating": 4
   },
   {
     "id": "sj_0065",
@@ -87,7 +150,14 @@
     "title": "Ridgeline Fitness Studio service visit",
     "scheduled_for": "2026-06-15",
     "status": "completed",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Repair",
+    "lead_source": "Referral",
+    "estimated_duration_minutes": 60,
+    "actual_duration_minutes": 60,
+    "invoice_total": 145,
+    "completed_at": "2026-06-15T17:00:00Z",
+    "customer_satisfaction_rating": 4
   },
   {
     "id": "sj_0075",
@@ -96,7 +166,14 @@
     "title": "Cascade Self Storage service visit",
     "scheduled_for": "2026-06-17",
     "status": "completed",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Inspection",
+    "lead_source": "Repeat client",
+    "estimated_duration_minutes": 180,
+    "actual_duration_minutes": 195,
+    "invoice_total": 530,
+    "completed_at": "2026-06-17T17:00:00Z",
+    "customer_satisfaction_rating": 5
   },
   {
     "id": "sj_0062",
@@ -105,7 +182,14 @@
     "title": "Union Station Lofts service visit",
     "scheduled_for": "2026-07-03",
     "status": "completed",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Maintenance",
+    "lead_source": "Website",
+    "estimated_duration_minutes": 90,
+    "actual_duration_minutes": 90,
+    "invoice_total": 420,
+    "completed_at": "2026-07-03T17:00:00Z",
+    "customer_satisfaction_rating": 4
   },
   {
     "id": "sj_0071",
@@ -114,7 +198,14 @@
     "title": "Bluebird Preschool service visit",
     "scheduled_for": "2026-08-16",
     "status": "cancelled",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Inspection",
+    "lead_source": "Repeat client",
+    "estimated_duration_minutes": 180,
+    "actual_duration_minutes": null,
+    "invoice_total": null,
+    "completed_at": null,
+    "customer_satisfaction_rating": null
   },
   {
     "id": "sj_0063",
@@ -123,7 +214,14 @@
     "title": "Union Station Lofts service visit",
     "scheduled_for": "2026-08-26",
     "status": "scheduled",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Installation",
+    "lead_source": "Google",
+    "estimated_duration_minutes": 120,
+    "actual_duration_minutes": null,
+    "invoice_total": null,
+    "completed_at": null,
+    "customer_satisfaction_rating": null
   },
   {
     "id": "sj_0066",
@@ -132,7 +230,14 @@
     "title": "Ridgeline Fitness Studio service visit",
     "scheduled_for": "2026-08-29",
     "status": "scheduled",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Maintenance",
+    "lead_source": "Website",
+    "estimated_duration_minutes": 90,
+    "actual_duration_minutes": null,
+    "invoice_total": null,
+    "completed_at": null,
+    "customer_satisfaction_rating": null
   },
   {
     "id": "sj_0068",
@@ -141,7 +246,14 @@
     "title": "Ridgeline Fitness Studio service visit",
     "scheduled_for": "2026-09-18",
     "status": "scheduled",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Inspection",
+    "lead_source": "Repeat client",
+    "estimated_duration_minutes": 180,
+    "actual_duration_minutes": null,
+    "invoice_total": null,
+    "completed_at": null,
+    "customer_satisfaction_rating": null
   },
   {
     "id": "sj_0077",
@@ -150,7 +262,14 @@
     "title": "Palmetto Insurance Group service visit",
     "scheduled_for": "2026-02-02",
     "status": "completed",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Maintenance",
+    "lead_source": "Website",
+    "estimated_duration_minutes": 90,
+    "actual_duration_minutes": 90,
+    "invoice_total": 200,
+    "completed_at": "2026-02-02T17:00:00Z",
+    "customer_satisfaction_rating": 4
   },
   {
     "id": "sj_0079",
@@ -159,7 +278,14 @@
     "title": "Whistlestop Diner service visit",
     "scheduled_for": "2026-03-06",
     "status": "completed",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Inspection",
+    "lead_source": "Repeat client",
+    "estimated_duration_minutes": 180,
+    "actual_duration_minutes": 165,
+    "invoice_total": 310,
+    "completed_at": "2026-03-06T17:00:00Z",
+    "customer_satisfaction_rating": 3
   },
   {
     "id": "sj_0082",
@@ -168,7 +294,14 @@
     "title": "Foothills Realty service visit",
     "scheduled_for": "2026-03-10",
     "status": "completed",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Inspection",
+    "lead_source": "Repeat client",
+    "estimated_duration_minutes": 180,
+    "actual_duration_minutes": 165,
+    "invoice_total": 310,
+    "completed_at": "2026-03-10T17:00:00Z",
+    "customer_satisfaction_rating": 3
   },
   {
     "id": "sj_0085",
@@ -177,7 +310,14 @@
     "title": "Foothills Realty service visit",
     "scheduled_for": "2026-03-10",
     "status": "completed",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Installation",
+    "lead_source": "Google",
+    "estimated_duration_minutes": 120,
+    "actual_duration_minutes": 105,
+    "invoice_total": 475,
+    "completed_at": "2026-03-10T17:00:00Z",
+    "customer_satisfaction_rating": 3
   },
   {
     "id": "sj_0087",
@@ -186,7 +326,14 @@
     "title": "Copperline Brewing Co. service visit",
     "scheduled_for": "2026-03-21",
     "status": "completed",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Repair",
+    "lead_source": "Referral",
+    "estimated_duration_minutes": 60,
+    "actual_duration_minutes": 75,
+    "invoice_total": 145,
+    "completed_at": "2026-03-21T17:00:00Z",
+    "customer_satisfaction_rating": 5
   },
   {
     "id": "sj_0078",
@@ -195,7 +342,14 @@
     "title": "Whistlestop Diner service visit",
     "scheduled_for": "2026-03-29",
     "status": "completed",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Installation",
+    "lead_source": "Google",
+    "estimated_duration_minutes": 120,
+    "actual_duration_minutes": 135,
+    "invoice_total": 255,
+    "completed_at": "2026-03-29T17:00:00Z",
+    "customer_satisfaction_rating": 5
   },
   {
     "id": "sj_0088",
@@ -204,7 +358,14 @@
     "title": "Northgate Medical Plaza service visit",
     "scheduled_for": "2026-05-26",
     "status": "completed",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Maintenance",
+    "lead_source": "Website",
+    "estimated_duration_minutes": 90,
+    "actual_duration_minutes": 75,
+    "invoice_total": 200,
+    "completed_at": "2026-05-26T17:00:00Z",
+    "customer_satisfaction_rating": 3
   },
   {
     "id": "sj_0081",
@@ -213,7 +374,14 @@
     "title": "Foothills Realty service visit",
     "scheduled_for": "2026-06-08",
     "status": "completed",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Installation",
+    "lead_source": "Google",
+    "estimated_duration_minutes": 120,
+    "actual_duration_minutes": 135,
+    "invoice_total": 255,
+    "completed_at": "2026-06-08T17:00:00Z",
+    "customer_satisfaction_rating": 5
   },
   {
     "id": "sj_0076",
@@ -222,7 +390,14 @@
     "title": "Palmetto Insurance Group service visit",
     "scheduled_for": "2026-06-29",
     "status": "completed",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Repair",
+    "lead_source": "Referral",
+    "estimated_duration_minutes": 60,
+    "actual_duration_minutes": 45,
+    "invoice_total": 145,
+    "completed_at": "2026-06-29T17:00:00Z",
+    "customer_satisfaction_rating": 3
   },
   {
     "id": "sj_0080",
@@ -231,7 +406,14 @@
     "title": "Foothills Realty service visit",
     "scheduled_for": "2026-07-05",
     "status": "completed",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Maintenance",
+    "lead_source": "Website",
+    "estimated_duration_minutes": 90,
+    "actual_duration_minutes": 90,
+    "invoice_total": 200,
+    "completed_at": "2026-07-05T17:00:00Z",
+    "customer_satisfaction_rating": 4
   },
   {
     "id": "sj_0083",
@@ -240,7 +422,14 @@
     "title": "Foothills Realty service visit",
     "scheduled_for": "2026-07-20",
     "status": "completed",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Repair",
+    "lead_source": "Referral",
+    "estimated_duration_minutes": 60,
+    "actual_duration_minutes": 60,
+    "invoice_total": 365,
+    "completed_at": "2026-07-20T17:00:00Z",
+    "customer_satisfaction_rating": 4
   },
   {
     "id": "sj_0086",
@@ -249,7 +438,14 @@
     "title": "Copperline Brewing Co. service visit",
     "scheduled_for": "2026-07-27",
     "status": "cancelled",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Inspection",
+    "lead_source": "Repeat client",
+    "estimated_duration_minutes": 180,
+    "actual_duration_minutes": null,
+    "invoice_total": null,
+    "completed_at": null,
+    "customer_satisfaction_rating": null
   },
   {
     "id": "sj_0089",
@@ -258,7 +454,14 @@
     "title": "Northgate Medical Plaza service visit",
     "scheduled_for": "2026-08-06",
     "status": "completed",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Installation",
+    "lead_source": "Google",
+    "estimated_duration_minutes": 120,
+    "actual_duration_minutes": 120,
+    "invoice_total": 255,
+    "completed_at": "2026-08-06T17:00:00Z",
+    "customer_satisfaction_rating": 4
   },
   {
     "id": "sj_0084",
@@ -267,7 +470,14 @@
     "title": "Foothills Realty service visit",
     "scheduled_for": "2026-08-08",
     "status": "completed",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Maintenance",
+    "lead_source": "Website",
+    "estimated_duration_minutes": 90,
+    "actual_duration_minutes": 105,
+    "invoice_total": 420,
+    "completed_at": "2026-08-08T17:00:00Z",
+    "customer_satisfaction_rating": 5
   },
   {
     "id": "sj_0107",
@@ -276,7 +486,14 @@
     "title": "Southgate Shopping Center service visit",
     "scheduled_for": "2026-01-07",
     "status": "cancelled",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Maintenance",
+    "lead_source": "Website",
+    "estimated_duration_minutes": 90,
+    "actual_duration_minutes": null,
+    "invoice_total": null,
+    "completed_at": null,
+    "customer_satisfaction_rating": null
   },
   {
     "id": "sj_0096",
@@ -285,7 +502,14 @@
     "title": "Ironbridge Machine Shop service visit",
     "scheduled_for": "2026-01-10",
     "status": "completed",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Installation",
+    "lead_source": "Google",
+    "estimated_duration_minutes": 120,
+    "actual_duration_minutes": 135,
+    "invoice_total": 475,
+    "completed_at": "2026-01-10T17:00:00Z",
+    "customer_satisfaction_rating": 5
   },
   {
     "id": "sj_0092",
@@ -294,7 +518,14 @@
     "title": "Willowbrook Assisted Living service visit",
     "scheduled_for": "2026-01-24",
     "status": "completed",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Installation",
+    "lead_source": "Google",
+    "estimated_duration_minutes": 120,
+    "actual_duration_minutes": 120,
+    "invoice_total": 255,
+    "completed_at": "2026-01-24T17:00:00Z",
+    "customer_satisfaction_rating": 4
   },
   {
     "id": "sj_0109",
@@ -303,7 +534,14 @@
     "title": "Southgate Shopping Center service visit",
     "scheduled_for": "2026-01-24",
     "status": "completed",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Inspection",
+    "lead_source": "Repeat client",
+    "estimated_duration_minutes": 180,
+    "actual_duration_minutes": 165,
+    "invoice_total": 310,
+    "completed_at": "2026-01-24T17:00:00Z",
+    "customer_satisfaction_rating": 3
   },
   {
     "id": "sj_0091",
@@ -312,7 +550,14 @@
     "title": "Willowbrook Assisted Living service visit",
     "scheduled_for": "2026-02-19",
     "status": "completed",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Maintenance",
+    "lead_source": "Website",
+    "estimated_duration_minutes": 90,
+    "actual_duration_minutes": 75,
+    "invoice_total": 200,
+    "completed_at": "2026-02-19T17:00:00Z",
+    "customer_satisfaction_rating": 3
   },
   {
     "id": "sj_0090",
@@ -321,7 +566,14 @@
     "title": "Willowbrook Assisted Living service visit",
     "scheduled_for": "2026-03-16",
     "status": "cancelled",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Repair",
+    "lead_source": "Referral",
+    "estimated_duration_minutes": 60,
+    "actual_duration_minutes": null,
+    "invoice_total": null,
+    "completed_at": null,
+    "customer_satisfaction_rating": null
   },
   {
     "id": "sj_0102",
@@ -330,7 +582,14 @@
     "title": "Maple & Vine Florist service visit",
     "scheduled_for": "2026-04-17",
     "status": "completed",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Repair",
+    "lead_source": "Referral",
+    "estimated_duration_minutes": 60,
+    "actual_duration_minutes": 75,
+    "invoice_total": 365,
+    "completed_at": "2026-04-17T17:00:00Z",
+    "customer_satisfaction_rating": 5
   },
   {
     "id": "sj_0097",
@@ -339,7 +598,14 @@
     "title": "Ironbridge Machine Shop service visit",
     "scheduled_for": "2026-05-09",
     "status": "completed",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Inspection",
+    "lead_source": "Repeat client",
+    "estimated_duration_minutes": 180,
+    "actual_duration_minutes": 165,
+    "invoice_total": 530,
+    "completed_at": "2026-05-09T17:00:00Z",
+    "customer_satisfaction_rating": 3
   },
   {
     "id": "sj_0101",
@@ -348,7 +614,14 @@
     "title": "Maple & Vine Florist service visit",
     "scheduled_for": "2026-05-26",
     "status": "completed",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Inspection",
+    "lead_source": "Repeat client",
+    "estimated_duration_minutes": 180,
+    "actual_duration_minutes": 180,
+    "invoice_total": 310,
+    "completed_at": "2026-05-26T17:00:00Z",
+    "customer_satisfaction_rating": 4
   },
   {
     "id": "sj_0105",
@@ -357,7 +630,14 @@
     "title": "Southgate Shopping Center service visit",
     "scheduled_for": "2026-06-13",
     "status": "completed",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Inspection",
+    "lead_source": "Repeat client",
+    "estimated_duration_minutes": 180,
+    "actual_duration_minutes": 195,
+    "invoice_total": 530,
+    "completed_at": "2026-06-13T17:00:00Z",
+    "customer_satisfaction_rating": 5
   },
   {
     "id": "sj_0095",
@@ -366,7 +646,14 @@
     "title": "Ironbridge Machine Shop service visit",
     "scheduled_for": "2026-06-16",
     "status": "completed",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Maintenance",
+    "lead_source": "Website",
+    "estimated_duration_minutes": 90,
+    "actual_duration_minutes": 90,
+    "invoice_total": 420,
+    "completed_at": "2026-06-16T17:00:00Z",
+    "customer_satisfaction_rating": 4
   },
   {
     "id": "sj_0100",
@@ -375,7 +662,14 @@
     "title": "Sundial Yoga Studio service visit",
     "scheduled_for": "2026-07-08",
     "status": "cancelled",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Installation",
+    "lead_source": "Google",
+    "estimated_duration_minutes": 120,
+    "actual_duration_minutes": null,
+    "invoice_total": null,
+    "completed_at": null,
+    "customer_satisfaction_rating": null
   },
   {
     "id": "sj_0099",
@@ -384,7 +678,14 @@
     "title": "Sundial Yoga Studio service visit",
     "scheduled_for": "2026-07-28",
     "status": "completed",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Maintenance",
+    "lead_source": "Website",
+    "estimated_duration_minutes": 90,
+    "actual_duration_minutes": 105,
+    "invoice_total": 200,
+    "completed_at": "2026-07-28T17:00:00Z",
+    "customer_satisfaction_rating": 5
   },
   {
     "id": "sj_0106",
@@ -393,7 +694,14 @@
     "title": "Southgate Shopping Center service visit",
     "scheduled_for": "2026-08-03",
     "status": "completed",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Repair",
+    "lead_source": "Referral",
+    "estimated_duration_minutes": 60,
+    "actual_duration_minutes": 45,
+    "invoice_total": 145,
+    "completed_at": "2026-08-03T17:00:00Z",
+    "customer_satisfaction_rating": 3
   },
   {
     "id": "sj_0103",
@@ -402,7 +710,14 @@
     "title": "Maple & Vine Florist service visit",
     "scheduled_for": "2026-08-28",
     "status": "scheduled",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Maintenance",
+    "lead_source": "Website",
+    "estimated_duration_minutes": 90,
+    "actual_duration_minutes": null,
+    "invoice_total": null,
+    "completed_at": null,
+    "customer_satisfaction_rating": null
   },
   {
     "id": "sj_0104",
@@ -411,7 +726,14 @@
     "title": "Southgate Shopping Center service visit",
     "scheduled_for": "2026-09-04",
     "status": "cancelled",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Installation",
+    "lead_source": "Google",
+    "estimated_duration_minutes": 120,
+    "actual_duration_minutes": null,
+    "invoice_total": null,
+    "completed_at": null,
+    "customer_satisfaction_rating": null
   },
   {
     "id": "sj_0098",
@@ -420,7 +742,14 @@
     "title": "Sundial Yoga Studio service visit",
     "scheduled_for": "2026-09-22",
     "status": "scheduled",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Repair",
+    "lead_source": "Referral",
+    "estimated_duration_minutes": 60,
+    "actual_duration_minutes": null,
+    "invoice_total": null,
+    "completed_at": null,
+    "customer_satisfaction_rating": null
   },
   {
     "id": "sj_0093",
@@ -429,7 +758,14 @@
     "title": "Willowbrook Assisted Living service visit",
     "scheduled_for": "2026-09-25",
     "status": "scheduled",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Inspection",
+    "lead_source": "Repeat client",
+    "estimated_duration_minutes": 180,
+    "actual_duration_minutes": null,
+    "invoice_total": null,
+    "completed_at": null,
+    "customer_satisfaction_rating": null
   },
   {
     "id": "sj_0094",
@@ -438,7 +774,14 @@
     "title": "Ironbridge Machine Shop service visit",
     "scheduled_for": "2026-09-28",
     "status": "scheduled",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Repair",
+    "lead_source": "Referral",
+    "estimated_duration_minutes": 60,
+    "actual_duration_minutes": null,
+    "invoice_total": null,
+    "completed_at": null,
+    "customer_satisfaction_rating": null
   },
   {
     "id": "sj_0108",
@@ -447,7 +790,14 @@
     "title": "Southgate Shopping Center service visit",
     "scheduled_for": "2026-09-29",
     "status": "scheduled",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Installation",
+    "lead_source": "Google",
+    "estimated_duration_minutes": 120,
+    "actual_duration_minutes": null,
+    "invoice_total": null,
+    "completed_at": null,
+    "customer_satisfaction_rating": null
   },
   {
     "id": "sj_0131",
@@ -456,7 +806,14 @@
     "title": "Thistlewood Manor service visit",
     "scheduled_for": "2026-01-06",
     "status": "completed",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Repair",
+    "lead_source": "Referral",
+    "estimated_duration_minutes": 60,
+    "actual_duration_minutes": 60,
+    "invoice_total": 145,
+    "completed_at": "2026-01-06T17:00:00Z",
+    "customer_satisfaction_rating": 4
   },
   {
     "id": "sj_0136",
@@ -465,7 +822,14 @@
     "title": "Copper Kettle Coffeehouse service visit",
     "scheduled_for": "2026-02-11",
     "status": "completed",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Maintenance",
+    "lead_source": "Website",
+    "estimated_duration_minutes": 90,
+    "actual_duration_minutes": 75,
+    "invoice_total": 420,
+    "completed_at": "2026-02-11T17:00:00Z",
+    "customer_satisfaction_rating": 3
   },
   {
     "id": "sj_0134",
@@ -474,7 +838,14 @@
     "title": "Copper Kettle Coffeehouse service visit",
     "scheduled_for": "2026-03-10",
     "status": "completed",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Inspection",
+    "lead_source": "Repeat client",
+    "estimated_duration_minutes": 180,
+    "actual_duration_minutes": 180,
+    "invoice_total": 310,
+    "completed_at": "2026-03-10T17:00:00Z",
+    "customer_satisfaction_rating": 4
   },
   {
     "id": "sj_0129",
@@ -483,7 +854,14 @@
     "title": "Landmark Credit Union service visit",
     "scheduled_for": "2026-03-20",
     "status": "completed",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Maintenance",
+    "lead_source": "Website",
+    "estimated_duration_minutes": 90,
+    "actual_duration_minutes": 105,
+    "invoice_total": 200,
+    "completed_at": "2026-03-20T17:00:00Z",
+    "customer_satisfaction_rating": 5
   },
   {
     "id": "sj_0133",
@@ -492,7 +870,14 @@
     "title": "Beacon Ridge Church service visit",
     "scheduled_for": "2026-03-24",
     "status": "completed",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Installation",
+    "lead_source": "Google",
+    "estimated_duration_minutes": 120,
+    "actual_duration_minutes": 105,
+    "invoice_total": 255,
+    "completed_at": "2026-03-24T17:00:00Z",
+    "customer_satisfaction_rating": 3
   },
   {
     "id": "sj_0128",
@@ -501,7 +886,14 @@
     "title": "Landmark Credit Union service visit",
     "scheduled_for": "2026-04-06",
     "status": "completed",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Repair",
+    "lead_source": "Referral",
+    "estimated_duration_minutes": 60,
+    "actual_duration_minutes": 60,
+    "invoice_total": 145,
+    "completed_at": "2026-04-06T17:00:00Z",
+    "customer_satisfaction_rating": 4
   },
   {
     "id": "sj_0137",
@@ -510,7 +902,14 @@
     "title": "Vantage Point Offices service visit",
     "scheduled_for": "2026-06-08",
     "status": "completed",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Installation",
+    "lead_source": "Google",
+    "estimated_duration_minutes": 120,
+    "actual_duration_minutes": 120,
+    "invoice_total": 475,
+    "completed_at": "2026-06-08T17:00:00Z",
+    "customer_satisfaction_rating": 4
   },
   {
     "id": "sj_0135",
@@ -519,7 +918,14 @@
     "title": "Copper Kettle Coffeehouse service visit",
     "scheduled_for": "2026-06-21",
     "status": "completed",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Repair",
+    "lead_source": "Referral",
+    "estimated_duration_minutes": 60,
+    "actual_duration_minutes": 75,
+    "invoice_total": 365,
+    "completed_at": "2026-06-21T17:00:00Z",
+    "customer_satisfaction_rating": 5
   },
   {
     "id": "sj_0138",
@@ -528,7 +934,14 @@
     "title": "Vantage Point Offices service visit",
     "scheduled_for": "2026-07-02",
     "status": "completed",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Inspection",
+    "lead_source": "Repeat client",
+    "estimated_duration_minutes": 180,
+    "actual_duration_minutes": 195,
+    "invoice_total": 530,
+    "completed_at": "2026-07-02T17:00:00Z",
+    "customer_satisfaction_rating": 5
   },
   {
     "id": "sj_0141",
@@ -537,7 +950,14 @@
     "title": "Vantage Point Offices service visit",
     "scheduled_for": "2026-07-07",
     "status": "completed",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Inspection",
+    "lead_source": "Repeat client",
+    "estimated_duration_minutes": 180,
+    "actual_duration_minutes": 195,
+    "invoice_total": 530,
+    "completed_at": "2026-07-07T17:00:00Z",
+    "customer_satisfaction_rating": 5
   },
   {
     "id": "sj_0132",
@@ -546,7 +966,14 @@
     "title": "Beacon Ridge Church service visit",
     "scheduled_for": "2026-07-12",
     "status": "completed",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Maintenance",
+    "lead_source": "Website",
+    "estimated_duration_minutes": 90,
+    "actual_duration_minutes": 105,
+    "invoice_total": 200,
+    "completed_at": "2026-07-12T17:00:00Z",
+    "customer_satisfaction_rating": 5
   },
   {
     "id": "sj_0142",
@@ -555,7 +982,14 @@
     "title": "Vantage Point Offices service visit",
     "scheduled_for": "2026-08-26",
     "status": "cancelled",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Repair",
+    "lead_source": "Referral",
+    "estimated_duration_minutes": 60,
+    "actual_duration_minutes": null,
+    "invoice_total": null,
+    "completed_at": null,
+    "customer_satisfaction_rating": null
   },
   {
     "id": "sj_0139",
@@ -564,7 +998,14 @@
     "title": "Vantage Point Offices service visit",
     "scheduled_for": "2026-09-17",
     "status": "scheduled",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Repair",
+    "lead_source": "Referral",
+    "estimated_duration_minutes": 60,
+    "actual_duration_minutes": null,
+    "invoice_total": null,
+    "completed_at": null,
+    "customer_satisfaction_rating": null
   },
   {
     "id": "sj_0130",
@@ -573,7 +1014,14 @@
     "title": "Thistlewood Manor service visit",
     "scheduled_for": "2026-09-25",
     "status": "scheduled",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Inspection",
+    "lead_source": "Repeat client",
+    "estimated_duration_minutes": 180,
+    "actual_duration_minutes": null,
+    "invoice_total": null,
+    "completed_at": null,
+    "customer_satisfaction_rating": null
   },
   {
     "id": "sj_0140",
@@ -582,7 +1030,14 @@
     "title": "Vantage Point Offices service visit",
     "scheduled_for": "2026-09-27",
     "status": "scheduled",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Installation",
+    "lead_source": "Google",
+    "estimated_duration_minutes": 120,
+    "actual_duration_minutes": null,
+    "invoice_total": null,
+    "completed_at": null,
+    "customer_satisfaction_rating": null
   },
   {
     "id": "job_201",
@@ -591,7 +1046,14 @@
     "title": "Panel inspection",
     "scheduled_for": "2026-08-10",
     "status": "completed",
-    "assignee": "Riley Park"
+    "assignee": "Riley Park",
+    "job_category": "Installation",
+    "lead_source": "Google",
+    "estimated_duration_minutes": 120,
+    "actual_duration_minutes": 135,
+    "invoice_total": 255,
+    "completed_at": "2026-08-10T17:00:00Z",
+    "customer_satisfaction_rating": 5
   },
   {
     "id": "job_202",
@@ -600,7 +1062,14 @@
     "title": "Lighting repair",
     "scheduled_for": "2026-08-12",
     "status": "completed",
-    "assignee": "Riley Park"
+    "assignee": "Riley Park",
+    "job_category": "Inspection",
+    "lead_source": "Repeat client",
+    "estimated_duration_minutes": 180,
+    "actual_duration_minutes": 165,
+    "invoice_total": 310,
+    "completed_at": "2026-08-12T17:00:00Z",
+    "customer_satisfaction_rating": 3
   },
   {
     "id": "job_203",
@@ -609,7 +1078,14 @@
     "title": "Outlet installation",
     "scheduled_for": "2026-08-18",
     "status": "completed",
-    "assignee": "Riley Park"
+    "assignee": "Riley Park",
+    "job_category": "Repair",
+    "lead_source": "Referral",
+    "estimated_duration_minutes": 60,
+    "actual_duration_minutes": 60,
+    "invoice_total": 365,
+    "completed_at": "2026-08-18T17:00:00Z",
+    "customer_satisfaction_rating": 4
   },
   {
     "id": "job_204",
@@ -618,7 +1094,14 @@
     "title": "Emergency lighting test",
     "scheduled_for": "2026-08-21",
     "status": "scheduled",
-    "assignee": "Riley Park"
+    "assignee": "Riley Park",
+    "job_category": "Maintenance",
+    "lead_source": "Website",
+    "estimated_duration_minutes": 90,
+    "actual_duration_minutes": null,
+    "invoice_total": null,
+    "completed_at": null,
+    "customer_satisfaction_rating": null
   },
   {
     "id": "sj_0124",
@@ -627,7 +1110,14 @@
     "title": "Crescent Moon Bakery service visit",
     "scheduled_for": "2026-01-09",
     "status": "completed",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Repair",
+    "lead_source": "Referral",
+    "estimated_duration_minutes": 60,
+    "actual_duration_minutes": 45,
+    "invoice_total": 365,
+    "completed_at": "2026-01-09T17:00:00Z",
+    "customer_satisfaction_rating": 3
   },
   {
     "id": "sj_0112",
@@ -636,7 +1126,14 @@
     "title": "Trailhead Outfitters service visit",
     "scheduled_for": "2026-01-14",
     "status": "completed",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Inspection",
+    "lead_source": "Repeat client",
+    "estimated_duration_minutes": 180,
+    "actual_duration_minutes": 165,
+    "invoice_total": 310,
+    "completed_at": "2026-01-14T17:00:00Z",
+    "customer_satisfaction_rating": 3
   },
   {
     "id": "sj_0117",
@@ -645,7 +1142,14 @@
     "title": "Amber Grove Elementary service visit",
     "scheduled_for": "2026-02-27",
     "status": "completed",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Repair",
+    "lead_source": "Referral",
+    "estimated_duration_minutes": 60,
+    "actual_duration_minutes": 75,
+    "invoice_total": 145,
+    "completed_at": "2026-02-27T17:00:00Z",
+    "customer_satisfaction_rating": 5
   },
   {
     "id": "sj_0116",
@@ -654,7 +1158,14 @@
     "title": "Amber Grove Elementary service visit",
     "scheduled_for": "2026-03-26",
     "status": "cancelled",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Inspection",
+    "lead_source": "Repeat client",
+    "estimated_duration_minutes": 180,
+    "actual_duration_minutes": null,
+    "invoice_total": null,
+    "completed_at": null,
+    "customer_satisfaction_rating": null
   },
   {
     "id": "sj_0127",
@@ -663,7 +1174,14 @@
     "title": "Crescent Moon Bakery service visit",
     "scheduled_for": "2026-04-02",
     "status": "completed",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Inspection",
+    "lead_source": "Repeat client",
+    "estimated_duration_minutes": 180,
+    "actual_duration_minutes": 165,
+    "invoice_total": 530,
+    "completed_at": "2026-04-02T17:00:00Z",
+    "customer_satisfaction_rating": 3
   },
   {
     "id": "sj_0123",
@@ -672,7 +1190,14 @@
     "title": "Crescent Moon Bakery service visit",
     "scheduled_for": "2026-04-11",
     "status": "cancelled",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Inspection",
+    "lead_source": "Repeat client",
+    "estimated_duration_minutes": 180,
+    "actual_duration_minutes": null,
+    "invoice_total": null,
+    "completed_at": null,
+    "customer_satisfaction_rating": null
   },
   {
     "id": "sj_0120",
@@ -681,7 +1206,14 @@
     "title": "Riverside Marina service visit",
     "scheduled_for": "2026-04-12",
     "status": "completed",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Repair",
+    "lead_source": "Referral",
+    "estimated_duration_minutes": 60,
+    "actual_duration_minutes": 75,
+    "invoice_total": 145,
+    "completed_at": "2026-04-12T17:00:00Z",
+    "customer_satisfaction_rating": 5
   },
   {
     "id": "sj_0111",
@@ -690,7 +1222,14 @@
     "title": "Cobblestone Row Condos service visit",
     "scheduled_for": "2026-05-20",
     "status": "completed",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Installation",
+    "lead_source": "Google",
+    "estimated_duration_minutes": 120,
+    "actual_duration_minutes": 135,
+    "invoice_total": 255,
+    "completed_at": "2026-05-20T17:00:00Z",
+    "customer_satisfaction_rating": 5
   },
   {
     "id": "sj_0122",
@@ -699,7 +1238,14 @@
     "title": "Riverside Marina service visit",
     "scheduled_for": "2026-05-31",
     "status": "completed",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Installation",
+    "lead_source": "Google",
+    "estimated_duration_minutes": 120,
+    "actual_duration_minutes": 120,
+    "invoice_total": 255,
+    "completed_at": "2026-05-31T17:00:00Z",
+    "customer_satisfaction_rating": 4
   },
   {
     "id": "sj_0121",
@@ -708,7 +1254,14 @@
     "title": "Riverside Marina service visit",
     "scheduled_for": "2026-06-03",
     "status": "completed",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Maintenance",
+    "lead_source": "Website",
+    "estimated_duration_minutes": 90,
+    "actual_duration_minutes": 75,
+    "invoice_total": 200,
+    "completed_at": "2026-06-03T17:00:00Z",
+    "customer_satisfaction_rating": 3
   },
   {
     "id": "sj_0110",
@@ -717,7 +1270,14 @@
     "title": "Cobblestone Row Condos service visit",
     "scheduled_for": "2026-06-07",
     "status": "completed",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Maintenance",
+    "lead_source": "Website",
+    "estimated_duration_minutes": 90,
+    "actual_duration_minutes": 90,
+    "invoice_total": 200,
+    "completed_at": "2026-06-07T17:00:00Z",
+    "customer_satisfaction_rating": 4
   },
   {
     "id": "sj_0113",
@@ -726,7 +1286,14 @@
     "title": "Trailhead Outfitters service visit",
     "scheduled_for": "2026-06-11",
     "status": "completed",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Repair",
+    "lead_source": "Referral",
+    "estimated_duration_minutes": 60,
+    "actual_duration_minutes": 60,
+    "invoice_total": 365,
+    "completed_at": "2026-06-11T17:00:00Z",
+    "customer_satisfaction_rating": 4
   },
   {
     "id": "sj_0119",
@@ -735,7 +1302,14 @@
     "title": "Riverside Marina service visit",
     "scheduled_for": "2026-06-12",
     "status": "completed",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Installation",
+    "lead_source": "Google",
+    "estimated_duration_minutes": 120,
+    "actual_duration_minutes": 120,
+    "invoice_total": 255,
+    "completed_at": "2026-06-12T17:00:00Z",
+    "customer_satisfaction_rating": 4
   },
   {
     "id": "sj_0126",
@@ -744,7 +1318,14 @@
     "title": "Crescent Moon Bakery service visit",
     "scheduled_for": "2026-07-06",
     "status": "completed",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Installation",
+    "lead_source": "Google",
+    "estimated_duration_minutes": 120,
+    "actual_duration_minutes": 135,
+    "invoice_total": 475,
+    "completed_at": "2026-07-06T17:00:00Z",
+    "customer_satisfaction_rating": 5
   },
   {
     "id": "sj_0114",
@@ -753,7 +1334,14 @@
     "title": "Amber Grove Elementary service visit",
     "scheduled_for": "2026-07-18",
     "status": "completed",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Maintenance",
+    "lead_source": "Website",
+    "estimated_duration_minutes": 90,
+    "actual_duration_minutes": 105,
+    "invoice_total": 420,
+    "completed_at": "2026-07-18T17:00:00Z",
+    "customer_satisfaction_rating": 5
   },
   {
     "id": "sj_0118",
@@ -762,7 +1350,14 @@
     "title": "Amber Grove Elementary service visit",
     "scheduled_for": "2026-07-23",
     "status": "completed",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Maintenance",
+    "lead_source": "Website",
+    "estimated_duration_minutes": 90,
+    "actual_duration_minutes": 75,
+    "invoice_total": 200,
+    "completed_at": "2026-07-23T17:00:00Z",
+    "customer_satisfaction_rating": 3
   },
   {
     "id": "sj_0125",
@@ -771,7 +1366,14 @@
     "title": "Crescent Moon Bakery service visit",
     "scheduled_for": "2026-09-07",
     "status": "cancelled",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Maintenance",
+    "lead_source": "Website",
+    "estimated_duration_minutes": 90,
+    "actual_duration_minutes": null,
+    "invoice_total": null,
+    "completed_at": null,
+    "customer_satisfaction_rating": null
   },
   {
     "id": "sj_0115",
@@ -780,7 +1382,14 @@
     "title": "Amber Grove Elementary service visit",
     "scheduled_for": "2026-09-26",
     "status": "scheduled",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Installation",
+    "lead_source": "Google",
+    "estimated_duration_minutes": 120,
+    "actual_duration_minutes": null,
+    "invoice_total": null,
+    "completed_at": null,
+    "customer_satisfaction_rating": null
   },
   {
     "id": "job_071",
@@ -789,7 +1398,14 @@
     "title": "Summer system inspection",
     "scheduled_for": "2026-06-29",
     "status": "completed",
-    "assignee": "Maya Chen"
+    "assignee": "Maya Chen",
+    "job_category": "Maintenance",
+    "lead_source": "Website",
+    "estimated_duration_minutes": 90,
+    "actual_duration_minutes": 90,
+    "invoice_total": 200,
+    "completed_at": "2026-06-29T17:00:00Z",
+    "customer_satisfaction_rating": 4
   },
   {
     "id": "job_072",
@@ -798,7 +1414,14 @@
     "title": "Air quality check",
     "scheduled_for": "2026-06-30",
     "status": "completed",
-    "assignee": "Jordan Lee"
+    "assignee": "Jordan Lee",
+    "job_category": "Installation",
+    "lead_source": "Google",
+    "estimated_duration_minutes": 120,
+    "actual_duration_minutes": 135,
+    "invoice_total": 255,
+    "completed_at": "2026-06-30T17:00:00Z",
+    "customer_satisfaction_rating": 5
   },
   {
     "id": "job_073",
@@ -807,7 +1430,14 @@
     "title": "Cooling unit maintenance",
     "scheduled_for": "2026-07-01",
     "status": "completed",
-    "assignee": "Maya Chen"
+    "assignee": "Maya Chen",
+    "job_category": "Inspection",
+    "lead_source": "Repeat client",
+    "estimated_duration_minutes": 180,
+    "actual_duration_minutes": 165,
+    "invoice_total": 310,
+    "completed_at": "2026-07-01T17:00:00Z",
+    "customer_satisfaction_rating": 3
   },
   {
     "id": "job_074",
@@ -816,7 +1446,14 @@
     "title": "Duct inspection",
     "scheduled_for": "2026-07-02",
     "status": "completed",
-    "assignee": "Jordan Lee"
+    "assignee": "Jordan Lee",
+    "job_category": "Repair",
+    "lead_source": "Referral",
+    "estimated_duration_minutes": 60,
+    "actual_duration_minutes": 60,
+    "invoice_total": 365,
+    "completed_at": "2026-07-02T17:00:00Z",
+    "customer_satisfaction_rating": 4
   },
   {
     "id": "job_075",
@@ -825,7 +1462,14 @@
     "title": "Boiler pressure check",
     "scheduled_for": "2026-07-03",
     "status": "completed",
-    "assignee": "Maya Chen"
+    "assignee": "Maya Chen",
+    "job_category": "Maintenance",
+    "lead_source": "Website",
+    "estimated_duration_minutes": 90,
+    "actual_duration_minutes": 105,
+    "invoice_total": 420,
+    "completed_at": "2026-07-03T17:00:00Z",
+    "customer_satisfaction_rating": 5
   },
   {
     "id": "job_076",
@@ -834,7 +1478,14 @@
     "title": "Kitchen exhaust service",
     "scheduled_for": "2026-07-04",
     "status": "completed",
-    "assignee": "Jordan Lee"
+    "assignee": "Jordan Lee",
+    "job_category": "Installation",
+    "lead_source": "Google",
+    "estimated_duration_minutes": 120,
+    "actual_duration_minutes": 105,
+    "invoice_total": 475,
+    "completed_at": "2026-07-04T17:00:00Z",
+    "customer_satisfaction_rating": 3
   },
   {
     "id": "job_077",
@@ -843,7 +1494,14 @@
     "title": "Filter replacement",
     "scheduled_for": "2026-07-06",
     "status": "completed",
-    "assignee": "Maya Chen"
+    "assignee": "Maya Chen",
+    "job_category": "Inspection",
+    "lead_source": "Repeat client",
+    "estimated_duration_minutes": 180,
+    "actual_duration_minutes": 180,
+    "invoice_total": 530,
+    "completed_at": "2026-07-06T17:00:00Z",
+    "customer_satisfaction_rating": 4
   },
   {
     "id": "job_078",
@@ -852,7 +1510,14 @@
     "title": "Ventilation inspection",
     "scheduled_for": "2026-07-07",
     "status": "completed",
-    "assignee": "Jordan Lee"
+    "assignee": "Jordan Lee",
+    "job_category": "Repair",
+    "lead_source": "Referral",
+    "estimated_duration_minutes": 60,
+    "actual_duration_minutes": 75,
+    "invoice_total": 145,
+    "completed_at": "2026-07-07T17:00:00Z",
+    "customer_satisfaction_rating": 5
   },
   {
     "id": "job_079",
@@ -861,7 +1526,14 @@
     "title": "Equipment calibration",
     "scheduled_for": "2026-07-08",
     "status": "completed",
-    "assignee": "Maya Chen"
+    "assignee": "Maya Chen",
+    "job_category": "Maintenance",
+    "lead_source": "Website",
+    "estimated_duration_minutes": 90,
+    "actual_duration_minutes": 75,
+    "invoice_total": 200,
+    "completed_at": "2026-07-08T17:00:00Z",
+    "customer_satisfaction_rating": 3
   },
   {
     "id": "job_080",
@@ -870,7 +1542,14 @@
     "title": "Comfort system check",
     "scheduled_for": "2026-07-09",
     "status": "completed",
-    "assignee": "Jordan Lee"
+    "assignee": "Jordan Lee",
+    "job_category": "Inspection",
+    "lead_source": "Repeat client",
+    "estimated_duration_minutes": 180,
+    "actual_duration_minutes": 180,
+    "invoice_total": 530,
+    "completed_at": "2026-07-09T17:00:00Z",
+    "customer_satisfaction_rating": 4
   },
   {
     "id": "job_081",
@@ -879,7 +1558,14 @@
     "title": "Display case tune-up",
     "scheduled_for": "2026-07-10",
     "status": "completed",
-    "assignee": "Maya Chen"
+    "assignee": "Maya Chen",
+    "job_category": "Repair",
+    "lead_source": "Referral",
+    "estimated_duration_minutes": 60,
+    "actual_duration_minutes": 75,
+    "invoice_total": 145,
+    "completed_at": "2026-07-10T17:00:00Z",
+    "customer_satisfaction_rating": 5
   },
   {
     "id": "job_082",
@@ -888,7 +1574,14 @@
     "title": "Heat pump inspection",
     "scheduled_for": "2026-07-11",
     "status": "completed",
-    "assignee": "Jordan Lee"
+    "assignee": "Jordan Lee",
+    "job_category": "Maintenance",
+    "lead_source": "Website",
+    "estimated_duration_minutes": 90,
+    "actual_duration_minutes": 75,
+    "invoice_total": 200,
+    "completed_at": "2026-07-11T17:00:00Z",
+    "customer_satisfaction_rating": 3
   },
   {
     "id": "job_083",
@@ -897,7 +1590,14 @@
     "title": "Water heater service",
     "scheduled_for": "2026-07-12",
     "status": "completed",
-    "assignee": "Maya Chen"
+    "assignee": "Maya Chen",
+    "job_category": "Installation",
+    "lead_source": "Google",
+    "estimated_duration_minutes": 120,
+    "actual_duration_minutes": 120,
+    "invoice_total": 255,
+    "completed_at": "2026-07-12T17:00:00Z",
+    "customer_satisfaction_rating": 4
   },
   {
     "id": "job_084",
@@ -906,7 +1606,14 @@
     "title": "Freezer inspection",
     "scheduled_for": "2026-07-13",
     "status": "completed",
-    "assignee": "Jordan Lee"
+    "assignee": "Jordan Lee",
+    "job_category": "Inspection",
+    "lead_source": "Repeat client",
+    "estimated_duration_minutes": 180,
+    "actual_duration_minutes": 195,
+    "invoice_total": 310,
+    "completed_at": "2026-07-13T17:00:00Z",
+    "customer_satisfaction_rating": 5
   },
   {
     "id": "job_085",
@@ -915,7 +1622,14 @@
     "title": "Rooftop unit service",
     "scheduled_for": "2026-07-14",
     "status": "completed",
-    "assignee": "Maya Chen"
+    "assignee": "Maya Chen",
+    "job_category": "Repair",
+    "lead_source": "Referral",
+    "estimated_duration_minutes": 60,
+    "actual_duration_minutes": 45,
+    "invoice_total": 365,
+    "completed_at": "2026-07-14T17:00:00Z",
+    "customer_satisfaction_rating": 3
   },
   {
     "id": "job_086",
@@ -924,7 +1638,14 @@
     "title": "Temperature sensor test",
     "scheduled_for": "2026-07-15",
     "status": "completed",
-    "assignee": "Jordan Lee"
+    "assignee": "Jordan Lee",
+    "job_category": "Maintenance",
+    "lead_source": "Website",
+    "estimated_duration_minutes": 90,
+    "actual_duration_minutes": 90,
+    "invoice_total": 420,
+    "completed_at": "2026-07-15T17:00:00Z",
+    "customer_satisfaction_rating": 4
   },
   {
     "id": "job_087",
@@ -933,7 +1654,14 @@
     "title": "Refrigeration repair",
     "scheduled_for": "2026-07-16",
     "status": "completed",
-    "assignee": "Maya Chen"
+    "assignee": "Maya Chen",
+    "job_category": "Installation",
+    "lead_source": "Google",
+    "estimated_duration_minutes": 120,
+    "actual_duration_minutes": 135,
+    "invoice_total": 475,
+    "completed_at": "2026-07-16T17:00:00Z",
+    "customer_satisfaction_rating": 5
   },
   {
     "id": "job_088",
@@ -942,7 +1670,14 @@
     "title": "Air handler tune-up",
     "scheduled_for": "2026-07-17",
     "status": "completed",
-    "assignee": "Jordan Lee"
+    "assignee": "Jordan Lee",
+    "job_category": "Inspection",
+    "lead_source": "Repeat client",
+    "estimated_duration_minutes": 180,
+    "actual_duration_minutes": 165,
+    "invoice_total": 530,
+    "completed_at": "2026-07-17T17:00:00Z",
+    "customer_satisfaction_rating": 3
   },
   {
     "id": "job_089",
@@ -951,7 +1686,14 @@
     "title": "Ventilation repair",
     "scheduled_for": "2026-07-18",
     "status": "completed",
-    "assignee": "Maya Chen"
+    "assignee": "Maya Chen",
+    "job_category": "Repair",
+    "lead_source": "Referral",
+    "estimated_duration_minutes": 60,
+    "actual_duration_minutes": 60,
+    "invoice_total": 145,
+    "completed_at": "2026-07-18T17:00:00Z",
+    "customer_satisfaction_rating": 4
   },
   {
     "id": "job_090",
@@ -960,7 +1702,14 @@
     "title": "Thermostat adjustment",
     "scheduled_for": "2026-07-19",
     "status": "completed",
-    "assignee": "Jordan Lee"
+    "assignee": "Jordan Lee",
+    "job_category": "Installation",
+    "lead_source": "Google",
+    "estimated_duration_minutes": 120,
+    "actual_duration_minutes": 135,
+    "invoice_total": 475,
+    "completed_at": "2026-07-19T17:00:00Z",
+    "customer_satisfaction_rating": 5
   },
   {
     "id": "job_091",
@@ -969,7 +1718,14 @@
     "title": "Pipe insulation repair",
     "scheduled_for": "2026-07-19",
     "status": "completed",
-    "assignee": "Maya Chen"
+    "assignee": "Maya Chen",
+    "job_category": "Inspection",
+    "lead_source": "Repeat client",
+    "estimated_duration_minutes": 180,
+    "actual_duration_minutes": 165,
+    "invoice_total": 530,
+    "completed_at": "2026-07-19T17:00:00Z",
+    "customer_satisfaction_rating": 3
   },
   {
     "id": "job_092",
@@ -978,7 +1734,14 @@
     "title": "Seasonal tune-up",
     "scheduled_for": "2026-07-20",
     "status": "completed",
-    "assignee": "Jordan Lee"
+    "assignee": "Jordan Lee",
+    "job_category": "Repair",
+    "lead_source": "Referral",
+    "estimated_duration_minutes": 60,
+    "actual_duration_minutes": 60,
+    "invoice_total": 145,
+    "completed_at": "2026-07-20T17:00:00Z",
+    "customer_satisfaction_rating": 4
   },
   {
     "id": "job_093",
@@ -987,7 +1750,14 @@
     "title": "Filter replacement",
     "scheduled_for": "2026-07-20",
     "status": "completed",
-    "assignee": "Maya Chen"
+    "assignee": "Maya Chen",
+    "job_category": "Maintenance",
+    "lead_source": "Website",
+    "estimated_duration_minutes": 90,
+    "actual_duration_minutes": 105,
+    "invoice_total": 200,
+    "completed_at": "2026-07-20T17:00:00Z",
+    "customer_satisfaction_rating": 5
   },
   {
     "id": "job_094",
@@ -996,7 +1766,14 @@
     "title": "Walk-in cooler service",
     "scheduled_for": "2026-07-21",
     "status": "completed",
-    "assignee": "Jordan Lee"
+    "assignee": "Jordan Lee",
+    "job_category": "Installation",
+    "lead_source": "Google",
+    "estimated_duration_minutes": 120,
+    "actual_duration_minutes": 105,
+    "invoice_total": 255,
+    "completed_at": "2026-07-21T17:00:00Z",
+    "customer_satisfaction_rating": 3
   },
   {
     "id": "job_095",
@@ -1005,7 +1782,14 @@
     "title": "Duct cleaning",
     "scheduled_for": "2026-07-21",
     "status": "completed",
-    "assignee": "Maya Chen"
+    "assignee": "Maya Chen",
+    "job_category": "Inspection",
+    "lead_source": "Repeat client",
+    "estimated_duration_minutes": 180,
+    "actual_duration_minutes": 180,
+    "invoice_total": 310,
+    "completed_at": "2026-07-21T17:00:00Z",
+    "customer_satisfaction_rating": 4
   },
   {
     "id": "job_096",
@@ -1014,7 +1798,14 @@
     "title": "Boiler maintenance",
     "scheduled_for": "2026-07-22",
     "status": "completed",
-    "assignee": "Jordan Lee"
+    "assignee": "Jordan Lee",
+    "job_category": "Repair",
+    "lead_source": "Referral",
+    "estimated_duration_minutes": 60,
+    "actual_duration_minutes": 75,
+    "invoice_total": 365,
+    "completed_at": "2026-07-22T17:00:00Z",
+    "customer_satisfaction_rating": 5
   },
   {
     "id": "job_097",
@@ -1023,7 +1814,14 @@
     "title": "Exhaust fan repair",
     "scheduled_for": "2026-07-23",
     "status": "completed",
-    "assignee": "Maya Chen"
+    "assignee": "Maya Chen",
+    "job_category": "Maintenance",
+    "lead_source": "Website",
+    "estimated_duration_minutes": 90,
+    "actual_duration_minutes": 75,
+    "invoice_total": 420,
+    "completed_at": "2026-07-23T17:00:00Z",
+    "customer_satisfaction_rating": 3
   },
   {
     "id": "job_098",
@@ -1032,7 +1830,14 @@
     "title": "Rooftop unit inspection",
     "scheduled_for": "2026-07-24",
     "status": "completed",
-    "assignee": "Jordan Lee"
+    "assignee": "Jordan Lee",
+    "job_category": "Installation",
+    "lead_source": "Google",
+    "estimated_duration_minutes": 120,
+    "actual_duration_minutes": 120,
+    "invoice_total": 475,
+    "completed_at": "2026-07-24T17:00:00Z",
+    "customer_satisfaction_rating": 4
   },
   {
     "id": "job_099",
@@ -1041,7 +1846,14 @@
     "title": "Airflow balancing",
     "scheduled_for": "2026-07-25",
     "status": "completed",
-    "assignee": "Maya Chen"
+    "assignee": "Maya Chen",
+    "job_category": "Inspection",
+    "lead_source": "Repeat client",
+    "estimated_duration_minutes": 180,
+    "actual_duration_minutes": 195,
+    "invoice_total": 530,
+    "completed_at": "2026-07-25T17:00:00Z",
+    "customer_satisfaction_rating": 5
   },
   {
     "id": "job_100",
@@ -1050,7 +1862,14 @@
     "title": "Drain line service",
     "scheduled_for": "2026-07-26",
     "status": "completed",
-    "assignee": "Jordan Lee"
+    "assignee": "Jordan Lee",
+    "job_category": "Repair",
+    "lead_source": "Referral",
+    "estimated_duration_minutes": 60,
+    "actual_duration_minutes": 45,
+    "invoice_total": 145,
+    "completed_at": "2026-07-26T17:00:00Z",
+    "customer_satisfaction_rating": 3
   },
   {
     "id": "job_101",
@@ -1059,7 +1878,14 @@
     "title": "HVAC inspection",
     "scheduled_for": "2026-07-27",
     "status": "completed",
-    "assignee": "Maya Chen"
+    "assignee": "Maya Chen",
+    "job_category": "Maintenance",
+    "lead_source": "Website",
+    "estimated_duration_minutes": 90,
+    "actual_duration_minutes": 90,
+    "invoice_total": 200,
+    "completed_at": "2026-07-27T17:00:00Z",
+    "customer_satisfaction_rating": 4
   },
   {
     "id": "job_102",
@@ -1068,7 +1894,14 @@
     "title": "Equipment calibration",
     "scheduled_for": "2026-07-28",
     "status": "completed",
-    "assignee": "Jordan Lee"
+    "assignee": "Jordan Lee",
+    "job_category": "Installation",
+    "lead_source": "Google",
+    "estimated_duration_minutes": 120,
+    "actual_duration_minutes": 135,
+    "invoice_total": 255,
+    "completed_at": "2026-07-28T17:00:00Z",
+    "customer_satisfaction_rating": 5
   },
   {
     "id": "job_103",
@@ -1077,7 +1910,14 @@
     "title": "Safety follow-up",
     "scheduled_for": "2026-07-29",
     "status": "completed",
-    "assignee": "Maya Chen"
+    "assignee": "Maya Chen",
+    "job_category": "Inspection",
+    "lead_source": "Repeat client",
+    "estimated_duration_minutes": 180,
+    "actual_duration_minutes": 165,
+    "invoice_total": 310,
+    "completed_at": "2026-07-29T17:00:00Z",
+    "customer_satisfaction_rating": 3
   },
   {
     "id": "job_104",
@@ -1086,7 +1926,14 @@
     "title": "Filter replacement",
     "scheduled_for": "2026-07-30",
     "status": "completed",
-    "assignee": "Jordan Lee"
+    "assignee": "Jordan Lee",
+    "job_category": "Repair",
+    "lead_source": "Referral",
+    "estimated_duration_minutes": 60,
+    "actual_duration_minutes": 60,
+    "invoice_total": 365,
+    "completed_at": "2026-07-30T17:00:00Z",
+    "customer_satisfaction_rating": 4
   },
   {
     "id": "job_105",
@@ -1095,7 +1942,14 @@
     "title": "Boiler maintenance",
     "scheduled_for": "2026-07-31",
     "status": "completed",
-    "assignee": "Maya Chen"
+    "assignee": "Maya Chen",
+    "job_category": "Maintenance",
+    "lead_source": "Website",
+    "estimated_duration_minutes": 90,
+    "actual_duration_minutes": 105,
+    "invoice_total": 420,
+    "completed_at": "2026-07-31T17:00:00Z",
+    "customer_satisfaction_rating": 5
   },
   {
     "id": "job_106",
@@ -1104,7 +1958,14 @@
     "title": "Thermostat replacement",
     "scheduled_for": "2026-08-01",
     "status": "completed",
-    "assignee": "Jordan Lee"
+    "assignee": "Jordan Lee",
+    "job_category": "Installation",
+    "lead_source": "Google",
+    "estimated_duration_minutes": 120,
+    "actual_duration_minutes": 105,
+    "invoice_total": 475,
+    "completed_at": "2026-08-01T17:00:00Z",
+    "customer_satisfaction_rating": 3
   },
   {
     "id": "job_107",
@@ -1113,7 +1974,14 @@
     "title": "Kitchen ventilation check",
     "scheduled_for": "2026-08-01",
     "status": "completed",
-    "assignee": "Maya Chen"
+    "assignee": "Maya Chen",
+    "job_category": "Inspection",
+    "lead_source": "Repeat client",
+    "estimated_duration_minutes": 180,
+    "actual_duration_minutes": 180,
+    "invoice_total": 530,
+    "completed_at": "2026-08-01T17:00:00Z",
+    "customer_satisfaction_rating": 4
   },
   {
     "id": "job_108",
@@ -1122,7 +1990,14 @@
     "title": "Air quality test",
     "scheduled_for": "2026-08-02",
     "status": "completed",
-    "assignee": "Jordan Lee"
+    "assignee": "Jordan Lee",
+    "job_category": "Repair",
+    "lead_source": "Referral",
+    "estimated_duration_minutes": 60,
+    "actual_duration_minutes": 75,
+    "invoice_total": 145,
+    "completed_at": "2026-08-02T17:00:00Z",
+    "customer_satisfaction_rating": 5
   },
   {
     "id": "job_109",
@@ -1131,7 +2006,14 @@
     "title": "Ventilation repair",
     "scheduled_for": "2026-08-03",
     "status": "completed",
-    "assignee": "Maya Chen"
+    "assignee": "Maya Chen",
+    "job_category": "Maintenance",
+    "lead_source": "Website",
+    "estimated_duration_minutes": 90,
+    "actual_duration_minutes": 75,
+    "invoice_total": 200,
+    "completed_at": "2026-08-03T17:00:00Z",
+    "customer_satisfaction_rating": 3
   },
   {
     "id": "job_110",
@@ -1140,7 +2022,14 @@
     "title": "Seasonal tune-up",
     "scheduled_for": "2026-08-04",
     "status": "completed",
-    "assignee": "Jordan Lee"
+    "assignee": "Jordan Lee",
+    "job_category": "Inspection",
+    "lead_source": "Repeat client",
+    "estimated_duration_minutes": 180,
+    "actual_duration_minutes": 180,
+    "invoice_total": 530,
+    "completed_at": "2026-08-04T17:00:00Z",
+    "customer_satisfaction_rating": 4
   },
   {
     "id": "job_111",
@@ -1149,7 +2038,14 @@
     "title": "Refrigeration check",
     "scheduled_for": "2026-08-04",
     "status": "completed",
-    "assignee": "Maya Chen"
+    "assignee": "Maya Chen",
+    "job_category": "Repair",
+    "lead_source": "Referral",
+    "estimated_duration_minutes": 60,
+    "actual_duration_minutes": 75,
+    "invoice_total": 145,
+    "completed_at": "2026-08-04T17:00:00Z",
+    "customer_satisfaction_rating": 5
   },
   {
     "id": "job_112",
@@ -1158,7 +2054,14 @@
     "title": "Duct cleaning",
     "scheduled_for": "2026-08-05",
     "status": "completed",
-    "assignee": "Jordan Lee"
+    "assignee": "Jordan Lee",
+    "job_category": "Maintenance",
+    "lead_source": "Website",
+    "estimated_duration_minutes": 90,
+    "actual_duration_minutes": 75,
+    "invoice_total": 200,
+    "completed_at": "2026-08-05T17:00:00Z",
+    "customer_satisfaction_rating": 3
   },
   {
     "id": "job_113",
@@ -1167,7 +2070,14 @@
     "title": "Water heater inspection",
     "scheduled_for": "2026-08-06",
     "status": "completed",
-    "assignee": "Maya Chen"
+    "assignee": "Maya Chen",
+    "job_category": "Installation",
+    "lead_source": "Google",
+    "estimated_duration_minutes": 120,
+    "actual_duration_minutes": 120,
+    "invoice_total": 255,
+    "completed_at": "2026-08-06T17:00:00Z",
+    "customer_satisfaction_rating": 4
   },
   {
     "id": "job_114",
@@ -1176,7 +2086,14 @@
     "title": "Exhaust fan repair",
     "scheduled_for": "2026-08-07",
     "status": "completed",
-    "assignee": "Jordan Lee"
+    "assignee": "Jordan Lee",
+    "job_category": "Inspection",
+    "lead_source": "Repeat client",
+    "estimated_duration_minutes": 180,
+    "actual_duration_minutes": 195,
+    "invoice_total": 310,
+    "completed_at": "2026-08-07T17:00:00Z",
+    "customer_satisfaction_rating": 5
   },
   {
     "id": "job_115",
@@ -1185,7 +2102,14 @@
     "title": "Temperature sensor setup",
     "scheduled_for": "2026-08-08",
     "status": "completed",
-    "assignee": "Maya Chen"
+    "assignee": "Maya Chen",
+    "job_category": "Repair",
+    "lead_source": "Referral",
+    "estimated_duration_minutes": 60,
+    "actual_duration_minutes": 45,
+    "invoice_total": 365,
+    "completed_at": "2026-08-08T17:00:00Z",
+    "customer_satisfaction_rating": 3
   },
   {
     "id": "job_116",
@@ -1194,7 +2118,14 @@
     "title": "New client inspection",
     "scheduled_for": "2026-08-08",
     "status": "completed",
-    "assignee": "Jordan Lee"
+    "assignee": "Jordan Lee",
+    "job_category": "Maintenance",
+    "lead_source": "Website",
+    "estimated_duration_minutes": 90,
+    "actual_duration_minutes": 90,
+    "invoice_total": 420,
+    "completed_at": "2026-08-08T17:00:00Z",
+    "customer_satisfaction_rating": 4
   },
   {
     "id": "job_117",
@@ -1203,7 +2134,14 @@
     "title": "Drain line service",
     "scheduled_for": "2026-08-09",
     "status": "completed",
-    "assignee": "Maya Chen"
+    "assignee": "Maya Chen",
+    "job_category": "Installation",
+    "lead_source": "Google",
+    "estimated_duration_minutes": 120,
+    "actual_duration_minutes": 135,
+    "invoice_total": 475,
+    "completed_at": "2026-08-09T17:00:00Z",
+    "customer_satisfaction_rating": 5
   },
   {
     "id": "job_118",
@@ -1212,7 +2150,14 @@
     "title": "Filter replacement",
     "scheduled_for": "2026-08-09",
     "status": "completed",
-    "assignee": "Jordan Lee"
+    "assignee": "Jordan Lee",
+    "job_category": "Inspection",
+    "lead_source": "Repeat client",
+    "estimated_duration_minutes": 180,
+    "actual_duration_minutes": 165,
+    "invoice_total": 530,
+    "completed_at": "2026-08-09T17:00:00Z",
+    "customer_satisfaction_rating": 3
   },
   {
     "id": "job_119",
@@ -1221,7 +2166,14 @@
     "title": "Cooling system repair",
     "scheduled_for": "2026-08-10",
     "status": "completed",
-    "assignee": "Maya Chen"
+    "assignee": "Maya Chen",
+    "job_category": "Repair",
+    "lead_source": "Referral",
+    "estimated_duration_minutes": 60,
+    "actual_duration_minutes": 60,
+    "invoice_total": 145,
+    "completed_at": "2026-08-10T17:00:00Z",
+    "customer_satisfaction_rating": 4
   },
   {
     "id": "job_120",
@@ -1230,7 +2182,14 @@
     "title": "Walk-in cooler service",
     "scheduled_for": "2026-08-10",
     "status": "completed",
-    "assignee": "Jordan Lee"
+    "assignee": "Jordan Lee",
+    "job_category": "Installation",
+    "lead_source": "Google",
+    "estimated_duration_minutes": 120,
+    "actual_duration_minutes": 135,
+    "invoice_total": 475,
+    "completed_at": "2026-08-10T17:00:00Z",
+    "customer_satisfaction_rating": 5
   },
   {
     "id": "job_121",
@@ -1239,7 +2198,14 @@
     "title": "Equipment calibration",
     "scheduled_for": "2026-08-11",
     "status": "completed",
-    "assignee": "Maya Chen"
+    "assignee": "Maya Chen",
+    "job_category": "Inspection",
+    "lead_source": "Repeat client",
+    "estimated_duration_minutes": 180,
+    "actual_duration_minutes": 165,
+    "invoice_total": 530,
+    "completed_at": "2026-08-11T17:00:00Z",
+    "customer_satisfaction_rating": 3
   },
   {
     "id": "job_122",
@@ -1248,7 +2214,14 @@
     "title": "Air handler inspection",
     "scheduled_for": "2026-08-12",
     "status": "completed",
-    "assignee": "Jordan Lee"
+    "assignee": "Jordan Lee",
+    "job_category": "Repair",
+    "lead_source": "Referral",
+    "estimated_duration_minutes": 60,
+    "actual_duration_minutes": 60,
+    "invoice_total": 145,
+    "completed_at": "2026-08-12T17:00:00Z",
+    "customer_satisfaction_rating": 4
   },
   {
     "id": "job_123",
@@ -1257,7 +2230,14 @@
     "title": "Pipe insulation repair",
     "scheduled_for": "2026-08-12",
     "status": "completed",
-    "assignee": "Maya Chen"
+    "assignee": "Maya Chen",
+    "job_category": "Maintenance",
+    "lead_source": "Website",
+    "estimated_duration_minutes": 90,
+    "actual_duration_minutes": 105,
+    "invoice_total": 200,
+    "completed_at": "2026-08-12T17:00:00Z",
+    "customer_satisfaction_rating": 5
   },
   {
     "id": "job_124",
@@ -1266,7 +2246,14 @@
     "title": "Freezer maintenance",
     "scheduled_for": "2026-08-13",
     "status": "completed",
-    "assignee": "Jordan Lee"
+    "assignee": "Jordan Lee",
+    "job_category": "Installation",
+    "lead_source": "Google",
+    "estimated_duration_minutes": 120,
+    "actual_duration_minutes": 105,
+    "invoice_total": 255,
+    "completed_at": "2026-08-13T17:00:00Z",
+    "customer_satisfaction_rating": 3
   },
   {
     "id": "job_125",
@@ -1275,7 +2262,14 @@
     "title": "Comfort check",
     "scheduled_for": "2026-08-14",
     "status": "completed",
-    "assignee": "Maya Chen"
+    "assignee": "Maya Chen",
+    "job_category": "Inspection",
+    "lead_source": "Repeat client",
+    "estimated_duration_minutes": 180,
+    "actual_duration_minutes": 180,
+    "invoice_total": 310,
+    "completed_at": "2026-08-14T17:00:00Z",
+    "customer_satisfaction_rating": 4
   },
   {
     "id": "job_126",
@@ -1284,7 +2278,14 @@
     "title": "Rooftop unit service",
     "scheduled_for": "2026-08-14",
     "status": "completed",
-    "assignee": "Jordan Lee"
+    "assignee": "Jordan Lee",
+    "job_category": "Repair",
+    "lead_source": "Referral",
+    "estimated_duration_minutes": 60,
+    "actual_duration_minutes": 75,
+    "invoice_total": 365,
+    "completed_at": "2026-08-14T17:00:00Z",
+    "customer_satisfaction_rating": 5
   },
   {
     "id": "job_127",
@@ -1293,7 +2294,14 @@
     "title": "Preventive maintenance",
     "scheduled_for": "2026-08-15",
     "status": "completed",
-    "assignee": "Maya Chen"
+    "assignee": "Maya Chen",
+    "job_category": "Maintenance",
+    "lead_source": "Website",
+    "estimated_duration_minutes": 90,
+    "actual_duration_minutes": 75,
+    "invoice_total": 420,
+    "completed_at": "2026-08-15T17:00:00Z",
+    "customer_satisfaction_rating": 3
   },
   {
     "id": "job_128",
@@ -1302,7 +2310,14 @@
     "title": "Display case repair",
     "scheduled_for": "2026-08-16",
     "status": "completed",
-    "assignee": "Jordan Lee"
+    "assignee": "Jordan Lee",
+    "job_category": "Installation",
+    "lead_source": "Google",
+    "estimated_duration_minutes": 120,
+    "actual_duration_minutes": 120,
+    "invoice_total": 475,
+    "completed_at": "2026-08-16T17:00:00Z",
+    "customer_satisfaction_rating": 4
   },
   {
     "id": "job_129",
@@ -1311,7 +2326,14 @@
     "title": "Filter replacement",
     "scheduled_for": "2026-08-16",
     "status": "cancelled",
-    "assignee": "Maya Chen"
+    "assignee": "Maya Chen",
+    "job_category": "Inspection",
+    "lead_source": "Repeat client",
+    "estimated_duration_minutes": 180,
+    "actual_duration_minutes": null,
+    "invoice_total": null,
+    "completed_at": null,
+    "customer_satisfaction_rating": null
   },
   {
     "id": "job_130",
@@ -1320,7 +2342,14 @@
     "title": "AC performance check",
     "scheduled_for": "2026-08-17",
     "status": "completed",
-    "assignee": "Jordan Lee"
+    "assignee": "Jordan Lee",
+    "job_category": "Maintenance",
+    "lead_source": "Website",
+    "estimated_duration_minutes": 90,
+    "actual_duration_minutes": 75,
+    "invoice_total": 420,
+    "completed_at": "2026-08-17T17:00:00Z",
+    "customer_satisfaction_rating": 3
   },
   {
     "id": "job_131",
@@ -1329,7 +2358,14 @@
     "title": "Air quality test",
     "scheduled_for": "2026-08-17",
     "status": "completed",
-    "assignee": "Maya Chen"
+    "assignee": "Maya Chen",
+    "job_category": "Installation",
+    "lead_source": "Google",
+    "estimated_duration_minutes": 120,
+    "actual_duration_minutes": 120,
+    "invoice_total": 475,
+    "completed_at": "2026-08-17T17:00:00Z",
+    "customer_satisfaction_rating": 4
   },
   {
     "id": "job_132",
@@ -1338,7 +2374,14 @@
     "title": "Refrigeration inspection",
     "scheduled_for": "2026-08-18",
     "status": "completed",
-    "assignee": "Jordan Lee"
+    "assignee": "Jordan Lee",
+    "job_category": "Inspection",
+    "lead_source": "Repeat client",
+    "estimated_duration_minutes": 180,
+    "actual_duration_minutes": 195,
+    "invoice_total": 530,
+    "completed_at": "2026-08-18T17:00:00Z",
+    "customer_satisfaction_rating": 5
   },
   {
     "id": "job_133",
@@ -1347,7 +2390,14 @@
     "title": "Heat pump service",
     "scheduled_for": "2026-08-18",
     "status": "completed",
-    "assignee": "Maya Chen"
+    "assignee": "Maya Chen",
+    "job_category": "Repair",
+    "lead_source": "Referral",
+    "estimated_duration_minutes": 60,
+    "actual_duration_minutes": 45,
+    "invoice_total": 145,
+    "completed_at": "2026-08-18T17:00:00Z",
+    "customer_satisfaction_rating": 3
   },
   {
     "id": "job_134",
@@ -1356,7 +2406,14 @@
     "title": "Rooftop unit diagnosis",
     "scheduled_for": "2026-08-19",
     "status": "in_progress",
-    "assignee": "Jordan Lee"
+    "assignee": "Jordan Lee",
+    "job_category": "Maintenance",
+    "lead_source": "Website",
+    "estimated_duration_minutes": 90,
+    "actual_duration_minutes": null,
+    "invoice_total": null,
+    "completed_at": null,
+    "customer_satisfaction_rating": null
   },
   {
     "id": "job_135",
@@ -1365,7 +2422,14 @@
     "title": "Warehouse HVAC estimate",
     "scheduled_for": "2026-08-19",
     "status": "scheduled",
-    "assignee": "Maya Chen"
+    "assignee": "Maya Chen",
+    "job_category": "Installation",
+    "lead_source": "Google",
+    "estimated_duration_minutes": 120,
+    "actual_duration_minutes": null,
+    "invoice_total": null,
+    "completed_at": null,
+    "customer_satisfaction_rating": null
   },
   {
     "id": "job_136",
@@ -1374,7 +2438,14 @@
     "title": "Classroom airflow check",
     "scheduled_for": "2026-08-20",
     "status": "scheduled",
-    "assignee": "Jordan Lee"
+    "assignee": "Jordan Lee",
+    "job_category": "Inspection",
+    "lead_source": "Repeat client",
+    "estimated_duration_minutes": 180,
+    "actual_duration_minutes": null,
+    "invoice_total": null,
+    "completed_at": null,
+    "customer_satisfaction_rating": null
   },
   {
     "id": "job_137",
@@ -1383,7 +2454,14 @@
     "title": "Locker room ventilation",
     "scheduled_for": "2026-08-20",
     "status": "scheduled",
-    "assignee": "Maya Chen"
+    "assignee": "Maya Chen",
+    "job_category": "Repair",
+    "lead_source": "Referral",
+    "estimated_duration_minutes": 60,
+    "actual_duration_minutes": null,
+    "invoice_total": null,
+    "completed_at": null,
+    "customer_satisfaction_rating": null
   },
   {
     "id": "job_138",
@@ -1392,7 +2470,14 @@
     "title": "Guest room cooling repair",
     "scheduled_for": "2026-08-20",
     "status": "scheduled",
-    "assignee": "Jordan Lee"
+    "assignee": "Jordan Lee",
+    "job_category": "Maintenance",
+    "lead_source": "Website",
+    "estimated_duration_minutes": 90,
+    "actual_duration_minutes": null,
+    "invoice_total": null,
+    "completed_at": null,
+    "customer_satisfaction_rating": null
   },
   {
     "id": "job_139",
@@ -1401,7 +2486,14 @@
     "title": "Office temperature survey",
     "scheduled_for": "2026-08-21",
     "status": "scheduled",
-    "assignee": "Maya Chen"
+    "assignee": "Maya Chen",
+    "job_category": "Installation",
+    "lead_source": "Google",
+    "estimated_duration_minutes": 120,
+    "actual_duration_minutes": null,
+    "invoice_total": null,
+    "completed_at": null,
+    "customer_satisfaction_rating": null
   },
   {
     "id": "job_140",
@@ -1410,7 +2502,14 @@
     "title": "Equipment calibration",
     "scheduled_for": "2026-08-21",
     "status": "scheduled",
-    "assignee": "Jordan Lee"
+    "assignee": "Jordan Lee",
+    "job_category": "Repair",
+    "lead_source": "Referral",
+    "estimated_duration_minutes": 60,
+    "actual_duration_minutes": null,
+    "invoice_total": null,
+    "completed_at": null,
+    "customer_satisfaction_rating": null
   },
   {
     "id": "job_141",
@@ -1419,7 +2518,14 @@
     "title": "Loading bay ventilation",
     "scheduled_for": "2026-08-22",
     "status": "scheduled",
-    "assignee": "Maya Chen"
+    "assignee": "Maya Chen",
+    "job_category": "Maintenance",
+    "lead_source": "Website",
+    "estimated_duration_minutes": 90,
+    "actual_duration_minutes": null,
+    "invoice_total": null,
+    "completed_at": null,
+    "customer_satisfaction_rating": null
   },
   {
     "id": "job_142",
@@ -1428,7 +2534,14 @@
     "title": "Thermostat installation",
     "scheduled_for": "2026-08-22",
     "status": "scheduled",
-    "assignee": "Jordan Lee"
+    "assignee": "Jordan Lee",
+    "job_category": "Installation",
+    "lead_source": "Google",
+    "estimated_duration_minutes": 120,
+    "actual_duration_minutes": null,
+    "invoice_total": null,
+    "completed_at": null,
+    "customer_satisfaction_rating": null
   },
   {
     "id": "job_143",
@@ -1437,7 +2550,14 @@
     "title": "Storefront comfort check",
     "scheduled_for": "2026-08-23",
     "status": "scheduled",
-    "assignee": "Maya Chen"
+    "assignee": "Maya Chen",
+    "job_category": "Inspection",
+    "lead_source": "Repeat client",
+    "estimated_duration_minutes": 180,
+    "actual_duration_minutes": null,
+    "invoice_total": null,
+    "completed_at": null,
+    "customer_satisfaction_rating": null
   },
   {
     "id": "job_301",
@@ -1446,7 +2566,14 @@
     "title": "Boiler inspection",
     "scheduled_for": "2026-08-11",
     "status": "completed",
-    "assignee": "Casey Morgan"
+    "assignee": "Casey Morgan",
+    "job_category": "Inspection",
+    "lead_source": "Repeat client",
+    "estimated_duration_minutes": 180,
+    "actual_duration_minutes": 165,
+    "invoice_total": 310,
+    "completed_at": "2026-08-11T17:00:00Z",
+    "customer_satisfaction_rating": 3
   },
   {
     "id": "job_302",
@@ -1455,7 +2582,14 @@
     "title": "Pump repair",
     "scheduled_for": "2026-08-14",
     "status": "completed",
-    "assignee": "Casey Morgan"
+    "assignee": "Casey Morgan",
+    "job_category": "Repair",
+    "lead_source": "Referral",
+    "estimated_duration_minutes": 60,
+    "actual_duration_minutes": 60,
+    "invoice_total": 365,
+    "completed_at": "2026-08-14T17:00:00Z",
+    "customer_satisfaction_rating": 4
   },
   {
     "id": "job_303",
@@ -1464,7 +2598,14 @@
     "title": "Cooling system check",
     "scheduled_for": "2026-08-19",
     "status": "in_progress",
-    "assignee": "Casey Morgan"
+    "assignee": "Casey Morgan",
+    "job_category": "Maintenance",
+    "lead_source": "Website",
+    "estimated_duration_minutes": 90,
+    "actual_duration_minutes": null,
+    "invoice_total": null,
+    "completed_at": null,
+    "customer_satisfaction_rating": null
   },
   {
     "id": "job_304",
@@ -1473,7 +2614,14 @@
     "title": "Radiator maintenance",
     "scheduled_for": "2026-08-22",
     "status": "scheduled",
-    "assignee": "Casey Morgan"
+    "assignee": "Casey Morgan",
+    "job_category": "Installation",
+    "lead_source": "Google",
+    "estimated_duration_minutes": 120,
+    "actual_duration_minutes": null,
+    "invoice_total": null,
+    "completed_at": null,
+    "customer_satisfaction_rating": null
   },
   {
     "id": "sj_0143",
@@ -1482,7 +2630,14 @@
     "title": "Millrace Antiques service visit",
     "scheduled_for": "2026-02-16",
     "status": "completed",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Maintenance",
+    "lead_source": "Website",
+    "estimated_duration_minutes": 90,
+    "actual_duration_minutes": 90,
+    "invoice_total": 200,
+    "completed_at": "2026-02-16T17:00:00Z",
+    "customer_satisfaction_rating": 4
   },
   {
     "id": "sj_0144",
@@ -1491,7 +2646,14 @@
     "title": "Millrace Antiques service visit",
     "scheduled_for": "2026-02-18",
     "status": "completed",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Installation",
+    "lead_source": "Google",
+    "estimated_duration_minutes": 120,
+    "actual_duration_minutes": 135,
+    "invoice_total": 255,
+    "completed_at": "2026-02-18T17:00:00Z",
+    "customer_satisfaction_rating": 5
   },
   {
     "id": "sj_0156",
@@ -1500,7 +2662,14 @@
     "title": "Wraymond Textiles service visit",
     "scheduled_for": "2026-03-06",
     "status": "completed",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Inspection",
+    "lead_source": "Repeat client",
+    "estimated_duration_minutes": 180,
+    "actual_duration_minutes": 195,
+    "invoice_total": 310,
+    "completed_at": "2026-03-06T17:00:00Z",
+    "customer_satisfaction_rating": 5
   },
   {
     "id": "sj_0155",
@@ -1509,7 +2678,14 @@
     "title": "Hillcrest Animal Hospital service visit",
     "scheduled_for": "2026-03-11",
     "status": "completed",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Installation",
+    "lead_source": "Google",
+    "estimated_duration_minutes": 120,
+    "actual_duration_minutes": 120,
+    "invoice_total": 255,
+    "completed_at": "2026-03-11T17:00:00Z",
+    "customer_satisfaction_rating": 4
   },
   {
     "id": "sj_0159",
@@ -1518,7 +2694,14 @@
     "title": "Wraymond Textiles service visit",
     "scheduled_for": "2026-03-19",
     "status": "completed",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Installation",
+    "lead_source": "Google",
+    "estimated_duration_minutes": 120,
+    "actual_duration_minutes": 135,
+    "invoice_total": 475,
+    "completed_at": "2026-03-19T17:00:00Z",
+    "customer_satisfaction_rating": 5
   },
   {
     "id": "sj_0150",
@@ -1527,7 +2710,14 @@
     "title": "Stonebridge Country Club service visit",
     "scheduled_for": "2026-04-05",
     "status": "completed",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Maintenance",
+    "lead_source": "Website",
+    "estimated_duration_minutes": 90,
+    "actual_duration_minutes": 105,
+    "invoice_total": 420,
+    "completed_at": "2026-04-05T17:00:00Z",
+    "customer_satisfaction_rating": 5
   },
   {
     "id": "sj_0146",
@@ -1536,7 +2726,14 @@
     "title": "Millrace Antiques service visit",
     "scheduled_for": "2026-04-30",
     "status": "completed",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Repair",
+    "lead_source": "Referral",
+    "estimated_duration_minutes": 60,
+    "actual_duration_minutes": 60,
+    "invoice_total": 365,
+    "completed_at": "2026-04-30T17:00:00Z",
+    "customer_satisfaction_rating": 4
   },
   {
     "id": "sj_0158",
@@ -1545,7 +2742,14 @@
     "title": "Wraymond Textiles service visit",
     "scheduled_for": "2026-05-22",
     "status": "completed",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Maintenance",
+    "lead_source": "Website",
+    "estimated_duration_minutes": 90,
+    "actual_duration_minutes": 90,
+    "invoice_total": 420,
+    "completed_at": "2026-05-22T17:00:00Z",
+    "customer_satisfaction_rating": 4
   },
   {
     "id": "sj_0160",
@@ -1554,7 +2758,14 @@
     "title": "Cypress Grove Apartments service visit",
     "scheduled_for": "2026-05-22",
     "status": "completed",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Repair",
+    "lead_source": "Referral",
+    "estimated_duration_minutes": 60,
+    "actual_duration_minutes": 45,
+    "invoice_total": 365,
+    "completed_at": "2026-05-22T17:00:00Z",
+    "customer_satisfaction_rating": 3
   },
   {
     "id": "sj_0145",
@@ -1563,7 +2774,14 @@
     "title": "Millrace Antiques service visit",
     "scheduled_for": "2026-06-13",
     "status": "completed",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Inspection",
+    "lead_source": "Repeat client",
+    "estimated_duration_minutes": 180,
+    "actual_duration_minutes": 165,
+    "invoice_total": 310,
+    "completed_at": "2026-06-13T17:00:00Z",
+    "customer_satisfaction_rating": 3
   },
   {
     "id": "sj_0148",
@@ -1572,7 +2790,14 @@
     "title": "Stonebridge Country Club service visit",
     "scheduled_for": "2026-06-19",
     "status": "cancelled",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Installation",
+    "lead_source": "Google",
+    "estimated_duration_minutes": 120,
+    "actual_duration_minutes": null,
+    "invoice_total": null,
+    "completed_at": null,
+    "customer_satisfaction_rating": null
   },
   {
     "id": "sj_0152",
@@ -1581,7 +2806,14 @@
     "title": "Hillcrest Animal Hospital service visit",
     "scheduled_for": "2026-07-03",
     "status": "completed",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Inspection",
+    "lead_source": "Repeat client",
+    "estimated_duration_minutes": 180,
+    "actual_duration_minutes": 180,
+    "invoice_total": 530,
+    "completed_at": "2026-07-03T17:00:00Z",
+    "customer_satisfaction_rating": 4
   },
   {
     "id": "sj_0153",
@@ -1590,7 +2822,14 @@
     "title": "Hillcrest Animal Hospital service visit",
     "scheduled_for": "2026-07-19",
     "status": "completed",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Repair",
+    "lead_source": "Referral",
+    "estimated_duration_minutes": 60,
+    "actual_duration_minutes": 75,
+    "invoice_total": 145,
+    "completed_at": "2026-07-19T17:00:00Z",
+    "customer_satisfaction_rating": 5
   },
   {
     "id": "sj_0154",
@@ -1599,7 +2838,14 @@
     "title": "Hillcrest Animal Hospital service visit",
     "scheduled_for": "2026-08-19",
     "status": "scheduled",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Maintenance",
+    "lead_source": "Website",
+    "estimated_duration_minutes": 90,
+    "actual_duration_minutes": null,
+    "invoice_total": null,
+    "completed_at": null,
+    "customer_satisfaction_rating": null
   },
   {
     "id": "sj_0157",
@@ -1608,7 +2854,14 @@
     "title": "Wraymond Textiles service visit",
     "scheduled_for": "2026-08-20",
     "status": "scheduled",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Repair",
+    "lead_source": "Referral",
+    "estimated_duration_minutes": 60,
+    "actual_duration_minutes": null,
+    "invoice_total": null,
+    "completed_at": null,
+    "customer_satisfaction_rating": null
   },
   {
     "id": "sj_0161",
@@ -1617,7 +2870,14 @@
     "title": "Cypress Grove Apartments service visit",
     "scheduled_for": "2026-08-27",
     "status": "scheduled",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Maintenance",
+    "lead_source": "Website",
+    "estimated_duration_minutes": 90,
+    "actual_duration_minutes": null,
+    "invoice_total": null,
+    "completed_at": null,
+    "customer_satisfaction_rating": null
   },
   {
     "id": "sj_0151",
@@ -1626,7 +2886,14 @@
     "title": "Stonebridge Country Club service visit",
     "scheduled_for": "2026-08-30",
     "status": "scheduled",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Installation",
+    "lead_source": "Google",
+    "estimated_duration_minutes": 120,
+    "actual_duration_minutes": null,
+    "invoice_total": null,
+    "completed_at": null,
+    "customer_satisfaction_rating": null
   },
   {
     "id": "sj_0149",
@@ -1635,7 +2902,14 @@
     "title": "Stonebridge Country Club service visit",
     "scheduled_for": "2026-09-14",
     "status": "scheduled",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Inspection",
+    "lead_source": "Repeat client",
+    "estimated_duration_minutes": 180,
+    "actual_duration_minutes": null,
+    "invoice_total": null,
+    "completed_at": null,
+    "customer_satisfaction_rating": null
   },
   {
     "id": "sj_0147",
@@ -1644,7 +2918,14 @@
     "title": "Stonebridge Country Club service visit",
     "scheduled_for": "2026-09-21",
     "status": "scheduled",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Maintenance",
+    "lead_source": "Website",
+    "estimated_duration_minutes": 90,
+    "actual_duration_minutes": null,
+    "invoice_total": null,
+    "completed_at": null,
+    "customer_satisfaction_rating": null
   },
   {
     "id": "sj_0169",
@@ -1653,7 +2934,14 @@
     "title": "Founders Row Market service visit",
     "scheduled_for": "2026-01-10",
     "status": "completed",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Maintenance",
+    "lead_source": "Website",
+    "estimated_duration_minutes": 90,
+    "actual_duration_minutes": 75,
+    "invoice_total": 420,
+    "completed_at": "2026-01-10T17:00:00Z",
+    "customer_satisfaction_rating": 3
   },
   {
     "id": "sj_0162",
@@ -1662,7 +2950,14 @@
     "title": "Lantern Hill Retirement Village service visit",
     "scheduled_for": "2026-01-16",
     "status": "completed",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Installation",
+    "lead_source": "Google",
+    "estimated_duration_minutes": 120,
+    "actual_duration_minutes": 135,
+    "invoice_total": 475,
+    "completed_at": "2026-01-16T17:00:00Z",
+    "customer_satisfaction_rating": 5
   },
   {
     "id": "sj_0174",
@@ -1671,7 +2966,14 @@
     "title": "Ember & Ash Restaurant service visit",
     "scheduled_for": "2026-01-24",
     "status": "completed",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Inspection",
+    "lead_source": "Repeat client",
+    "estimated_duration_minutes": 180,
+    "actual_duration_minutes": 195,
+    "invoice_total": 530,
+    "completed_at": "2026-01-24T17:00:00Z",
+    "customer_satisfaction_rating": 5
   },
   {
     "id": "sj_0180",
@@ -1680,7 +2982,14 @@
     "title": "Timberline Contractors service visit",
     "scheduled_for": "2026-02-22",
     "status": "completed",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Installation",
+    "lead_source": "Google",
+    "estimated_duration_minutes": 120,
+    "actual_duration_minutes": 135,
+    "invoice_total": 255,
+    "completed_at": "2026-02-22T17:00:00Z",
+    "customer_satisfaction_rating": 5
   },
   {
     "id": "sj_0175",
@@ -1689,7 +2998,14 @@
     "title": "Ember & Ash Restaurant service visit",
     "scheduled_for": "2026-03-07",
     "status": "completed",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Repair",
+    "lead_source": "Referral",
+    "estimated_duration_minutes": 60,
+    "actual_duration_minutes": 45,
+    "invoice_total": 145,
+    "completed_at": "2026-03-07T17:00:00Z",
+    "customer_satisfaction_rating": 3
   },
   {
     "id": "sj_0179",
@@ -1698,7 +3014,14 @@
     "title": "Silverleaf Salon & Spa service visit",
     "scheduled_for": "2026-04-11",
     "status": "completed",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Repair",
+    "lead_source": "Referral",
+    "estimated_duration_minutes": 60,
+    "actual_duration_minutes": 60,
+    "invoice_total": 365,
+    "completed_at": "2026-04-11T17:00:00Z",
+    "customer_satisfaction_rating": 4
   },
   {
     "id": "sj_0181",
@@ -1707,7 +3030,14 @@
     "title": "Timberline Contractors service visit",
     "scheduled_for": "2026-04-27",
     "status": "cancelled",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Inspection",
+    "lead_source": "Repeat client",
+    "estimated_duration_minutes": 180,
+    "actual_duration_minutes": null,
+    "invoice_total": null,
+    "completed_at": null,
+    "customer_satisfaction_rating": null
   },
   {
     "id": "sj_0170",
@@ -1716,7 +3046,14 @@
     "title": "Founders Row Market service visit",
     "scheduled_for": "2026-05-14",
     "status": "completed",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Inspection",
+    "lead_source": "Repeat client",
+    "estimated_duration_minutes": 180,
+    "actual_duration_minutes": 180,
+    "invoice_total": 310,
+    "completed_at": "2026-05-14T17:00:00Z",
+    "customer_satisfaction_rating": 4
   },
   {
     "id": "sj_0176",
@@ -1725,7 +3062,14 @@
     "title": "Ember & Ash Restaurant service visit",
     "scheduled_for": "2026-05-22",
     "status": "completed",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Maintenance",
+    "lead_source": "Website",
+    "estimated_duration_minutes": 90,
+    "actual_duration_minutes": 90,
+    "invoice_total": 200,
+    "completed_at": "2026-05-22T17:00:00Z",
+    "customer_satisfaction_rating": 4
   },
   {
     "id": "sj_0163",
@@ -1734,7 +3078,14 @@
     "title": "Lantern Hill Retirement Village service visit",
     "scheduled_for": "2026-06-22",
     "status": "completed",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Inspection",
+    "lead_source": "Repeat client",
+    "estimated_duration_minutes": 180,
+    "actual_duration_minutes": 165,
+    "invoice_total": 530,
+    "completed_at": "2026-06-22T17:00:00Z",
+    "customer_satisfaction_rating": 3
   },
   {
     "id": "sj_0167",
@@ -1743,7 +3094,14 @@
     "title": "Founders Row Market service visit",
     "scheduled_for": "2026-06-23",
     "status": "completed",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Inspection",
+    "lead_source": "Repeat client",
+    "estimated_duration_minutes": 180,
+    "actual_duration_minutes": 180,
+    "invoice_total": 310,
+    "completed_at": "2026-06-23T17:00:00Z",
+    "customer_satisfaction_rating": 4
   },
   {
     "id": "sj_0164",
@@ -1752,7 +3110,14 @@
     "title": "Lantern Hill Retirement Village service visit",
     "scheduled_for": "2026-06-26",
     "status": "completed",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Repair",
+    "lead_source": "Referral",
+    "estimated_duration_minutes": 60,
+    "actual_duration_minutes": 60,
+    "invoice_total": 145,
+    "completed_at": "2026-06-26T17:00:00Z",
+    "customer_satisfaction_rating": 4
   },
   {
     "id": "sj_0178",
@@ -1761,7 +3126,14 @@
     "title": "Silverleaf Salon & Spa service visit",
     "scheduled_for": "2026-07-13",
     "status": "completed",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Inspection",
+    "lead_source": "Repeat client",
+    "estimated_duration_minutes": 180,
+    "actual_duration_minutes": 165,
+    "invoice_total": 310,
+    "completed_at": "2026-07-13T17:00:00Z",
+    "customer_satisfaction_rating": 3
   },
   {
     "id": "sj_0168",
@@ -1770,7 +3142,14 @@
     "title": "Founders Row Market service visit",
     "scheduled_for": "2026-07-28",
     "status": "completed",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Repair",
+    "lead_source": "Referral",
+    "estimated_duration_minutes": 60,
+    "actual_duration_minutes": 75,
+    "invoice_total": 365,
+    "completed_at": "2026-07-28T17:00:00Z",
+    "customer_satisfaction_rating": 5
   },
   {
     "id": "sj_0171",
@@ -1779,7 +3158,14 @@
     "title": "Ember & Ash Restaurant service visit",
     "scheduled_for": "2026-08-05",
     "status": "completed",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Repair",
+    "lead_source": "Referral",
+    "estimated_duration_minutes": 60,
+    "actual_duration_minutes": 75,
+    "invoice_total": 365,
+    "completed_at": "2026-08-05T17:00:00Z",
+    "customer_satisfaction_rating": 5
   },
   {
     "id": "sj_0177",
@@ -1788,7 +3174,14 @@
     "title": "Silverleaf Salon & Spa service visit",
     "scheduled_for": "2026-08-27",
     "status": "scheduled",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Installation",
+    "lead_source": "Google",
+    "estimated_duration_minutes": 120,
+    "actual_duration_minutes": null,
+    "invoice_total": null,
+    "completed_at": null,
+    "customer_satisfaction_rating": null
   },
   {
     "id": "sj_0172",
@@ -1797,7 +3190,14 @@
     "title": "Ember & Ash Restaurant service visit",
     "scheduled_for": "2026-09-05",
     "status": "scheduled",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Maintenance",
+    "lead_source": "Website",
+    "estimated_duration_minutes": 90,
+    "actual_duration_minutes": null,
+    "invoice_total": null,
+    "completed_at": null,
+    "customer_satisfaction_rating": null
   },
   {
     "id": "sj_0173",
@@ -1806,7 +3206,14 @@
     "title": "Ember & Ash Restaurant service visit",
     "scheduled_for": "2026-09-09",
     "status": "scheduled",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Installation",
+    "lead_source": "Google",
+    "estimated_duration_minutes": 120,
+    "actual_duration_minutes": null,
+    "invoice_total": null,
+    "completed_at": null,
+    "customer_satisfaction_rating": null
   },
   {
     "id": "sj_0165",
@@ -1815,7 +3222,14 @@
     "title": "Lantern Hill Retirement Village service visit",
     "scheduled_for": "2026-09-15",
     "status": "cancelled",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Maintenance",
+    "lead_source": "Website",
+    "estimated_duration_minutes": 90,
+    "actual_duration_minutes": null,
+    "invoice_total": null,
+    "completed_at": null,
+    "customer_satisfaction_rating": null
   },
   {
     "id": "sj_0166",
@@ -1824,6 +3238,13 @@
     "title": "Lantern Hill Retirement Village service visit",
     "scheduled_for": "2026-09-26",
     "status": "scheduled",
-    "assignee": null
+    "assignee": null,
+    "job_category": "Installation",
+    "lead_source": "Google",
+    "estimated_duration_minutes": 120,
+    "actual_duration_minutes": null,
+    "invoice_total": null,
+    "completed_at": null,
+    "customer_satisfaction_rating": null
   }
 ]

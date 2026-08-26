@@ -1,31 +1,56 @@
 import { useEffect, useState } from 'react';
-import demoAccounts from '../../shared-data/accounts.json';
-import demoJobs from '../../shared-data/jobs.json';
-import { getAccountById, getJobsForAccount, getOperationsSession, getSignedInAccount, isSupabaseConfigured, signOut } from '../../shared-data/supabase.js';
+import { getAccountById, getClientsForAccount, getJobsForAccount, getOperationsSession, getSignedInAccount, isSupabaseConfigured, signOut } from '../../shared-data/supabase.js';
 import { buildMockAppLink, isMockContractor, mockUserFromSearch } from '../../shared-data/mockSession.js';
 import { buildMockDataLink, loadMockAccountData } from '../../shared-data/mockDataSession.js';
-import { buildAnalyticsSummary, buildSchedulingLink, chatSummaryText } from './analyticsSummary.js';
+import { buildAnalyticsInsights, buildAnalyticsSummary, buildSchedulingLink, changePresentation, chatSummaryText } from './analyticsSummary.js';
 import SignInPage from './SignInPage.jsx';
 import { APP_URLS } from '../../shared-data/appConfig.js';
 import { formatReportingDate, reportingDateFromAccount, toggleReportingDateInCurrentUrl, withReportingDate } from '../../shared-data/reportingDate.js';
+
+const [demoAccounts, demoClients, demoJobs] = __FIELDFLOW_DEMO__
+  ? await Promise.all([
+      import('../../shared-data/accounts.json').then((module) => module.default),
+      import('../../shared-data/clients.json').then((module) => module.default),
+      import('../../shared-data/jobs.json').then((module) => module.default),
+    ])
+  : [[], [], []];
 
 const DEMO_ACCOUNT_ID = 'acct_northstar';
 const SCHEDULING_URL = APP_URLS.scheduling;
 const OPERATIONS_URL = APP_URLS.operations;
 const CHATBOT_URL = APP_URLS.chatbot;
+const INSIGHT_OPTIONS = [
+  { id: 'status', label: 'Job status and completion' },
+  { id: 'upcoming', label: 'Upcoming work' },
+  { id: 'workload', label: 'Technician workload' },
+  { id: 'clients', label: 'Client activity and top clients' },
+  { id: 'performance', label: 'Revenue and service performance' },
+  { id: 'recent', label: 'Latest scheduled work' },
+];
+
+function formatJobDate(isoDate) {
+  return new Date(`${isoDate}T00:00:00Z`).toLocaleDateString('en-US', {
+    month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC',
+  });
+}
+
+function formatCurrency(value) {
+  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(value);
+}
 
 export default function AnalyticsPage() {
   const [timeframe, setTimeframe] = useState('this_week');
   const [copyStatus, setCopyStatus] = useState('');
   const [hoveredPoint, setHoveredPoint] = useState(null);
-  const [sessionState, setSessionState] = useState({ loading: isSupabaseConfigured, account: null, jobs: [], user: null, isOps: false, error: '' });
+  const [visibleInsights, setVisibleInsights] = useState(() => new Set(INSIGHT_OPTIONS.map((option) => option.id)));
+  const [sessionState, setSessionState] = useState({ loading: isSupabaseConfigured, account: null, clients: [], jobs: [], user: null, isOps: false, error: '' });
 
   const loadLiveData = async () => {
     setSessionState((current) => ({ ...current, loading: true, error: '' }));
     try {
       const context = await getSignedInAccount();
       if (!context?.user) {
-        setSessionState({ loading: false, account: null, jobs: [], user: null, isOps: false, error: '' });
+        setSessionState({ loading: false, account: null, clients: [], jobs: [], user: null, isOps: false, error: '' });
         return;
       }
       if (!context.account) {
@@ -34,15 +59,15 @@ export default function AnalyticsPage() {
         if (operations?.staff && requested) {
           const operationsAccount = await getAccountById(requested);
           if (!operationsAccount) throw new Error('The requested company could not be found.');
-          const operationsJobs = await getJobsForAccount(operationsAccount.id);
-          setSessionState({ loading: false, account: operationsAccount, jobs: operationsJobs, user: context.user, isOps: true, error: '' });
+          const [operationsJobs, operationsClients] = await Promise.all([getJobsForAccount(operationsAccount.id), getClientsForAccount(operationsAccount.id)]);
+          setSessionState({ loading: false, account: operationsAccount, clients: operationsClients, jobs: operationsJobs, user: context.user, isOps: true, error: '' });
           return;
         }
-        setSessionState({ loading: false, account: null, jobs: [], user: context.user, isOps: false, error: 'This login is not assigned to a FieldFlow company yet.' });
+        setSessionState({ loading: false, account: null, clients: [], jobs: [], user: context.user, isOps: false, error: 'This login is not assigned to a FieldFlow company yet.' });
         return;
       }
-      const liveJobs = await getJobsForAccount(context.account.id);
-      setSessionState({ loading: false, account: context.account, jobs: liveJobs, user: context.user, isOps: false, error: '' });
+      const [liveJobs, liveClients] = await Promise.all([getJobsForAccount(context.account.id), getClientsForAccount(context.account.id)]);
+      setSessionState({ loading: false, account: context.account, clients: liveClients, jobs: liveJobs, user: context.user, isOps: false, error: '' });
     } catch (error) {
       const message = String(error?.message ?? '').toLowerCase();
       const friendly = message.includes('jwt') || message.includes('session') || message.includes('401')
@@ -52,7 +77,7 @@ export default function AnalyticsPage() {
         : typeof navigator !== 'undefined' && !navigator.onLine
         ? 'You appear to be offline. Check your connection and try again.'
         : 'We couldn’t load your data. Check your connection and try again.';
-      setSessionState({ loading: false, account: null, jobs: [], user: null, isOps: false, error: friendly });
+      setSessionState({ loading: false, account: null, clients: [], jobs: [], user: null, isOps: false, error: friendly });
     }
   };
 
@@ -76,7 +101,9 @@ export default function AnalyticsPage() {
       ? (demoAccounts.some((item) => item.id === requestedAccountId) ? requestedAccountId : DEMO_ACCOUNT_ID)
       : mockUser.account_id;
   const account = isSupabaseConfigured ? sessionState.account : demoAccounts.find((item) => item.id === demoAccountId) ?? { id: demoAccountId, name: mockUser.company_name ?? 'Your new business', plan: 'Starter' };
-  const accountJobs = isSupabaseConfigured ? sessionState.jobs : loadMockAccountData(demoAccountId, { clients: [], jobs: demoJobs }).jobs;
+  const mockAccountData = isSupabaseConfigured ? null : loadMockAccountData(demoAccountId, { clients: demoClients, jobs: demoJobs });
+  const accountJobs = isSupabaseConfigured ? sessionState.jobs : mockAccountData.jobs;
+  const accountClients = isSupabaseConfigured ? sessionState.clients : mockAccountData.clients;
   const accountId = account?.id ?? (isSupabaseConfigured ? DEMO_ACCOUNT_ID : demoAccountId);
   const reporting = isSupabaseConfigured
     ? reportingDateFromAccount(account, window.location.search)
@@ -84,9 +111,22 @@ export default function AnalyticsPage() {
   const referenceDate = reporting.date;
   const summary = buildAnalyticsSummary(accountJobs, accountId, timeframe, referenceDate);
   const { selectedPeriod, selectedEnd, selectedRangeLabel, comparisonRangeLabel, selectedJobs, comparisonJobs, change, hasCompleteComparison, newClients, repeatClients, trend } = summary;
-  const displayedChange = hasCompleteComparison ? change : null;
-  const changeDescription = displayedChange === null ? null : `${displayedChange > 0 ? 'More' : displayedChange < 0 ? 'Fewer' : 'The same number of'} jobs than ${comparisonRangeLabel}`;
+  const changeStatus = changePresentation({
+    selectedJobs: selectedJobs.length,
+    comparisonJobs: comparisonJobs.length,
+    change,
+    hasCompleteComparison,
+    comparisonRangeLabel,
+  });
   const totalClients = newClients + repeatClients;
+  const insights = buildAnalyticsInsights({ jobs: accountJobs, clients: accountClients, accountId, summary, referenceDate });
+  const isInsightVisible = (insightId) => visibleInsights.has(insightId);
+  const toggleInsight = (insightId) => setVisibleInsights((current) => {
+    const next = new Set(current);
+    if (next.has(insightId)) next.delete(insightId);
+    else next.add(insightId);
+    return next;
+  });
   const newClientShare = totalClients === 0 ? 0 : (newClients / totalClients) * 100;
   const newClientPercent = Math.round(newClientShare);
   const repeatClientPercent = totalClients === 0 ? 0 : 100 - newClientPercent;
@@ -168,19 +208,67 @@ export default function AnalyticsPage() {
           <p className="metric">{comparisonJobs.length}</p>
           <p className="helper">Previous {selectedPeriod.weeks} week{selectedPeriod.weeks === 1 ? '' : 's'}</p>
         </article>
-        <article className="card" title={displayedChange === null ? 'A fair comparison is not available yet.' : `Calculated from ${selectedJobs.length} jobs versus ${comparisonJobs.length} jobs.`}>
+        <article className="card" title={`Calculated from ${selectedJobs.length} jobs in the selected period and ${comparisonJobs.length} jobs in the previous period.`}>
           <p className="card-label">Change vs. previous period</p>
-          <p className={`metric ${displayedChange !== null && displayedChange < 0 ? 'negative' : 'positive'}`}>
-            {displayedChange === null ? '—' : `${displayedChange > 0 ? '+' : ''}${displayedChange}%`}
-          </p>
-          {!hasCompleteComparison && <p className="helper">Not enough earlier data for a fair comparison.</p>}
-          {hasCompleteComparison && change === null && <p className="helper">No earlier jobs to compare.</p>}
-          {changeDescription && <p className="helper">{changeDescription}</p>}
+          <p className={`metric metric-status ${changeStatus.tone}`}>{changeStatus.value}</p>
+          <p className="helper">{changeStatus.detail}</p>
         </article>
       </section>
-      {selectedJobs.length === 0 && <p className="empty-state">No jobs are scheduled in this period yet. Add one in Scheduling to update this view.</p>}
+      {selectedJobs.length === 0 && <p className="empty-state">No jobs are scheduled in this period yet. <a href={schedulingLink}>View Scheduling to create or review a job.</a></p>}
 
-      <section className="card client-card" aria-labelledby="client-heading">
+      <details className="insight-picker">
+        <summary>Customize dashboard</summary>
+        <p>Choose the extra details you want to see. The weekly summary and trend always stay visible.</p>
+        <div className="insight-picker-options">
+          {INSIGHT_OPTIONS.map((option) => <label key={option.id}>
+            <input type="checkbox" checked={isInsightVisible(option.id)} onChange={() => toggleInsight(option.id)} />
+            {option.label}
+          </label>)}
+        </div>
+      </details>
+
+      {isInsightVisible('status') && <section className="insights-grid" aria-label="Job status insights">
+        <article className="card insight-card">
+          <p className="eyebrow">Job status</p>
+          <h2>Work in this period</h2>
+          <div className="status-list">
+            {insights.statusBreakdown.map((item) => <div className="status-row" key={item.status}>
+              <span className="status-label"><i className={`status-dot ${item.status}`} aria-hidden="true" />{item.label}</span>
+              <span className="status-track" aria-hidden="true"><span className={`status-fill ${item.status}`} style={{ width: `${selectedJobs.length ? (item.jobs / selectedJobs.length) * 100 : 0}%` }} /></span>
+              <strong>{item.jobs}</strong>
+            </div>)}
+          </div>
+        </article>
+        <article className="card insight-card completion-card">
+          <p className="eyebrow">Completion</p>
+          <h2>{insights.completionRate === null ? 'No jobs to complete' : `${insights.completionRate}% complete`}</h2>
+          <p className="helper">{insights.completionRate === null ? 'Choose a period with scheduled work to see a completion rate.' : `${insights.statusBreakdown.find((item) => item.status === 'completed').jobs} completed out of ${selectedJobs.length} jobs.`}</p>
+          <div className="busiest-day">
+            <span>Busiest {selectedPeriod.granularity === 'day' ? 'day' : 'week'}</span>
+            <strong>{insights.busiestPoint ? `${insights.busiestPoint.detail} · ${insights.busiestPoint.jobs} jobs` : 'No scheduled work'}</strong>
+          </div>
+        </article>
+      </section>}
+
+      {isInsightVisible('upcoming') && <section className="card insight-card list-card" aria-labelledby="upcoming-heading">
+        <div><p className="eyebrow">Upcoming work</p><h2 id="upcoming-heading">Next scheduled jobs</h2></div>
+        {insights.upcomingJobs.length ? <ul className="insight-list">
+          {insights.upcomingJobs.map((job) => <li key={job.id}><div><strong>{job.clientName}</strong><span>{job.assigneeLabel} · {job.status === 'in_progress' ? 'In progress' : 'Scheduled'}</span></div><time dateTime={job.scheduled_for}>{formatJobDate(job.scheduled_for)}</time></li>)}
+        </ul> : <p className="helper">There is no upcoming scheduled work yet.</p>}
+      </section>}
+
+      {isInsightVisible('workload') && <section className="insights-grid" aria-label="Technician and client insights">
+        <article className="card insight-card">
+          <p className="eyebrow">Technician workload</p><h2>Jobs by assignee</h2>
+          {insights.workload.length ? <ul className="ranked-list">{insights.workload.map((item) => <li key={item.assignee}><span>{item.assignee}</span><strong>{item.jobs}</strong></li>)}</ul> : <p className="helper">No jobs are assigned in this period.</p>}
+        </article>
+        <article className="card insight-card">
+          <p className="eyebrow">Top clients</p><h2>Most jobs this period</h2>
+          {insights.topClients.length ? <ul className="ranked-list">{insights.topClients.map((item) => <li key={item.clientId}><span>{item.name}</span><strong>{item.jobs}</strong></li>)}</ul> : <p className="helper">No client work in this period yet.</p>}
+        </article>
+      </section>}
+
+      {isInsightVisible('clients') && <section className="card client-card" aria-labelledby="client-heading">
         <div>
           <p className="eyebrow">Client mix</p>
           <h2 id="client-heading">Who this period’s work came from</h2>
@@ -199,9 +287,33 @@ export default function AnalyticsPage() {
           <div className="donut-legend">
             <p title={`${newClients} of ${totalClients} clients (${newClientPercent}%) had no job before this selected period.`}><i className="legend-dot new" aria-hidden="true" />New clients <strong>{newClients}</strong></p>
             <p title={`${repeatClients} of ${totalClients} clients (${repeatClientPercent}%) had a job before this selected period.`}><i className="legend-dot repeat" aria-hidden="true" />Repeat clients <strong>{repeatClients}</strong></p>
+            <p title={`Clients with prior jobs but no work in ${selectedRangeLabel}.`}><i className="legend-dot inactive" aria-hidden="true" />Inactive clients <strong>{insights.inactiveClients.length}</strong></p>
           </div>
         </div>
       </section>
+      }
+
+      {isInsightVisible('performance') && <section className="insights-grid" aria-label="Revenue and service performance">
+        <article className="card insight-card">
+          <p className="eyebrow">Completed-work value</p><h2>{insights.performance.invoicedJobs ? formatCurrency(insights.performance.invoiceTotal) : 'No invoice values yet'}</h2>
+          <p className="helper">{insights.performance.invoicedJobs ? `${insights.performance.invoicedJobs} completed job${insights.performance.invoicedJobs === 1 ? '' : 's'} with recorded invoice values. Average: ${formatCurrency(insights.performance.averageInvoice)}.` : 'Add invoice totals to completed jobs to see this measure.'}</p>
+          <div className="performance-stats">
+            <span><strong>{insights.performance.averageActualMinutes === null ? '—' : `${insights.performance.averageActualMinutes} min`}</strong>Average actual duration</span>
+            <span><strong>{insights.performance.averageRating === null ? '—' : `${insights.performance.averageRating} / 5`}</strong>Average client rating</span>
+          </div>
+        </article>
+        <article className="card insight-card">
+          <p className="eyebrow">Service categories</p><h2>Work by category</h2>
+          {insights.performance.categoryPerformance.length ? <ul className="category-list">{insights.performance.categoryPerformance.map((item) => <li key={item.category}><div><span>{item.category}</span><small>{item.jobs} job{item.jobs === 1 ? '' : 's'}</small></div><strong>{item.invoiceTotal ? formatCurrency(item.invoiceTotal) : '—'}</strong></li>)}</ul> : <p className="helper">No service categories are recorded for this period.</p>}
+        </article>
+      </section>}
+
+      {isInsightVisible('recent') && <section className="card insight-card list-card" aria-labelledby="recent-heading">
+        <div><p className="eyebrow">Latest scheduled work</p><h2 id="recent-heading">Most recently scheduled jobs</h2></div>
+        {insights.recentScheduledJobs.length ? <ul className="insight-list">
+          {insights.recentScheduledJobs.map((job) => <li key={job.id}><div><strong>{job.clientName}</strong><span>{job.assigneeLabel} · {job.status.replace('_', ' ')}</span></div><time dateTime={job.scheduled_for}>{formatJobDate(job.scheduled_for)}</time></li>)}
+        </ul> : <p className="helper">There are no jobs for this company yet.</p>}
+      </section>}
 
       <section className="card trend-card" aria-labelledby="trend-heading">
         <div>

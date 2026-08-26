@@ -16,6 +16,7 @@
 (function () {
   const CURRENT_SCRIPT = document.currentScript;
   const BASE_URL = (CURRENT_SCRIPT && CURRENT_SCRIPT.dataset.src) || (window.location.protocol + '//' + window.location.hostname + ':' + '5175');
+  const CHAT_ORIGIN = new URL(BASE_URL, window.location.href).origin;
 
   const style = document.createElement('style');
   style.textContent = `
@@ -107,8 +108,8 @@
 
   function bridgeSession() {
     const session = readSupabaseSession();
-    if (session) frame.contentWindow.postMessage({ type: 'fieldflow-session', ...session }, BASE_URL);
-    else frame.contentWindow.postMessage({ type: 'fieldflow-session-clear' }, BASE_URL);
+    if (session) frame.contentWindow.postMessage({ type: 'fieldflow-session', ...session }, CHAT_ORIGIN);
+    else frame.contentWindow.postMessage({ type: 'fieldflow-session-clear' }, CHAT_ORIGIN);
   }
 
   function ready() {
@@ -130,7 +131,7 @@
   });
 
   window.addEventListener('message', (event) => {
-    if (event.data && event.data.type === 'fieldflow-chat-close') {
+    if (event.origin === CHAT_ORIGIN && event.source === frame.contentWindow && event.data?.type === 'fieldflow-chat-close') {
       frame.classList.remove('is-open');
       launcher.classList.remove('is-hidden');
     }

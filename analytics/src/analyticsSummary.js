@@ -96,6 +96,125 @@ export function chatSummaryText(accountName, summary) {
   return `${accountName}: ${summary.selectedPeriod.label}. ${summary.selectedJobs.length} jobs, ${summary.comparisonJobs.length} in the previous period, ${changeText} ${summary.newClients} new clients and ${summary.repeatClients} repeat clients.`;
 }
 
+export function changePresentation({ selectedJobs, comparisonJobs, change, hasCompleteComparison, comparisonRangeLabel }) {
+  if (selectedJobs === 0) {
+    return {
+      value: 'No jobs scheduled',
+      detail: comparisonJobs > 0
+        ? `Previous period: ${comparisonJobs} job${comparisonJobs === 1 ? '' : 's'}`
+        : 'No jobs in the previous period either.',
+      tone: 'neutral',
+    };
+  }
+  if (!hasCompleteComparison) {
+    return { value: 'Comparison unavailable', detail: 'Not enough earlier data for a fair comparison.', tone: 'neutral' };
+  }
+  if (change === null) {
+    return { value: 'No earlier jobs to compare', detail: `This period: ${selectedJobs} job${selectedJobs === 1 ? '' : 's'}`, tone: 'neutral' };
+  }
+  if (change > 0) {
+    return { value: `Up ${change}%`, detail: `${selectedJobs} jobs vs. ${comparisonJobs} in ${comparisonRangeLabel}`, tone: 'positive' };
+  }
+  if (change < 0) {
+    return { value: `Down ${Math.abs(change)}%`, detail: `${selectedJobs} jobs vs. ${comparisonJobs} in ${comparisonRangeLabel}`, tone: 'negative' };
+  }
+  return { value: 'No change', detail: `${selectedJobs} jobs in both periods`, tone: 'neutral' };
+}
+
+const STATUS_ORDER = ['scheduled', 'in_progress', 'completed', 'cancelled'];
+const STATUS_LABELS = {
+  scheduled: 'Scheduled',
+  in_progress: 'In progress',
+  completed: 'Completed',
+  cancelled: 'Cancelled',
+};
+
+export function buildAnalyticsInsights({ jobs, clients, accountId, summary, referenceDate }) {
+  const accountJobs = jobs.filter((job) => job.account_id === accountId);
+  const accountClients = clients.filter((client) => client.account_id === accountId);
+  const clientNames = new Map(accountClients.map((client) => [client.id, client.name]));
+  const selectedJobs = summary.selectedJobs;
+  const selectedClientIds = new Set(selectedJobs.map((job) => job.client_id));
+  const selectedStart = summary.selectedPeriod.start;
+  const statusBreakdown = STATUS_ORDER.map((status) => ({
+    status,
+    label: STATUS_LABELS[status],
+    jobs: selectedJobs.filter((job) => job.status === status).length,
+  }));
+  const completionRate = selectedJobs.length
+    ? Math.round((statusBreakdown.find((item) => item.status === 'completed').jobs / selectedJobs.length) * 100)
+    : null;
+  const busiestPoint = summary.trend.reduce((busiest, point) => point.jobs > (busiest?.jobs ?? 0) ? point : busiest, null);
+  const earliestSelectedDate = toIsoDate(referenceDate);
+  const upcomingJobs = accountJobs
+    .filter((job) => job.scheduled_for >= earliestSelectedDate && !['completed', 'cancelled'].includes(job.status))
+    .sort((first, second) => first.scheduled_for.localeCompare(second.scheduled_for))
+    .slice(0, 5)
+    .map((job) => ({ ...job, clientName: clientNames.get(job.client_id) ?? 'Unknown client', assigneeLabel: job.assignee || 'Unassigned' }));
+  const workload = [...selectedJobs.reduce((groups, job) => {
+    const assignee = job.assignee || 'Unassigned';
+    groups.set(assignee, (groups.get(assignee) ?? 0) + 1);
+    return groups;
+  }, new Map()).entries()]
+    .map(([assignee, jobs]) => ({ assignee, jobs }))
+    .sort((first, second) => second.jobs - first.jobs || first.assignee.localeCompare(second.assignee));
+  const topClients = [...selectedJobs.reduce((groups, job) => {
+    groups.set(job.client_id, (groups.get(job.client_id) ?? 0) + 1);
+    return groups;
+  }, new Map()).entries()]
+    .map(([clientId, jobs]) => ({ clientId, name: clientNames.get(clientId) ?? 'Unknown client', jobs }))
+    .sort((first, second) => second.jobs - first.jobs || first.name.localeCompare(second.name))
+    .slice(0, 5);
+  const inactiveClients = accountClients.filter((client) => {
+    if (selectedClientIds.has(client.id)) return false;
+    return accountJobs.some((job) => job.client_id === client.id && toUtcDate(job.scheduled_for) < selectedStart);
+  });
+  const recentScheduledJobs = [...accountJobs]
+    .sort((first, second) => second.scheduled_for.localeCompare(first.scheduled_for))
+    .slice(0, 5)
+    .map((job) => ({ ...job, clientName: clientNames.get(job.client_id) ?? 'Unknown client', assigneeLabel: job.assignee || 'Unassigned' }));
+  const completedJobs = selectedJobs.filter((job) => job.status === 'completed');
+  const invoicedJobs = completedJobs.filter((job) => Number.isFinite(Number(job.invoice_total)));
+  const invoiceTotal = Number(invoicedJobs.reduce((total, job) => total + Number(job.invoice_total), 0).toFixed(2));
+  const durationJobs = completedJobs.filter((job) => Number.isFinite(Number(job.estimated_duration_minutes)) && Number.isFinite(Number(job.actual_duration_minutes)));
+  const averageEstimatedMinutes = durationJobs.length ? Math.round(durationJobs.reduce((total, job) => total + Number(job.estimated_duration_minutes), 0) / durationJobs.length) : null;
+  const averageActualMinutes = durationJobs.length ? Math.round(durationJobs.reduce((total, job) => total + Number(job.actual_duration_minutes), 0) / durationJobs.length) : null;
+  const ratedJobs = completedJobs.filter((job) => Number.isFinite(Number(job.customer_satisfaction_rating)));
+  const averageRating = ratedJobs.length ? Number((ratedJobs.reduce((total, job) => total + Number(job.customer_satisfaction_rating), 0) / ratedJobs.length).toFixed(1)) : null;
+  const categoryPerformance = [...selectedJobs.reduce((groups, job) => {
+    const category = job.job_category || 'Uncategorized';
+    const current = groups.get(category) ?? { category, jobs: 0, invoiceTotal: 0 };
+    current.jobs += 1;
+    if (job.status === 'completed' && Number.isFinite(Number(job.invoice_total))) current.invoiceTotal += Number(job.invoice_total);
+    groups.set(category, current);
+    return groups;
+  }, new Map()).values()]
+    .map((item) => ({ ...item, invoiceTotal: Number(item.invoiceTotal.toFixed(2)) }))
+    .sort((first, second) => second.invoiceTotal - first.invoiceTotal || second.jobs - first.jobs || first.category.localeCompare(second.category));
+
+  return {
+    statusBreakdown,
+    completionRate,
+    busiestPoint: busiestPoint?.jobs ? busiestPoint : null,
+    upcomingJobs,
+    workload,
+    topClients,
+    inactiveClients,
+    recentScheduledJobs,
+    performance: {
+      completedJobs: completedJobs.length,
+      invoicedJobs: invoicedJobs.length,
+      invoiceTotal,
+      averageInvoice: invoicedJobs.length ? Number((invoiceTotal / invoicedJobs.length).toFixed(2)) : null,
+      averageEstimatedMinutes,
+      averageActualMinutes,
+      averageRating,
+      ratedJobs: ratedJobs.length,
+      categoryPerformance,
+    },
+  };
+}
+
 export function buildSchedulingLink(baseUrl, accountId, start, end) {
   const url = new URL(baseUrl);
   url.searchParams.set('account_id', accountId);
