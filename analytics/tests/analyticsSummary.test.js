@@ -172,6 +172,36 @@ test('reports a zero-job selected period against a populated comparison period',
   );
 });
 
+test('calculates an exact custom date range and a matching previous period', () => {
+  const summary = buildAnalyticsSummary(jobs, ACCOUNT_ID, 'custom_range', REFERENCE_DATE, {
+    start: '2026-08-10', end: '2026-08-16',
+  });
+
+  assert.equal(summary.selectedPeriod.label, 'Custom range');
+  assert.equal(summary.selectedRangeLabel, 'Aug 10–16');
+  assert.equal(summary.comparisonRangeLabel, 'Aug 3–9');
+  assert.equal(summary.selectedJobs.length, 11);
+  assert.equal(summary.comparisonJobs.length, 10);
+  assert.equal(summary.trend.length, 7);
+});
+
+test('uses weekly chart points for a custom range longer than two weeks', () => {
+  const summary = buildAnalyticsSummary(jobs, ACCOUNT_ID, 'custom_range', REFERENCE_DATE, {
+    start: '2026-07-27', end: '2026-08-23',
+  });
+
+  assert.equal(summary.trend.length, 4);
+  assert.deepEqual(summary.trend.map((point) => point.jobs), [8, 10, 11, 14]);
+});
+
+test('falls back safely when a custom range is incomplete or too long', () => {
+  const incomplete = buildAnalyticsSummary(jobs, ACCOUNT_ID, 'custom_range', REFERENCE_DATE, { start: '2026-08-10', end: '' });
+  const tooLong = buildAnalyticsSummary(jobs, ACCOUNT_ID, 'custom_range', REFERENCE_DATE, { start: '2026-01-01', end: '2026-05-01' });
+
+  assert.equal(incomplete.selectedPeriod.label, 'This week');
+  assert.equal(tooLong.selectedPeriod.label, 'This week');
+});
+
 test('builds selectable job, client, and workload insights from the same account data', () => {
   const summary = buildAnalyticsSummary(jobs, ACCOUNT_ID, 'this_week', REFERENCE_DATE);
   const insights = buildAnalyticsInsights({ jobs, clients, accountId: ACCOUNT_ID, summary, referenceDate: REFERENCE_DATE });
