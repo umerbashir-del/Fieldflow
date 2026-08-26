@@ -8,9 +8,14 @@ const authFiles = [
   'ops-dashboard/mockLogin.js',
   'analytics/src/SignInPage.jsx',
 ];
+// The quickSignIn*/QUICK_SIGNIN_ACCOUNTS name patterns used to be banned
+// outright here, rejecting the peer-testing quick-sign-in buttons
+// (mockLogin.js) regardless of how their passwords were sourced. Product
+// decision: keep that feature, but require its real passwords to come from
+// an env var (see mockLogin.js's QUICK_SIGN_IN_ACCOUNTS + .env's
+// VITE_JOHN_TEST_PASSWORD/VITE_SARAH_TEST_PASSWORD) rather than a literal
+// in source - which the remaining pattern below still enforces.
 const forbiddenPatterns = [
-  /QUICK_SIGNIN_ACCOUNTS/,
-  /quickSignIn(?:John|Sarah)/,
   /password\s*:\s*['"][^'"]+['"]/,
 ];
 
