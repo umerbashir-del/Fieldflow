@@ -15,26 +15,28 @@ let clientData = clients;
 let jobData = jobs;
 let loadError = '';
 if (isSupabaseConfigured) {
+  let operations = null;
   try {
-    const operations = await getOperationsSession();
-    if (operations?.staff) {
+    operations = await getOperationsSession();
+  } catch {
+    // A failed saved-session check belongs at the sign-in gate, not in the
+    // dashboard. Clear it and allow a clean sign-in attempt.
+    try { await signOut(); } catch { /* Keep the sign-in form usable if offline. */ }
+  }
+
+  if (operations?.staff) {
+    try {
       // Operations opens with compact account summaries. Jobs and clients are
       // loaded only after staff choose a company to inspect.
       accountData = await getOperationsSummaries();
       clientData = [];
       jobData = [];
-    } else {
-      accountData = [];
-      clientData = [];
-      jobData = [];
+    } catch (error) {
+      const message = String(error?.message ?? '').toLowerCase();
+      loadError = message.includes('permission') || message.includes('row-level')
+        ? 'You don’t have permission to load Operations summaries.'
+        : 'We couldn’t load account summaries. Check your connection and try again.';
     }
-  } catch {
-    // Do not leave a broken or stale automatic session blocking the login
-    // screen. The person can establish a fresh Operations session instead.
-    try { await signOut(); } catch { /* Keep the sign-in form usable if offline. */ }
-    // The login gate remains visible; do not leave an error from a cleared
-    // session on a form that is ready for a fresh sign-in.
-    loadError = '';
   }
 }
 
@@ -42,24 +44,20 @@ const STATUS_LABELS = { scheduled: 'Scheduled', in_progress: 'In progress', comp
 const state = { view: 'overview', selectedAccountId: null, accountSearch: '', statusFilter: 'all', detailLoading: false, detailError: '' };
 const $ = (id) => document.getElementById(id);
 const els = {
-  accountCount: $('accountCount'), clientCount: $('clientCount'), jobCount: $('jobCount'), progressCount: $('progressCount'),
+  accountCount: $('accountCount'), clientCount: $('clientCount'), jobCount: $('jobCount'), progressCount: $('progressCount'), atRiskCount: $('atRiskCount'),
   accountTable: $('accountTable'), accountCards: $('accountCards'), activityList: $('activityList'), detailContent: $('detailContent'),
   accountSearch: $('accountSearch'), statusFilter: $('statusFilter'), backBtn: $('backBtn'),
   tabs: [...document.querySelectorAll('.tab')], views: { overview: $('overview'), accounts: $('accounts'), activity: $('activity'), detail: $('detail') },
 };
 
 if (loadError) {
-  document.getElementById('opsDashboard').hidden = true;
-  document.getElementById('opsLoginGate').hidden = false;
-  const errorElement = document.getElementById('opsLoginError');
-  const descriptionElement = document.getElementById('operationsLoginDescription');
-  const retryElement = document.getElementById('opsRetryButton');
-  if (errorElement) errorElement.textContent = loadError;
-  if (descriptionElement) descriptionElement.textContent = `${loadError} You can try signing in again.`;
-  if (retryElement && !loadError.includes('session')) {
-    retryElement.hidden = false;
-    retryElement.addEventListener('click', () => window.location.reload());
-  }
+  document.getElementById('opsDashboard').hidden = false;
+  document.getElementById('opsLoginGate').hidden = true;
+  document.getElementById('opsDataError').hidden = false;
+  document.getElementById('opsDataErrorMessage').textContent = loadError;
+  document.getElementById('opsDataRetryButton').addEventListener('click', () => window.location.reload());
+  document.querySelector('.tabs').hidden = true;
+  Object.values(els.views).forEach((view) => { view.hidden = true; });
 }
 
 function escapeHtml(value) {
@@ -76,23 +74,41 @@ function badgeClass(status) {
   return status === 'in_progress' ? 'warning' : 'healthy';
 }
 
+function monthBounds(isoDate) {
+  const [year, month] = String(isoDate).slice(0, 7).split('-').map(Number);
+  const start = `${year}-${String(month).padStart(2, '0')}-01`;
+  const end = new Date(Date.UTC(year, month, 1)).toISOString().slice(0, 10);
+  return { start, end };
+}
+
+function jobCountThisMonth(account, jobs) {
+  const reportingDate = account.demo_reporting_date || new Date().toISOString().slice(0, 10);
+  const { start, end } = monthBounds(reportingDate);
+  return jobs.filter((job) => job.account_id === account.id && job.scheduled_for >= start && job.scheduled_for < end).length;
+}
+
 function accountSummary(account) {
   if (account.client_count !== undefined) {
     const clientCount = Number(account.client_count ?? 0);
     const jobCount = Number(account.job_count ?? 0);
     const completed = Number(account.completed_count ?? 0);
     const open = Number(account.open_count ?? 0);
-    const status = open > 0 ? 'Active' : jobCount > 0 ? 'No open work' : 'No activity';
-    const statusClass = open > 0 ? 'healthy' : jobCount > 0 ? 'warning' : 'cancelled';
-    return { account, clientCount, jobCount, completed, open, status, statusClass };
+    const hasMonthlyJobs = account.jobs_this_month !== undefined;
+    const jobsThisMonth = hasMonthlyJobs ? Number(account.jobs_this_month) : null;
+    const atRisk = hasMonthlyJobs && jobsThisMonth < 10;
+    const status = atRisk ? 'At risk' : open > 0 ? 'Active' : jobCount > 0 ? 'No open work' : 'No activity';
+    const statusClass = atRisk ? 'warning' : open > 0 ? 'healthy' : jobCount > 0 ? 'warning' : 'cancelled';
+    return { account, clientCount, jobCount, completed, open, jobsThisMonth, atRisk, status, statusClass };
   }
   const accountClients = clientData.filter((client) => client.account_id === account.id);
   const accountJobs = jobData.filter((job) => job.account_id === account.id);
   const completed = accountJobs.filter((job) => job.status === 'completed').length;
   const open = accountJobs.filter((job) => job.status === 'scheduled' || job.status === 'in_progress').length;
-  const status = open > 0 ? 'Active' : accountJobs.length > 0 ? 'No open work' : 'No activity';
-  const statusClass = open > 0 ? 'healthy' : accountJobs.length > 0 ? 'warning' : 'cancelled';
-  return { account, clientCount: accountClients.length, jobCount: accountJobs.length, completed, open, status, statusClass };
+  const jobsThisMonth = jobCountThisMonth(account, accountJobs);
+  const atRisk = jobsThisMonth < 10;
+  const status = atRisk ? 'At risk' : open > 0 ? 'Active' : accountJobs.length > 0 ? 'No open work' : 'No activity';
+  const statusClass = atRisk ? 'warning' : open > 0 ? 'healthy' : accountJobs.length > 0 ? 'warning' : 'cancelled';
+  return { account, clientCount: accountClients.length, jobCount: accountJobs.length, completed, open, jobsThisMonth, atRisk, status, statusClass };
 }
 
 function jobHtml(job, includeAccount = true) {
@@ -108,9 +124,10 @@ function renderOverview() {
   els.clientCount.textContent = summaries.reduce((total, summary) => total + summary.clientCount, 0);
   els.jobCount.textContent = summaries.reduce((total, summary) => total + summary.jobCount, 0);
   els.progressCount.textContent = summaries.reduce((total, summary) => total + summary.open, 0);
+  els.atRiskCount.textContent = summaries.filter((summary) => summary.atRisk).length;
   els.accountTable.innerHTML = accountData.map((account) => {
     const summary = accountSummary(account);
-    return `<tr><td><button class="account-table-link" type="button" data-account-id="${escapeHtml(account.id)}">${escapeHtml(account.name)}</button></td><td>${escapeHtml(account.plan)}</td><td>${summary.clientCount}</td><td>${summary.jobCount}</td><td>${summary.completed}</td><td>${summary.open}</td><td><span class="badge ${summary.statusClass}">${summary.status}</span></td></tr>`;
+    return `<tr><td><button class="account-table-link" type="button" data-account-id="${escapeHtml(account.id)}">${escapeHtml(account.name)}</button></td><td>${escapeHtml(account.plan)}</td><td>${summary.clientCount}</td><td>${summary.jobCount}</td><td>${summary.completed}</td><td>${summary.open}</td><td>${summary.jobsThisMonth ?? '—'}</td><td><span class="badge ${summary.statusClass}">${summary.status}</span></td></tr>`;
   }).join('');
   document.querySelectorAll('.account-table-link').forEach((button) => button.addEventListener('click', () => openAccount(button.dataset.accountId)));
 }
@@ -160,6 +177,7 @@ function renderDetail() {
 }
 
 function showView(view) {
+  if (loadError) return;
   state.view = view;
   Object.entries(els.views).forEach(([name, element]) => element.classList.toggle('hidden', name !== view));
   els.tabs.forEach((tab) => tab.classList.toggle('active', tab.dataset.view === view));
