@@ -13,7 +13,8 @@
     "actual_duration_minutes": 45,
     "invoice_total": 365,
     "completed_at": "2026-01-16T17:00:00Z",
-    "customer_satisfaction_rating": 3
+    "customer_satisfaction_rating": 3,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0064",
@@ -29,7 +30,8 @@
     "actual_duration_minutes": null,
     "invoice_total": null,
     "completed_at": null,
-    "customer_satisfaction_rating": null
+    "customer_satisfaction_rating": null,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0060",
@@ -45,7 +47,8 @@
     "actual_duration_minutes": 195,
     "invoice_total": 310,
     "completed_at": "2026-02-03T17:00:00Z",
-    "customer_satisfaction_rating": 5
+    "customer_satisfaction_rating": 5,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0070",
@@ -61,7 +64,8 @@
     "actual_duration_minutes": 105,
     "invoice_total": 255,
     "completed_at": "2026-02-03T17:00:00Z",
-    "customer_satisfaction_rating": 3
+    "customer_satisfaction_rating": 3,
+    "scheduled_start_time": "11:15"
   },
   {
     "id": "sj_0067",
@@ -77,7 +81,8 @@
     "actual_duration_minutes": 105,
     "invoice_total": 255,
     "completed_at": "2026-03-07T17:00:00Z",
-    "customer_satisfaction_rating": 3
+    "customer_satisfaction_rating": 3,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0069",
@@ -93,7 +98,8 @@
     "actual_duration_minutes": 75,
     "invoice_total": 365,
     "completed_at": "2026-05-13T17:00:00Z",
-    "customer_satisfaction_rating": 5
+    "customer_satisfaction_rating": 5,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0072",
@@ -109,7 +115,8 @@
     "actual_duration_minutes": 75,
     "invoice_total": 365,
     "completed_at": "2026-05-29T17:00:00Z",
-    "customer_satisfaction_rating": 5
+    "customer_satisfaction_rating": 5,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0073",
@@ -125,7 +132,8 @@
     "actual_duration_minutes": 75,
     "invoice_total": 420,
     "completed_at": "2026-06-02T17:00:00Z",
-    "customer_satisfaction_rating": 3
+    "customer_satisfaction_rating": 3,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0074",
@@ -141,7 +149,8 @@
     "actual_duration_minutes": 120,
     "invoice_total": 475,
     "completed_at": "2026-06-06T17:00:00Z",
-    "customer_satisfaction_rating": 4
+    "customer_satisfaction_rating": 4,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0065",
@@ -157,7 +166,8 @@
     "actual_duration_minutes": 60,
     "invoice_total": 145,
     "completed_at": "2026-06-15T17:00:00Z",
-    "customer_satisfaction_rating": 4
+    "customer_satisfaction_rating": 4,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0075",
@@ -173,7 +183,8 @@
     "actual_duration_minutes": 195,
     "invoice_total": 530,
     "completed_at": "2026-06-17T17:00:00Z",
-    "customer_satisfaction_rating": 5
+    "customer_satisfaction_rating": 5,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0062",
@@ -189,7 +200,8 @@
     "actual_duration_minutes": 90,
     "invoice_total": 420,
     "completed_at": "2026-07-03T17:00:00Z",
-    "customer_satisfaction_rating": 4
+    "customer_satisfaction_rating": 4,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0071",
@@ -205,7 +217,8 @@
     "actual_duration_minutes": null,
     "invoice_total": null,
     "completed_at": null,
-    "customer_satisfaction_rating": null
+    "customer_satisfaction_rating": null,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0063",
@@ -221,7 +234,8 @@
     "actual_duration_minutes": null,
     "invoice_total": null,
     "completed_at": null,
-    "customer_satisfaction_rating": null
+    "customer_satisfaction_rating": null,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0066",
@@ -237,7 +251,8 @@
     "actual_duration_minutes": null,
     "invoice_total": null,
     "completed_at": null,
-    "customer_satisfaction_rating": null
+    "customer_satisfaction_rating": null,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0068",
@@ -253,7 +268,8 @@
     "actual_duration_minutes": null,
     "invoice_total": null,
     "completed_at": null,
-    "customer_satisfaction_rating": null
+    "customer_satisfaction_rating": null,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0077",
@@ -269,7 +285,8 @@
     "actual_duration_minutes": 90,
     "invoice_total": 200,
     "completed_at": "2026-02-02T17:00:00Z",
-    "customer_satisfaction_rating": 4
+    "customer_satisfaction_rating": 4,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0079",
@@ -285,7 +302,8 @@
     "actual_duration_minutes": 165,
     "invoice_total": 310,
     "completed_at": "2026-03-06T17:00:00Z",
-    "customer_satisfaction_rating": 3
+    "customer_satisfaction_rating": 3,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0082",
@@ -301,7 +319,8 @@
     "actual_duration_minutes": 165,
     "invoice_total": 310,
     "completed_at": "2026-03-10T17:00:00Z",
-    "customer_satisfaction_rating": 3
+    "customer_satisfaction_rating": 3,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0085",
@@ -317,7 +336,8 @@
     "actual_duration_minutes": 105,
     "invoice_total": 475,
     "completed_at": "2026-03-10T17:00:00Z",
-    "customer_satisfaction_rating": 3
+    "customer_satisfaction_rating": 3,
+    "scheduled_start_time": "11:15"
   },
   {
     "id": "sj_0087",
@@ -333,7 +353,8 @@
     "actual_duration_minutes": 75,
     "invoice_total": 145,
     "completed_at": "2026-03-21T17:00:00Z",
-    "customer_satisfaction_rating": 5
+    "customer_satisfaction_rating": 5,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0078",
@@ -349,7 +370,8 @@
     "actual_duration_minutes": 135,
     "invoice_total": 255,
     "completed_at": "2026-03-29T17:00:00Z",
-    "customer_satisfaction_rating": 5
+    "customer_satisfaction_rating": 5,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0088",
@@ -365,7 +387,8 @@
     "actual_duration_minutes": 75,
     "invoice_total": 200,
     "completed_at": "2026-05-26T17:00:00Z",
-    "customer_satisfaction_rating": 3
+    "customer_satisfaction_rating": 3,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0081",
@@ -381,7 +404,8 @@
     "actual_duration_minutes": 135,
     "invoice_total": 255,
     "completed_at": "2026-06-08T17:00:00Z",
-    "customer_satisfaction_rating": 5
+    "customer_satisfaction_rating": 5,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0076",
@@ -397,7 +421,8 @@
     "actual_duration_minutes": 45,
     "invoice_total": 145,
     "completed_at": "2026-06-29T17:00:00Z",
-    "customer_satisfaction_rating": 3
+    "customer_satisfaction_rating": 3,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0080",
@@ -413,7 +438,8 @@
     "actual_duration_minutes": 90,
     "invoice_total": 200,
     "completed_at": "2026-07-05T17:00:00Z",
-    "customer_satisfaction_rating": 4
+    "customer_satisfaction_rating": 4,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0083",
@@ -429,7 +455,8 @@
     "actual_duration_minutes": 60,
     "invoice_total": 365,
     "completed_at": "2026-07-20T17:00:00Z",
-    "customer_satisfaction_rating": 4
+    "customer_satisfaction_rating": 4,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0086",
@@ -445,7 +472,8 @@
     "actual_duration_minutes": null,
     "invoice_total": null,
     "completed_at": null,
-    "customer_satisfaction_rating": null
+    "customer_satisfaction_rating": null,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0089",
@@ -461,7 +489,8 @@
     "actual_duration_minutes": 120,
     "invoice_total": 255,
     "completed_at": "2026-08-06T17:00:00Z",
-    "customer_satisfaction_rating": 4
+    "customer_satisfaction_rating": 4,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0084",
@@ -477,7 +506,8 @@
     "actual_duration_minutes": 105,
     "invoice_total": 420,
     "completed_at": "2026-08-08T17:00:00Z",
-    "customer_satisfaction_rating": 5
+    "customer_satisfaction_rating": 5,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0107",
@@ -493,7 +523,8 @@
     "actual_duration_minutes": null,
     "invoice_total": null,
     "completed_at": null,
-    "customer_satisfaction_rating": null
+    "customer_satisfaction_rating": null,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0096",
@@ -509,7 +540,8 @@
     "actual_duration_minutes": 135,
     "invoice_total": 475,
     "completed_at": "2026-01-10T17:00:00Z",
-    "customer_satisfaction_rating": 5
+    "customer_satisfaction_rating": 5,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0092",
@@ -525,7 +557,8 @@
     "actual_duration_minutes": 120,
     "invoice_total": 255,
     "completed_at": "2026-01-24T17:00:00Z",
-    "customer_satisfaction_rating": 4
+    "customer_satisfaction_rating": 4,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0109",
@@ -541,7 +574,8 @@
     "actual_duration_minutes": 165,
     "invoice_total": 310,
     "completed_at": "2026-01-24T17:00:00Z",
-    "customer_satisfaction_rating": 3
+    "customer_satisfaction_rating": 3,
+    "scheduled_start_time": "10:15"
   },
   {
     "id": "sj_0091",
@@ -557,7 +591,8 @@
     "actual_duration_minutes": 75,
     "invoice_total": 200,
     "completed_at": "2026-02-19T17:00:00Z",
-    "customer_satisfaction_rating": 3
+    "customer_satisfaction_rating": 3,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0090",
@@ -573,7 +608,8 @@
     "actual_duration_minutes": null,
     "invoice_total": null,
     "completed_at": null,
-    "customer_satisfaction_rating": null
+    "customer_satisfaction_rating": null,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0102",
@@ -589,7 +625,8 @@
     "actual_duration_minutes": 75,
     "invoice_total": 365,
     "completed_at": "2026-04-17T17:00:00Z",
-    "customer_satisfaction_rating": 5
+    "customer_satisfaction_rating": 5,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0097",
@@ -605,7 +642,8 @@
     "actual_duration_minutes": 165,
     "invoice_total": 530,
     "completed_at": "2026-05-09T17:00:00Z",
-    "customer_satisfaction_rating": 3
+    "customer_satisfaction_rating": 3,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0101",
@@ -621,7 +659,8 @@
     "actual_duration_minutes": 180,
     "invoice_total": 310,
     "completed_at": "2026-05-26T17:00:00Z",
-    "customer_satisfaction_rating": 4
+    "customer_satisfaction_rating": 4,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0105",
@@ -637,7 +676,8 @@
     "actual_duration_minutes": 195,
     "invoice_total": 530,
     "completed_at": "2026-06-13T17:00:00Z",
-    "customer_satisfaction_rating": 5
+    "customer_satisfaction_rating": 5,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0095",
@@ -653,7 +693,8 @@
     "actual_duration_minutes": 90,
     "invoice_total": 420,
     "completed_at": "2026-06-16T17:00:00Z",
-    "customer_satisfaction_rating": 4
+    "customer_satisfaction_rating": 4,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0100",
@@ -669,7 +710,8 @@
     "actual_duration_minutes": null,
     "invoice_total": null,
     "completed_at": null,
-    "customer_satisfaction_rating": null
+    "customer_satisfaction_rating": null,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0099",
@@ -685,7 +727,8 @@
     "actual_duration_minutes": 105,
     "invoice_total": 200,
     "completed_at": "2026-07-28T17:00:00Z",
-    "customer_satisfaction_rating": 5
+    "customer_satisfaction_rating": 5,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0106",
@@ -701,7 +744,8 @@
     "actual_duration_minutes": 45,
     "invoice_total": 145,
     "completed_at": "2026-08-03T17:00:00Z",
-    "customer_satisfaction_rating": 3
+    "customer_satisfaction_rating": 3,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0103",
@@ -717,7 +761,8 @@
     "actual_duration_minutes": null,
     "invoice_total": null,
     "completed_at": null,
-    "customer_satisfaction_rating": null
+    "customer_satisfaction_rating": null,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0104",
@@ -733,7 +778,8 @@
     "actual_duration_minutes": null,
     "invoice_total": null,
     "completed_at": null,
-    "customer_satisfaction_rating": null
+    "customer_satisfaction_rating": null,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0098",
@@ -749,7 +795,8 @@
     "actual_duration_minutes": null,
     "invoice_total": null,
     "completed_at": null,
-    "customer_satisfaction_rating": null
+    "customer_satisfaction_rating": null,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0093",
@@ -765,7 +812,8 @@
     "actual_duration_minutes": null,
     "invoice_total": null,
     "completed_at": null,
-    "customer_satisfaction_rating": null
+    "customer_satisfaction_rating": null,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0094",
@@ -781,7 +829,8 @@
     "actual_duration_minutes": null,
     "invoice_total": null,
     "completed_at": null,
-    "customer_satisfaction_rating": null
+    "customer_satisfaction_rating": null,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0108",
@@ -797,7 +846,8 @@
     "actual_duration_minutes": null,
     "invoice_total": null,
     "completed_at": null,
-    "customer_satisfaction_rating": null
+    "customer_satisfaction_rating": null,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0131",
@@ -813,7 +863,8 @@
     "actual_duration_minutes": 60,
     "invoice_total": 145,
     "completed_at": "2026-01-06T17:00:00Z",
-    "customer_satisfaction_rating": 4
+    "customer_satisfaction_rating": 4,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0136",
@@ -829,7 +880,8 @@
     "actual_duration_minutes": 75,
     "invoice_total": 420,
     "completed_at": "2026-02-11T17:00:00Z",
-    "customer_satisfaction_rating": 3
+    "customer_satisfaction_rating": 3,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0134",
@@ -845,7 +897,8 @@
     "actual_duration_minutes": 180,
     "invoice_total": 310,
     "completed_at": "2026-03-10T17:00:00Z",
-    "customer_satisfaction_rating": 4
+    "customer_satisfaction_rating": 4,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0129",
@@ -861,7 +914,8 @@
     "actual_duration_minutes": 105,
     "invoice_total": 200,
     "completed_at": "2026-03-20T17:00:00Z",
-    "customer_satisfaction_rating": 5
+    "customer_satisfaction_rating": 5,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0133",
@@ -877,7 +931,8 @@
     "actual_duration_minutes": 105,
     "invoice_total": 255,
     "completed_at": "2026-03-24T17:00:00Z",
-    "customer_satisfaction_rating": 3
+    "customer_satisfaction_rating": 3,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0128",
@@ -893,7 +948,8 @@
     "actual_duration_minutes": 60,
     "invoice_total": 145,
     "completed_at": "2026-04-06T17:00:00Z",
-    "customer_satisfaction_rating": 4
+    "customer_satisfaction_rating": 4,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0137",
@@ -909,7 +965,8 @@
     "actual_duration_minutes": 120,
     "invoice_total": 475,
     "completed_at": "2026-06-08T17:00:00Z",
-    "customer_satisfaction_rating": 4
+    "customer_satisfaction_rating": 4,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0135",
@@ -925,7 +982,8 @@
     "actual_duration_minutes": 75,
     "invoice_total": 365,
     "completed_at": "2026-06-21T17:00:00Z",
-    "customer_satisfaction_rating": 5
+    "customer_satisfaction_rating": 5,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0138",
@@ -941,7 +999,8 @@
     "actual_duration_minutes": 195,
     "invoice_total": 530,
     "completed_at": "2026-07-02T17:00:00Z",
-    "customer_satisfaction_rating": 5
+    "customer_satisfaction_rating": 5,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0141",
@@ -957,7 +1016,8 @@
     "actual_duration_minutes": 195,
     "invoice_total": 530,
     "completed_at": "2026-07-07T17:00:00Z",
-    "customer_satisfaction_rating": 5
+    "customer_satisfaction_rating": 5,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0132",
@@ -973,7 +1033,8 @@
     "actual_duration_minutes": 105,
     "invoice_total": 200,
     "completed_at": "2026-07-12T17:00:00Z",
-    "customer_satisfaction_rating": 5
+    "customer_satisfaction_rating": 5,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0142",
@@ -989,7 +1050,8 @@
     "actual_duration_minutes": null,
     "invoice_total": null,
     "completed_at": null,
-    "customer_satisfaction_rating": null
+    "customer_satisfaction_rating": null,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0139",
@@ -1005,7 +1067,8 @@
     "actual_duration_minutes": null,
     "invoice_total": null,
     "completed_at": null,
-    "customer_satisfaction_rating": null
+    "customer_satisfaction_rating": null,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0130",
@@ -1021,7 +1084,8 @@
     "actual_duration_minutes": null,
     "invoice_total": null,
     "completed_at": null,
-    "customer_satisfaction_rating": null
+    "customer_satisfaction_rating": null,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0140",
@@ -1037,7 +1101,8 @@
     "actual_duration_minutes": null,
     "invoice_total": null,
     "completed_at": null,
-    "customer_satisfaction_rating": null
+    "customer_satisfaction_rating": null,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "job_201",
@@ -1053,7 +1118,8 @@
     "actual_duration_minutes": 135,
     "invoice_total": 255,
     "completed_at": "2026-08-10T17:00:00Z",
-    "customer_satisfaction_rating": 5
+    "customer_satisfaction_rating": 5,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "job_202",
@@ -1069,7 +1135,8 @@
     "actual_duration_minutes": 165,
     "invoice_total": 310,
     "completed_at": "2026-08-12T17:00:00Z",
-    "customer_satisfaction_rating": 3
+    "customer_satisfaction_rating": 3,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "job_203",
@@ -1085,7 +1152,8 @@
     "actual_duration_minutes": 60,
     "invoice_total": 365,
     "completed_at": "2026-08-18T17:00:00Z",
-    "customer_satisfaction_rating": 4
+    "customer_satisfaction_rating": 4,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "job_204",
@@ -1101,7 +1169,8 @@
     "actual_duration_minutes": null,
     "invoice_total": null,
     "completed_at": null,
-    "customer_satisfaction_rating": null
+    "customer_satisfaction_rating": null,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0124",
@@ -1117,7 +1186,8 @@
     "actual_duration_minutes": 45,
     "invoice_total": 365,
     "completed_at": "2026-01-09T17:00:00Z",
-    "customer_satisfaction_rating": 3
+    "customer_satisfaction_rating": 3,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0112",
@@ -1133,7 +1203,8 @@
     "actual_duration_minutes": 165,
     "invoice_total": 310,
     "completed_at": "2026-01-14T17:00:00Z",
-    "customer_satisfaction_rating": 3
+    "customer_satisfaction_rating": 3,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0117",
@@ -1149,7 +1220,8 @@
     "actual_duration_minutes": 75,
     "invoice_total": 145,
     "completed_at": "2026-02-27T17:00:00Z",
-    "customer_satisfaction_rating": 5
+    "customer_satisfaction_rating": 5,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0116",
@@ -1165,7 +1237,8 @@
     "actual_duration_minutes": null,
     "invoice_total": null,
     "completed_at": null,
-    "customer_satisfaction_rating": null
+    "customer_satisfaction_rating": null,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0127",
@@ -1181,7 +1254,8 @@
     "actual_duration_minutes": 165,
     "invoice_total": 530,
     "completed_at": "2026-04-02T17:00:00Z",
-    "customer_satisfaction_rating": 3
+    "customer_satisfaction_rating": 3,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0123",
@@ -1197,7 +1271,8 @@
     "actual_duration_minutes": null,
     "invoice_total": null,
     "completed_at": null,
-    "customer_satisfaction_rating": null
+    "customer_satisfaction_rating": null,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0120",
@@ -1213,7 +1288,8 @@
     "actual_duration_minutes": 75,
     "invoice_total": 145,
     "completed_at": "2026-04-12T17:00:00Z",
-    "customer_satisfaction_rating": 5
+    "customer_satisfaction_rating": 5,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0111",
@@ -1229,7 +1305,8 @@
     "actual_duration_minutes": 135,
     "invoice_total": 255,
     "completed_at": "2026-05-20T17:00:00Z",
-    "customer_satisfaction_rating": 5
+    "customer_satisfaction_rating": 5,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0122",
@@ -1245,7 +1322,8 @@
     "actual_duration_minutes": 120,
     "invoice_total": 255,
     "completed_at": "2026-05-31T17:00:00Z",
-    "customer_satisfaction_rating": 4
+    "customer_satisfaction_rating": 4,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0121",
@@ -1261,7 +1339,8 @@
     "actual_duration_minutes": 75,
     "invoice_total": 200,
     "completed_at": "2026-06-03T17:00:00Z",
-    "customer_satisfaction_rating": 3
+    "customer_satisfaction_rating": 3,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0110",
@@ -1277,7 +1356,8 @@
     "actual_duration_minutes": 90,
     "invoice_total": 200,
     "completed_at": "2026-06-07T17:00:00Z",
-    "customer_satisfaction_rating": 4
+    "customer_satisfaction_rating": 4,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0113",
@@ -1293,7 +1373,8 @@
     "actual_duration_minutes": 60,
     "invoice_total": 365,
     "completed_at": "2026-06-11T17:00:00Z",
-    "customer_satisfaction_rating": 4
+    "customer_satisfaction_rating": 4,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0119",
@@ -1309,7 +1390,8 @@
     "actual_duration_minutes": 120,
     "invoice_total": 255,
     "completed_at": "2026-06-12T17:00:00Z",
-    "customer_satisfaction_rating": 4
+    "customer_satisfaction_rating": 4,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0126",
@@ -1325,7 +1407,8 @@
     "actual_duration_minutes": 135,
     "invoice_total": 475,
     "completed_at": "2026-07-06T17:00:00Z",
-    "customer_satisfaction_rating": 5
+    "customer_satisfaction_rating": 5,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0114",
@@ -1341,7 +1424,8 @@
     "actual_duration_minutes": 105,
     "invoice_total": 420,
     "completed_at": "2026-07-18T17:00:00Z",
-    "customer_satisfaction_rating": 5
+    "customer_satisfaction_rating": 5,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0118",
@@ -1357,7 +1441,8 @@
     "actual_duration_minutes": 75,
     "invoice_total": 200,
     "completed_at": "2026-07-23T17:00:00Z",
-    "customer_satisfaction_rating": 3
+    "customer_satisfaction_rating": 3,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0125",
@@ -1373,7 +1458,8 @@
     "actual_duration_minutes": null,
     "invoice_total": null,
     "completed_at": null,
-    "customer_satisfaction_rating": null
+    "customer_satisfaction_rating": null,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0115",
@@ -1389,7 +1475,8 @@
     "actual_duration_minutes": null,
     "invoice_total": null,
     "completed_at": null,
-    "customer_satisfaction_rating": null
+    "customer_satisfaction_rating": null,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "job_071",
@@ -1405,7 +1492,8 @@
     "actual_duration_minutes": 90,
     "invoice_total": 200,
     "completed_at": "2026-06-29T17:00:00Z",
-    "customer_satisfaction_rating": 4
+    "customer_satisfaction_rating": 4,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "job_072",
@@ -1421,7 +1509,8 @@
     "actual_duration_minutes": 135,
     "invoice_total": 255,
     "completed_at": "2026-06-30T17:00:00Z",
-    "customer_satisfaction_rating": 5
+    "customer_satisfaction_rating": 5,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "job_073",
@@ -1437,7 +1526,8 @@
     "actual_duration_minutes": 165,
     "invoice_total": 310,
     "completed_at": "2026-07-01T17:00:00Z",
-    "customer_satisfaction_rating": 3
+    "customer_satisfaction_rating": 3,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "job_074",
@@ -1453,7 +1543,8 @@
     "actual_duration_minutes": 60,
     "invoice_total": 365,
     "completed_at": "2026-07-02T17:00:00Z",
-    "customer_satisfaction_rating": 4
+    "customer_satisfaction_rating": 4,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "job_075",
@@ -1469,7 +1560,8 @@
     "actual_duration_minutes": 105,
     "invoice_total": 420,
     "completed_at": "2026-07-03T17:00:00Z",
-    "customer_satisfaction_rating": 5
+    "customer_satisfaction_rating": 5,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "job_076",
@@ -1485,7 +1577,8 @@
     "actual_duration_minutes": 105,
     "invoice_total": 475,
     "completed_at": "2026-07-04T17:00:00Z",
-    "customer_satisfaction_rating": 3
+    "customer_satisfaction_rating": 3,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "job_077",
@@ -1501,7 +1594,8 @@
     "actual_duration_minutes": 180,
     "invoice_total": 530,
     "completed_at": "2026-07-06T17:00:00Z",
-    "customer_satisfaction_rating": 4
+    "customer_satisfaction_rating": 4,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "job_078",
@@ -1517,7 +1611,8 @@
     "actual_duration_minutes": 75,
     "invoice_total": 145,
     "completed_at": "2026-07-07T17:00:00Z",
-    "customer_satisfaction_rating": 5
+    "customer_satisfaction_rating": 5,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "job_079",
@@ -1533,7 +1628,8 @@
     "actual_duration_minutes": 75,
     "invoice_total": 200,
     "completed_at": "2026-07-08T17:00:00Z",
-    "customer_satisfaction_rating": 3
+    "customer_satisfaction_rating": 3,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "job_080",
@@ -1549,7 +1645,8 @@
     "actual_duration_minutes": 180,
     "invoice_total": 530,
     "completed_at": "2026-07-09T17:00:00Z",
-    "customer_satisfaction_rating": 4
+    "customer_satisfaction_rating": 4,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "job_081",
@@ -1565,7 +1662,8 @@
     "actual_duration_minutes": 75,
     "invoice_total": 145,
     "completed_at": "2026-07-10T17:00:00Z",
-    "customer_satisfaction_rating": 5
+    "customer_satisfaction_rating": 5,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "job_082",
@@ -1581,7 +1679,8 @@
     "actual_duration_minutes": 75,
     "invoice_total": 200,
     "completed_at": "2026-07-11T17:00:00Z",
-    "customer_satisfaction_rating": 3
+    "customer_satisfaction_rating": 3,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "job_083",
@@ -1597,7 +1696,8 @@
     "actual_duration_minutes": 120,
     "invoice_total": 255,
     "completed_at": "2026-07-12T17:00:00Z",
-    "customer_satisfaction_rating": 4
+    "customer_satisfaction_rating": 4,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "job_084",
@@ -1613,7 +1713,8 @@
     "actual_duration_minutes": 195,
     "invoice_total": 310,
     "completed_at": "2026-07-13T17:00:00Z",
-    "customer_satisfaction_rating": 5
+    "customer_satisfaction_rating": 5,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "job_085",
@@ -1629,7 +1730,8 @@
     "actual_duration_minutes": 45,
     "invoice_total": 365,
     "completed_at": "2026-07-14T17:00:00Z",
-    "customer_satisfaction_rating": 3
+    "customer_satisfaction_rating": 3,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "job_086",
@@ -1645,7 +1747,8 @@
     "actual_duration_minutes": 90,
     "invoice_total": 420,
     "completed_at": "2026-07-15T17:00:00Z",
-    "customer_satisfaction_rating": 4
+    "customer_satisfaction_rating": 4,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "job_087",
@@ -1661,7 +1764,8 @@
     "actual_duration_minutes": 135,
     "invoice_total": 475,
     "completed_at": "2026-07-16T17:00:00Z",
-    "customer_satisfaction_rating": 5
+    "customer_satisfaction_rating": 5,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "job_088",
@@ -1677,7 +1781,8 @@
     "actual_duration_minutes": 165,
     "invoice_total": 530,
     "completed_at": "2026-07-17T17:00:00Z",
-    "customer_satisfaction_rating": 3
+    "customer_satisfaction_rating": 3,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "job_089",
@@ -1693,7 +1798,8 @@
     "actual_duration_minutes": 60,
     "invoice_total": 145,
     "completed_at": "2026-07-18T17:00:00Z",
-    "customer_satisfaction_rating": 4
+    "customer_satisfaction_rating": 4,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "job_090",
@@ -1709,7 +1815,8 @@
     "actual_duration_minutes": 135,
     "invoice_total": 475,
     "completed_at": "2026-07-19T17:00:00Z",
-    "customer_satisfaction_rating": 5
+    "customer_satisfaction_rating": 5,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "job_091",
@@ -1725,7 +1832,8 @@
     "actual_duration_minutes": 165,
     "invoice_total": 530,
     "completed_at": "2026-07-19T17:00:00Z",
-    "customer_satisfaction_rating": 3
+    "customer_satisfaction_rating": 3,
+    "scheduled_start_time": "10:15"
   },
   {
     "id": "job_092",
@@ -1741,7 +1849,8 @@
     "actual_duration_minutes": 60,
     "invoice_total": 145,
     "completed_at": "2026-07-20T17:00:00Z",
-    "customer_satisfaction_rating": 4
+    "customer_satisfaction_rating": 4,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "job_093",
@@ -1757,7 +1866,8 @@
     "actual_duration_minutes": 105,
     "invoice_total": 200,
     "completed_at": "2026-07-20T17:00:00Z",
-    "customer_satisfaction_rating": 5
+    "customer_satisfaction_rating": 5,
+    "scheduled_start_time": "09:15"
   },
   {
     "id": "job_094",
@@ -1773,7 +1883,8 @@
     "actual_duration_minutes": 105,
     "invoice_total": 255,
     "completed_at": "2026-07-21T17:00:00Z",
-    "customer_satisfaction_rating": 3
+    "customer_satisfaction_rating": 3,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "job_095",
@@ -1789,7 +1900,8 @@
     "actual_duration_minutes": 180,
     "invoice_total": 310,
     "completed_at": "2026-07-21T17:00:00Z",
-    "customer_satisfaction_rating": 4
+    "customer_satisfaction_rating": 4,
+    "scheduled_start_time": "10:15"
   },
   {
     "id": "job_096",
@@ -1805,7 +1917,8 @@
     "actual_duration_minutes": 75,
     "invoice_total": 365,
     "completed_at": "2026-07-22T17:00:00Z",
-    "customer_satisfaction_rating": 5
+    "customer_satisfaction_rating": 5,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "job_097",
@@ -1821,7 +1934,8 @@
     "actual_duration_minutes": 75,
     "invoice_total": 420,
     "completed_at": "2026-07-23T17:00:00Z",
-    "customer_satisfaction_rating": 3
+    "customer_satisfaction_rating": 3,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "job_098",
@@ -1837,7 +1951,8 @@
     "actual_duration_minutes": 120,
     "invoice_total": 475,
     "completed_at": "2026-07-24T17:00:00Z",
-    "customer_satisfaction_rating": 4
+    "customer_satisfaction_rating": 4,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "job_099",
@@ -1853,7 +1968,8 @@
     "actual_duration_minutes": 195,
     "invoice_total": 530,
     "completed_at": "2026-07-25T17:00:00Z",
-    "customer_satisfaction_rating": 5
+    "customer_satisfaction_rating": 5,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "job_100",
@@ -1869,7 +1985,8 @@
     "actual_duration_minutes": 45,
     "invoice_total": 145,
     "completed_at": "2026-07-26T17:00:00Z",
-    "customer_satisfaction_rating": 3
+    "customer_satisfaction_rating": 3,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "job_101",
@@ -1885,7 +2002,8 @@
     "actual_duration_minutes": 90,
     "invoice_total": 200,
     "completed_at": "2026-07-27T17:00:00Z",
-    "customer_satisfaction_rating": 4
+    "customer_satisfaction_rating": 4,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "job_102",
@@ -1901,7 +2019,8 @@
     "actual_duration_minutes": 135,
     "invoice_total": 255,
     "completed_at": "2026-07-28T17:00:00Z",
-    "customer_satisfaction_rating": 5
+    "customer_satisfaction_rating": 5,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "job_103",
@@ -1917,7 +2036,8 @@
     "actual_duration_minutes": 165,
     "invoice_total": 310,
     "completed_at": "2026-07-29T17:00:00Z",
-    "customer_satisfaction_rating": 3
+    "customer_satisfaction_rating": 3,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "job_104",
@@ -1933,7 +2053,8 @@
     "actual_duration_minutes": 60,
     "invoice_total": 365,
     "completed_at": "2026-07-30T17:00:00Z",
-    "customer_satisfaction_rating": 4
+    "customer_satisfaction_rating": 4,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "job_105",
@@ -1949,7 +2070,8 @@
     "actual_duration_minutes": 105,
     "invoice_total": 420,
     "completed_at": "2026-07-31T17:00:00Z",
-    "customer_satisfaction_rating": 5
+    "customer_satisfaction_rating": 5,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "job_106",
@@ -1965,7 +2087,8 @@
     "actual_duration_minutes": 105,
     "invoice_total": 475,
     "completed_at": "2026-08-01T17:00:00Z",
-    "customer_satisfaction_rating": 3
+    "customer_satisfaction_rating": 3,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "job_107",
@@ -1981,7 +2104,8 @@
     "actual_duration_minutes": 180,
     "invoice_total": 530,
     "completed_at": "2026-08-01T17:00:00Z",
-    "customer_satisfaction_rating": 4
+    "customer_satisfaction_rating": 4,
+    "scheduled_start_time": "10:15"
   },
   {
     "id": "job_108",
@@ -1997,7 +2121,8 @@
     "actual_duration_minutes": 75,
     "invoice_total": 145,
     "completed_at": "2026-08-02T17:00:00Z",
-    "customer_satisfaction_rating": 5
+    "customer_satisfaction_rating": 5,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "job_109",
@@ -2013,7 +2138,8 @@
     "actual_duration_minutes": 75,
     "invoice_total": 200,
     "completed_at": "2026-08-03T17:00:00Z",
-    "customer_satisfaction_rating": 3
+    "customer_satisfaction_rating": 3,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "job_110",
@@ -2029,7 +2155,8 @@
     "actual_duration_minutes": 180,
     "invoice_total": 530,
     "completed_at": "2026-08-04T17:00:00Z",
-    "customer_satisfaction_rating": 4
+    "customer_satisfaction_rating": 4,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "job_111",
@@ -2045,7 +2172,8 @@
     "actual_duration_minutes": 75,
     "invoice_total": 145,
     "completed_at": "2026-08-04T17:00:00Z",
-    "customer_satisfaction_rating": 5
+    "customer_satisfaction_rating": 5,
+    "scheduled_start_time": "11:15"
   },
   {
     "id": "job_112",
@@ -2061,7 +2189,8 @@
     "actual_duration_minutes": 75,
     "invoice_total": 200,
     "completed_at": "2026-08-05T17:00:00Z",
-    "customer_satisfaction_rating": 3
+    "customer_satisfaction_rating": 3,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "job_113",
@@ -2077,7 +2206,8 @@
     "actual_duration_minutes": 120,
     "invoice_total": 255,
     "completed_at": "2026-08-06T17:00:00Z",
-    "customer_satisfaction_rating": 4
+    "customer_satisfaction_rating": 4,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "job_114",
@@ -2093,7 +2223,8 @@
     "actual_duration_minutes": 195,
     "invoice_total": 310,
     "completed_at": "2026-08-07T17:00:00Z",
-    "customer_satisfaction_rating": 5
+    "customer_satisfaction_rating": 5,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "job_115",
@@ -2109,7 +2240,8 @@
     "actual_duration_minutes": 45,
     "invoice_total": 365,
     "completed_at": "2026-08-08T17:00:00Z",
-    "customer_satisfaction_rating": 3
+    "customer_satisfaction_rating": 3,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "job_116",
@@ -2125,7 +2257,8 @@
     "actual_duration_minutes": 90,
     "invoice_total": 420,
     "completed_at": "2026-08-08T17:00:00Z",
-    "customer_satisfaction_rating": 4
+    "customer_satisfaction_rating": 4,
+    "scheduled_start_time": "09:15"
   },
   {
     "id": "job_117",
@@ -2141,7 +2274,8 @@
     "actual_duration_minutes": 135,
     "invoice_total": 475,
     "completed_at": "2026-08-09T17:00:00Z",
-    "customer_satisfaction_rating": 5
+    "customer_satisfaction_rating": 5,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "job_118",
@@ -2157,7 +2291,8 @@
     "actual_duration_minutes": 165,
     "invoice_total": 530,
     "completed_at": "2026-08-09T17:00:00Z",
-    "customer_satisfaction_rating": 3
+    "customer_satisfaction_rating": 3,
+    "scheduled_start_time": "10:15"
   },
   {
     "id": "job_119",
@@ -2173,7 +2308,8 @@
     "actual_duration_minutes": 60,
     "invoice_total": 145,
     "completed_at": "2026-08-10T17:00:00Z",
-    "customer_satisfaction_rating": 4
+    "customer_satisfaction_rating": 4,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "job_120",
@@ -2189,7 +2325,8 @@
     "actual_duration_minutes": 135,
     "invoice_total": 475,
     "completed_at": "2026-08-10T17:00:00Z",
-    "customer_satisfaction_rating": 5
+    "customer_satisfaction_rating": 5,
+    "scheduled_start_time": "09:15"
   },
   {
     "id": "job_121",
@@ -2205,7 +2342,8 @@
     "actual_duration_minutes": 165,
     "invoice_total": 530,
     "completed_at": "2026-08-11T17:00:00Z",
-    "customer_satisfaction_rating": 3
+    "customer_satisfaction_rating": 3,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "job_122",
@@ -2221,7 +2359,8 @@
     "actual_duration_minutes": 60,
     "invoice_total": 145,
     "completed_at": "2026-08-12T17:00:00Z",
-    "customer_satisfaction_rating": 4
+    "customer_satisfaction_rating": 4,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "job_123",
@@ -2237,7 +2376,8 @@
     "actual_duration_minutes": 105,
     "invoice_total": 200,
     "completed_at": "2026-08-12T17:00:00Z",
-    "customer_satisfaction_rating": 5
+    "customer_satisfaction_rating": 5,
+    "scheduled_start_time": "09:15"
   },
   {
     "id": "job_124",
@@ -2253,7 +2393,8 @@
     "actual_duration_minutes": 105,
     "invoice_total": 255,
     "completed_at": "2026-08-13T17:00:00Z",
-    "customer_satisfaction_rating": 3
+    "customer_satisfaction_rating": 3,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "job_125",
@@ -2269,7 +2410,8 @@
     "actual_duration_minutes": 180,
     "invoice_total": 310,
     "completed_at": "2026-08-14T17:00:00Z",
-    "customer_satisfaction_rating": 4
+    "customer_satisfaction_rating": 4,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "job_126",
@@ -2285,7 +2427,8 @@
     "actual_duration_minutes": 75,
     "invoice_total": 365,
     "completed_at": "2026-08-14T17:00:00Z",
-    "customer_satisfaction_rating": 5
+    "customer_satisfaction_rating": 5,
+    "scheduled_start_time": "11:15"
   },
   {
     "id": "job_127",
@@ -2301,7 +2444,8 @@
     "actual_duration_minutes": 75,
     "invoice_total": 420,
     "completed_at": "2026-08-15T17:00:00Z",
-    "customer_satisfaction_rating": 3
+    "customer_satisfaction_rating": 3,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "job_128",
@@ -2317,7 +2461,8 @@
     "actual_duration_minutes": 120,
     "invoice_total": 475,
     "completed_at": "2026-08-16T17:00:00Z",
-    "customer_satisfaction_rating": 4
+    "customer_satisfaction_rating": 4,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "job_129",
@@ -2333,7 +2478,8 @@
     "actual_duration_minutes": null,
     "invoice_total": null,
     "completed_at": null,
-    "customer_satisfaction_rating": null
+    "customer_satisfaction_rating": null,
+    "scheduled_start_time": "10:15"
   },
   {
     "id": "job_130",
@@ -2349,7 +2495,8 @@
     "actual_duration_minutes": 75,
     "invoice_total": 420,
     "completed_at": "2026-08-17T17:00:00Z",
-    "customer_satisfaction_rating": 3
+    "customer_satisfaction_rating": 3,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "job_131",
@@ -2365,7 +2512,8 @@
     "actual_duration_minutes": 120,
     "invoice_total": 475,
     "completed_at": "2026-08-17T17:00:00Z",
-    "customer_satisfaction_rating": 4
+    "customer_satisfaction_rating": 4,
+    "scheduled_start_time": "09:45"
   },
   {
     "id": "job_132",
@@ -2381,7 +2529,8 @@
     "actual_duration_minutes": 195,
     "invoice_total": 530,
     "completed_at": "2026-08-18T17:00:00Z",
-    "customer_satisfaction_rating": 5
+    "customer_satisfaction_rating": 5,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "job_133",
@@ -2397,7 +2546,8 @@
     "actual_duration_minutes": 45,
     "invoice_total": 145,
     "completed_at": "2026-08-18T17:00:00Z",
-    "customer_satisfaction_rating": 3
+    "customer_satisfaction_rating": 3,
+    "scheduled_start_time": "11:15"
   },
   {
     "id": "job_134",
@@ -2413,7 +2563,8 @@
     "actual_duration_minutes": null,
     "invoice_total": null,
     "completed_at": null,
-    "customer_satisfaction_rating": null
+    "customer_satisfaction_rating": null,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "job_135",
@@ -2429,7 +2580,8 @@
     "actual_duration_minutes": null,
     "invoice_total": null,
     "completed_at": null,
-    "customer_satisfaction_rating": null
+    "customer_satisfaction_rating": null,
+    "scheduled_start_time": "09:45"
   },
   {
     "id": "job_136",
@@ -2445,7 +2597,8 @@
     "actual_duration_minutes": null,
     "invoice_total": null,
     "completed_at": null,
-    "customer_satisfaction_rating": null
+    "customer_satisfaction_rating": null,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "job_137",
@@ -2461,7 +2614,8 @@
     "actual_duration_minutes": null,
     "invoice_total": null,
     "completed_at": null,
-    "customer_satisfaction_rating": null
+    "customer_satisfaction_rating": null,
+    "scheduled_start_time": "11:15"
   },
   {
     "id": "job_138",
@@ -2477,7 +2631,8 @@
     "actual_duration_minutes": null,
     "invoice_total": null,
     "completed_at": null,
-    "customer_satisfaction_rating": null
+    "customer_satisfaction_rating": null,
+    "scheduled_start_time": "12:30"
   },
   {
     "id": "job_139",
@@ -2493,7 +2648,8 @@
     "actual_duration_minutes": null,
     "invoice_total": null,
     "completed_at": null,
-    "customer_satisfaction_rating": null
+    "customer_satisfaction_rating": null,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "job_140",
@@ -2509,7 +2665,8 @@
     "actual_duration_minutes": null,
     "invoice_total": null,
     "completed_at": null,
-    "customer_satisfaction_rating": null
+    "customer_satisfaction_rating": null,
+    "scheduled_start_time": "10:15"
   },
   {
     "id": "job_141",
@@ -2525,7 +2682,8 @@
     "actual_duration_minutes": null,
     "invoice_total": null,
     "completed_at": null,
-    "customer_satisfaction_rating": null
+    "customer_satisfaction_rating": null,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "job_142",
@@ -2541,7 +2699,8 @@
     "actual_duration_minutes": null,
     "invoice_total": null,
     "completed_at": null,
-    "customer_satisfaction_rating": null
+    "customer_satisfaction_rating": null,
+    "scheduled_start_time": "09:45"
   },
   {
     "id": "job_143",
@@ -2557,7 +2716,8 @@
     "actual_duration_minutes": null,
     "invoice_total": null,
     "completed_at": null,
-    "customer_satisfaction_rating": null
+    "customer_satisfaction_rating": null,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "job_301",
@@ -2573,7 +2733,8 @@
     "actual_duration_minutes": 165,
     "invoice_total": 310,
     "completed_at": "2026-08-11T17:00:00Z",
-    "customer_satisfaction_rating": 3
+    "customer_satisfaction_rating": 3,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "job_302",
@@ -2589,7 +2750,8 @@
     "actual_duration_minutes": 60,
     "invoice_total": 365,
     "completed_at": "2026-08-14T17:00:00Z",
-    "customer_satisfaction_rating": 4
+    "customer_satisfaction_rating": 4,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "job_303",
@@ -2605,7 +2767,8 @@
     "actual_duration_minutes": null,
     "invoice_total": null,
     "completed_at": null,
-    "customer_satisfaction_rating": null
+    "customer_satisfaction_rating": null,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "job_304",
@@ -2621,7 +2784,8 @@
     "actual_duration_minutes": null,
     "invoice_total": null,
     "completed_at": null,
-    "customer_satisfaction_rating": null
+    "customer_satisfaction_rating": null,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0143",
@@ -2637,7 +2801,8 @@
     "actual_duration_minutes": 90,
     "invoice_total": 200,
     "completed_at": "2026-02-16T17:00:00Z",
-    "customer_satisfaction_rating": 4
+    "customer_satisfaction_rating": 4,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0144",
@@ -2653,7 +2818,8 @@
     "actual_duration_minutes": 135,
     "invoice_total": 255,
     "completed_at": "2026-02-18T17:00:00Z",
-    "customer_satisfaction_rating": 5
+    "customer_satisfaction_rating": 5,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0156",
@@ -2669,7 +2835,8 @@
     "actual_duration_minutes": 195,
     "invoice_total": 310,
     "completed_at": "2026-03-06T17:00:00Z",
-    "customer_satisfaction_rating": 5
+    "customer_satisfaction_rating": 5,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0155",
@@ -2685,7 +2852,8 @@
     "actual_duration_minutes": 120,
     "invoice_total": 255,
     "completed_at": "2026-03-11T17:00:00Z",
-    "customer_satisfaction_rating": 4
+    "customer_satisfaction_rating": 4,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0159",
@@ -2701,7 +2869,8 @@
     "actual_duration_minutes": 135,
     "invoice_total": 475,
     "completed_at": "2026-03-19T17:00:00Z",
-    "customer_satisfaction_rating": 5
+    "customer_satisfaction_rating": 5,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0150",
@@ -2717,7 +2886,8 @@
     "actual_duration_minutes": 105,
     "invoice_total": 420,
     "completed_at": "2026-04-05T17:00:00Z",
-    "customer_satisfaction_rating": 5
+    "customer_satisfaction_rating": 5,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0146",
@@ -2733,7 +2903,8 @@
     "actual_duration_minutes": 60,
     "invoice_total": 365,
     "completed_at": "2026-04-30T17:00:00Z",
-    "customer_satisfaction_rating": 4
+    "customer_satisfaction_rating": 4,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0158",
@@ -2749,7 +2920,8 @@
     "actual_duration_minutes": 90,
     "invoice_total": 420,
     "completed_at": "2026-05-22T17:00:00Z",
-    "customer_satisfaction_rating": 4
+    "customer_satisfaction_rating": 4,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0160",
@@ -2765,7 +2937,8 @@
     "actual_duration_minutes": 45,
     "invoice_total": 365,
     "completed_at": "2026-05-22T17:00:00Z",
-    "customer_satisfaction_rating": 3
+    "customer_satisfaction_rating": 3,
+    "scheduled_start_time": "09:45"
   },
   {
     "id": "sj_0145",
@@ -2781,7 +2954,8 @@
     "actual_duration_minutes": 165,
     "invoice_total": 310,
     "completed_at": "2026-06-13T17:00:00Z",
-    "customer_satisfaction_rating": 3
+    "customer_satisfaction_rating": 3,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0148",
@@ -2797,7 +2971,8 @@
     "actual_duration_minutes": null,
     "invoice_total": null,
     "completed_at": null,
-    "customer_satisfaction_rating": null
+    "customer_satisfaction_rating": null,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0152",
@@ -2813,7 +2988,8 @@
     "actual_duration_minutes": 180,
     "invoice_total": 530,
     "completed_at": "2026-07-03T17:00:00Z",
-    "customer_satisfaction_rating": 4
+    "customer_satisfaction_rating": 4,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0153",
@@ -2829,7 +3005,8 @@
     "actual_duration_minutes": 75,
     "invoice_total": 145,
     "completed_at": "2026-07-19T17:00:00Z",
-    "customer_satisfaction_rating": 5
+    "customer_satisfaction_rating": 5,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0154",
@@ -2845,7 +3022,8 @@
     "actual_duration_minutes": null,
     "invoice_total": null,
     "completed_at": null,
-    "customer_satisfaction_rating": null
+    "customer_satisfaction_rating": null,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0157",
@@ -2861,7 +3039,8 @@
     "actual_duration_minutes": null,
     "invoice_total": null,
     "completed_at": null,
-    "customer_satisfaction_rating": null
+    "customer_satisfaction_rating": null,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0161",
@@ -2877,7 +3056,8 @@
     "actual_duration_minutes": null,
     "invoice_total": null,
     "completed_at": null,
-    "customer_satisfaction_rating": null
+    "customer_satisfaction_rating": null,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0151",
@@ -2893,7 +3073,8 @@
     "actual_duration_minutes": null,
     "invoice_total": null,
     "completed_at": null,
-    "customer_satisfaction_rating": null
+    "customer_satisfaction_rating": null,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0149",
@@ -2909,7 +3090,8 @@
     "actual_duration_minutes": null,
     "invoice_total": null,
     "completed_at": null,
-    "customer_satisfaction_rating": null
+    "customer_satisfaction_rating": null,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0147",
@@ -2925,7 +3107,8 @@
     "actual_duration_minutes": null,
     "invoice_total": null,
     "completed_at": null,
-    "customer_satisfaction_rating": null
+    "customer_satisfaction_rating": null,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0169",
@@ -2941,7 +3124,8 @@
     "actual_duration_minutes": 75,
     "invoice_total": 420,
     "completed_at": "2026-01-10T17:00:00Z",
-    "customer_satisfaction_rating": 3
+    "customer_satisfaction_rating": 3,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0162",
@@ -2957,7 +3141,8 @@
     "actual_duration_minutes": 135,
     "invoice_total": 475,
     "completed_at": "2026-01-16T17:00:00Z",
-    "customer_satisfaction_rating": 5
+    "customer_satisfaction_rating": 5,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0174",
@@ -2973,7 +3158,8 @@
     "actual_duration_minutes": 195,
     "invoice_total": 530,
     "completed_at": "2026-01-24T17:00:00Z",
-    "customer_satisfaction_rating": 5
+    "customer_satisfaction_rating": 5,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0180",
@@ -2989,7 +3175,8 @@
     "actual_duration_minutes": 135,
     "invoice_total": 255,
     "completed_at": "2026-02-22T17:00:00Z",
-    "customer_satisfaction_rating": 5
+    "customer_satisfaction_rating": 5,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0175",
@@ -3005,7 +3192,8 @@
     "actual_duration_minutes": 45,
     "invoice_total": 145,
     "completed_at": "2026-03-07T17:00:00Z",
-    "customer_satisfaction_rating": 3
+    "customer_satisfaction_rating": 3,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0179",
@@ -3021,7 +3209,8 @@
     "actual_duration_minutes": 60,
     "invoice_total": 365,
     "completed_at": "2026-04-11T17:00:00Z",
-    "customer_satisfaction_rating": 4
+    "customer_satisfaction_rating": 4,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0181",
@@ -3037,7 +3226,8 @@
     "actual_duration_minutes": null,
     "invoice_total": null,
     "completed_at": null,
-    "customer_satisfaction_rating": null
+    "customer_satisfaction_rating": null,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0170",
@@ -3053,7 +3243,8 @@
     "actual_duration_minutes": 180,
     "invoice_total": 310,
     "completed_at": "2026-05-14T17:00:00Z",
-    "customer_satisfaction_rating": 4
+    "customer_satisfaction_rating": 4,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0176",
@@ -3069,7 +3260,8 @@
     "actual_duration_minutes": 90,
     "invoice_total": 200,
     "completed_at": "2026-05-22T17:00:00Z",
-    "customer_satisfaction_rating": 4
+    "customer_satisfaction_rating": 4,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0163",
@@ -3085,7 +3277,8 @@
     "actual_duration_minutes": 165,
     "invoice_total": 530,
     "completed_at": "2026-06-22T17:00:00Z",
-    "customer_satisfaction_rating": 3
+    "customer_satisfaction_rating": 3,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0167",
@@ -3101,7 +3294,8 @@
     "actual_duration_minutes": 180,
     "invoice_total": 310,
     "completed_at": "2026-06-23T17:00:00Z",
-    "customer_satisfaction_rating": 4
+    "customer_satisfaction_rating": 4,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0164",
@@ -3117,7 +3311,8 @@
     "actual_duration_minutes": 60,
     "invoice_total": 145,
     "completed_at": "2026-06-26T17:00:00Z",
-    "customer_satisfaction_rating": 4
+    "customer_satisfaction_rating": 4,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0178",
@@ -3133,7 +3328,8 @@
     "actual_duration_minutes": 165,
     "invoice_total": 310,
     "completed_at": "2026-07-13T17:00:00Z",
-    "customer_satisfaction_rating": 3
+    "customer_satisfaction_rating": 3,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0168",
@@ -3149,7 +3345,8 @@
     "actual_duration_minutes": 75,
     "invoice_total": 365,
     "completed_at": "2026-07-28T17:00:00Z",
-    "customer_satisfaction_rating": 5
+    "customer_satisfaction_rating": 5,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0171",
@@ -3165,7 +3362,8 @@
     "actual_duration_minutes": 75,
     "invoice_total": 365,
     "completed_at": "2026-08-05T17:00:00Z",
-    "customer_satisfaction_rating": 5
+    "customer_satisfaction_rating": 5,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0177",
@@ -3181,7 +3379,8 @@
     "actual_duration_minutes": null,
     "invoice_total": null,
     "completed_at": null,
-    "customer_satisfaction_rating": null
+    "customer_satisfaction_rating": null,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0172",
@@ -3197,7 +3396,8 @@
     "actual_duration_minutes": null,
     "invoice_total": null,
     "completed_at": null,
-    "customer_satisfaction_rating": null
+    "customer_satisfaction_rating": null,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0173",
@@ -3213,7 +3413,8 @@
     "actual_duration_minutes": null,
     "invoice_total": null,
     "completed_at": null,
-    "customer_satisfaction_rating": null
+    "customer_satisfaction_rating": null,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0165",
@@ -3229,7 +3430,8 @@
     "actual_duration_minutes": null,
     "invoice_total": null,
     "completed_at": null,
-    "customer_satisfaction_rating": null
+    "customer_satisfaction_rating": null,
+    "scheduled_start_time": "08:00"
   },
   {
     "id": "sj_0166",
@@ -3245,6 +3447,7 @@
     "actual_duration_minutes": null,
     "invoice_total": null,
     "completed_at": null,
-    "customer_satisfaction_rating": null
+    "customer_satisfaction_rating": null,
+    "scheduled_start_time": "08:00"
   }
 ]

@@ -14,6 +14,8 @@
     "dev:analytics": "npm run dev --workspace=@fieldflow/analytics",
     "seed:supabase": "node scripts/seed-supabase.mjs",
     "prepare:demo-data": "node scripts/expand-canonical-demo-jobs.mjs",
+    "backfill:job-times": "node scripts/backfill-job-start-times.mjs",
+    "backfill:live-demo-job-times": "node scripts/backfill-live-demo-job-times.mjs",
     "enrich:demo-metrics": "node scripts/enrich-synthetic-job-metrics.mjs",
     "generate:demo-activity": "node scripts/generate-synthetic-activity.mjs",
     "verify:supabase": "node scripts/verify-supabase.mjs",
