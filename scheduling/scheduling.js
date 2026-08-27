@@ -349,24 +349,61 @@ import { assigneeLabel } from '../shared-data/jobPresentation.js';
     const address = client ? clientAddressLine(client) : 'No address on file';
     const phone = client && client.client_phone ? client.client_phone : 'No phone on file';
     return (
-      '<div class="muted job-meta">#' + escapeHtml(job.id) + ' · ' + escapeHtml(address) + '</div>' +
-      '<div class="muted job-meta">' + escapeHtml(phone) + '</div>'
+      '<span class="job-fact">📍 ' + escapeHtml(address) + '</span>' +
+      '<span class="job-fact"># ' + escapeHtml(job.id) + '</span>' +
+      '<span class="job-fact">📞 ' + escapeHtml(phone) + '</span>'
     );
+  }
+
+  // Quick actions for a job card: call the client or open directions,
+  // using the phone/address already on the client record. Real links
+  // (tel: / a maps search), not part of the edit flow, so tapping one
+  // shouldn't also open the edit modal (see the stopPropagation wiring
+  // in renderHome).
+  function jobActionsHtml(job) {
+    const client = clients.find((c) => c.id === job.client_id);
+    const phone = client && client.client_phone ? client.client_phone : '';
+    const address = client ? clientAddressLine(client) : '';
+    const telHref = phone ? 'tel:' + phone.replace(/[^\d+]/g, '') : '';
+    const mapsHref = address && address !== 'No address on file' ? 'https://maps.google.com/?q=' + encodeURIComponent(address) : '';
+    if (!telHref && !mapsHref) return '';
+    return (
+      '<div class="job-actions">' +
+        (telHref ? '<a class="job-action-btn" href="' + telHref + '">📞 Call client</a>' : '') +
+        (mapsHref ? '<a class="job-action-btn" href="' + mapsHref + '" target="_blank" rel="noopener">🧭 Get directions</a>' : '') +
+      '</div>'
+    );
+  }
+
+  function jobCategoryIcon(job) {
+    const icons = { Installation: '🛠️', Inspection: '🔎', Maintenance: '🔧', Repair: '🧰' };
+    return icons[job.job_category] || '📋';
+  }
+
+  // Each job category gets its own icon-badge tint so the "Today"/"Upcoming"
+  // lists read at a glance, the way the reference design color-codes job
+  // types (e.g. maintenance vs. an electrical/inspection visit).
+  function jobCategoryTint(job) {
+    const tints = { Installation: 'sage', Inspection: 'ochre', Maintenance: 'rose', Repair: 'terracotta' };
+    return tints[job.job_category] || 'neutral';
   }
 
   // Renders one job as a full-width row (used on the Home dashboard, in
   // both the "Today" and "Upcoming work" sections).
   function jobRowHtml(job, isConflict) {
+    const isConfirmed = confirmationStatus(job) === 'confirmed';
     return (
-      '<article class="job ' + (isConflict ? 'is-conflict' : '') + '" data-job-id="' + job.id + '">' +
-        '<div>' +
-          '<strong>' + escapeHtml(job.title) + '</strong>' +
-          '<div class="muted">' + escapeHtml(clientName(job.client_id, clients)) + ' · ' + escapeHtml(assigneeLabel(job.assignee)) + '</div>' +
-          jobContactLinesHtml(job) +
+      '<article class="job ' + (isConflict ? 'is-conflict' : '') + (isConfirmed ? ' is-confirmed' : '') + '" data-job-id="' + job.id + '">' +
+        '<div class="job-time"><strong>' + (job.scheduled_start_time ? formatTime(job.scheduled_start_time) : 'Time TBD') + '</strong><span>' + (job.estimated_duration_minutes ? job.estimated_duration_minutes + ' min' : 'Duration TBD') + '</span></div>' +
+        '<div class="job-main">' +
+          '<div class="job-title"><span class="job-type-icon tint-' + jobCategoryTint(job) + '" aria-hidden="true">' + jobCategoryIcon(job) + '</span><strong>' + escapeHtml(job.title) + '</strong></div>' +
+          '<div class="job-client">👤 ' + escapeHtml(clientName(job.client_id, clients)) + ' <span>·</span> ' + escapeHtml(assigneeLabel(job.assignee)) + '</div>' +
+          '<div class="job-facts">' + jobContactLinesHtml(job) + '</div>' +
+          jobActionsHtml(job) +
           (isConflict ? conflictFlagHtml() : '') +
         '</div>' +
-        '<div style="text-align:right">' + statusBadge(job.status) + ' ' + confirmationBadgeHtml(job) +
-          '<div class="muted" style="margin-top:6px">' + formatDate(job.scheduled_for) + (job.scheduled_start_time ? ' · ' + formatTime(job.scheduled_start_time) : '') + '</div>' +
+        '<div class="job-state">' + statusBadge(job.status) + confirmationBadgeHtml(job) +
+          '<div class="job-date">🗓️ ' + formatDate(job.scheduled_for) + '</div>' +
         '</div>' +
       '</article>'
     );
@@ -392,11 +429,12 @@ import { assigneeLabel } from '../shared-data/jobPresentation.js';
 
   // ---- Home tab ----
   const NEEDS_ATTENTION_META = {
-    unassigned: { label: 'Unassigned jobs' },
-    cancelled_week: { label: 'Cancelled this week' },
-    today: { label: 'Scheduled today' },
-    awaiting_confirmation: { label: 'Awaiting confirmation' },
+    unassigned: { label: 'Unassigned jobs', icon: '❔', tint: 'rose' },
+    cancelled_week: { label: 'Cancelled this week', icon: '✕', tint: 'neutral' },
+    today: { label: 'Scheduled today', icon: '📅', tint: 'sage' },
+    awaiting_confirmation: { label: 'Awaiting confirmation', icon: '⏳', tint: 'ochre' },
   };
+  const STATUS_ICONS = { scheduled: '🗓️', in_progress: '▶️', completed: '✅', cancelled: '✕' };
 
   function renderHome() {
     const aJobs = accountJobs();
@@ -407,7 +445,12 @@ import { assigneeLabel } from '../shared-data/jobPresentation.js';
     // Status summary cards: one per possible status, with a live count.
     statusGrid.innerHTML = STATUS_VALUES.map((status) => {
       const count = aJobs.filter((j) => j.status === status).length;
-      return '<div class="card"><span class="muted">' + STATUS_LABELS[status] + '</span><div class="metric">' + count + '</div></div>';
+      return (
+        '<div class="card stat-card">' +
+          '<span class="stat-icon tint-neutral" aria-hidden="true">' + STATUS_ICONS[status] + '</span>' +
+          '<div class="stat-text"><div class="metric">' + count + '</div><span class="muted">' + STATUS_LABELS[status] + '</span></div>' +
+        '</div>'
+      );
     }).join('');
 
     // "Needs attention": one clickable chip per group above. Clicking a
@@ -417,10 +460,11 @@ import { assigneeLabel } from '../shared-data/jobPresentation.js';
     if (needsAttentionGrid) {
       needsAttentionGrid.innerHTML = Object.keys(NEEDS_ATTENTION_META).map((key) => {
         const count = groups[key].length;
+        const meta = NEEDS_ATTENTION_META[key];
         return (
-          '<button type="button" class="card needs-attention-card' + (homeFilter === key ? ' is-active' : '') + '" data-filter="' + key + '">' +
-            '<span class="muted">' + NEEDS_ATTENTION_META[key].label + '</span>' +
-            '<div class="metric">' + count + '</div>' +
+          '<button type="button" class="card stat-card needs-attention-card' + (homeFilter === key ? ' is-active' : '') + '" data-filter="' + key + '">' +
+            '<span class="stat-icon tint-' + meta.tint + '" aria-hidden="true">' + meta.icon + '</span>' +
+            '<div class="stat-text"><div class="metric">' + count + '</div><span class="muted">' + meta.label + '</span></div>' +
           '</button>'
         );
       }).join('');
@@ -475,6 +519,11 @@ import { assigneeLabel } from '../shared-data/jobPresentation.js';
         const job = jobs.find((j) => j.id === node.dataset.jobId);
         if (job) openEditJob(job);
       });
+    });
+    // Call/directions are real links inside the job card; stop their
+    // clicks from also bubbling up to the card's "open edit modal" handler.
+    Array.from(document.querySelectorAll('#homeView .job-action-btn')).forEach((btn) => {
+      btn.addEventListener('click', (e) => e.stopPropagation());
     });
   }
 

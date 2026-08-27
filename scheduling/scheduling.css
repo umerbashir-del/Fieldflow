@@ -40,13 +40,55 @@ main { max-width: 1040px; margin: 0 auto; padding: 48px 24px; }
 header, .topbar { display: flex; justify-content: space-between; gap: 20px; align-items: start; margin-bottom: 32px; }
 h1 { margin: 0 0 6px; font-size: clamp(2rem, 4vw, 3rem); }
 h2 { margin-top: 0; }
+.schedule-intro { color: var(--ff-color-muted); margin: 10px 0 0; max-width: 560px; }
 .eyebrow { color: var(--ff-color-accent-600); font-weight: 750; letter-spacing: .08em; text-transform: uppercase; font-size: .75rem; }
 .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 16px; }
 .analytics-link-row { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 14px; }
 .analytics-link { display: inline-block; padding: 10px 14px; border-radius: 8px; background: var(--ff-color-brand-700); color: #fff; font: inherit; font-weight: 700; text-decoration: none; }
 .card { background: var(--ff-color-surface); border: 1px solid var(--ff-color-border); border-radius: 16px; padding: 20px; box-shadow: var(--ff-shadow-card); }
 .metric { font-size: 2rem; font-weight: 800; margin: 8px 0; }
-.job { display: flex; justify-content: space-between; gap: 16px; align-items: center; margin-top: 12px; padding: 16px; border-radius: 12px; background: var(--ff-color-surface); border: 1px solid var(--ff-color-border); cursor: pointer; }
+.status-overview .card { border-radius: 14px; box-shadow: none; padding: 16px; }
+.dashboard-section { position: relative; }
+
+/* Icon-badge stat rows (Needs Attention chips + status summary cards):
+   a tinted icon square beside a bold number and a muted label underneath,
+   the same "stat tile" language the reference design uses throughout. */
+.stat-card { align-items: center; display: flex; gap: 14px; text-align: left; }
+.stat-icon { align-items: center; border-radius: 12px; display: flex; flex: 0 0 auto; font-size: 1.15rem; height: 44px; justify-content: center; width: 44px; }
+.stat-text { display: flex; flex-direction: column; gap: 2px; }
+.stat-text .metric { font-size: 1.5rem; margin: 0; }
+.stat-text .muted { font-size: .82rem; }
+.status-overview .stat-text .metric { color: var(--ff-color-brand-700); font-size: 1.4rem; }
+.needs-attention-card .stat-text .metric { color: var(--ff-color-brand-700); }
+
+/* Shared tint palette for stat icons and job-type icons, reusing the
+   existing brand tokens rather than introducing new colors. */
+.tint-neutral { background: var(--ff-color-accent-100); color: var(--ff-color-accent-600); }
+.tint-sage { background: #e6ede1; color: var(--ff-color-forest-700); }
+.tint-ochre { background: #f3e6cc; color: var(--ff-color-ochre-500); }
+.tint-rose { background: #f3e2e4; color: var(--ff-color-rose-500); }
+.tint-terracotta { background: #f0ddd2; color: var(--ff-color-terracotta-500); }
+.section-helper { color: var(--ff-color-muted); font-size: .86rem; margin: 4px 0 0; }
+.job { align-items: stretch; background: var(--ff-color-surface); border: 1px solid var(--ff-color-border); border-radius: 16px; cursor: pointer; display: grid; gap: 18px; grid-template-columns: 92px minmax(0, 1fr) auto; margin-top: 12px; padding: 18px; transition: border-color .15s ease, box-shadow .15s ease, transform .15s ease; }
+.job:hover { border-color: var(--ff-color-brand-600); box-shadow: var(--ff-shadow-card); transform: translateY(-1px); }
+.job-time { border-right: 1px solid var(--ff-color-border); display: flex; flex-direction: column; gap: 3px; justify-content: center; padding-right: 16px; }
+.job-time strong { font-size: 1rem; letter-spacing: -.02em; }
+.job-time span, .job-date { color: var(--ff-color-muted); font-size: .78rem; }
+.job-main { min-width: 0; }
+.job-title { align-items: center; display: flex; gap: 9px; }
+.job-title strong { font-size: 1.05rem; line-height: 1.25; }
+.job-type-icon { align-items: center; border-radius: 10px; display: inline-flex; flex: 0 0 auto; font-size: 1.05rem; height: 34px; justify-content: center; width: 34px; }
+.job-client { color: var(--ff-color-muted); font-size: .88rem; margin-top: 7px; }
+.job-client span { color: var(--ff-color-taupe-400); }
+.job-facts { display: flex; flex-wrap: wrap; gap: 5px 15px; margin-top: 8px; }
+.job-fact { color: var(--ff-color-muted); font-size: .8rem; overflow-wrap: anywhere; }
+.job-state { align-items: flex-end; display: flex; flex-direction: column; gap: 7px; min-width: max-content; }
+.job-state .confirm-badge { margin-left: 0; }
+.job.is-conflict { border-color: #e08a8a; }
+.job.is-confirmed { background: #f5f9f5; border-color: var(--ff-color-brand-600); }
+.job-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.job-action-btn { align-items: center; background: var(--ff-color-surface); border: 1px solid var(--ff-color-border); border-radius: 999px; color: var(--ff-color-brand-700); display: inline-flex; font-size: .78rem; font-weight: 700; gap: 5px; padding: 6px 12px; text-decoration: none; }
+.job-action-btn:hover { background: var(--ff-color-accent-100); border-color: var(--ff-color-brand-600); }
 .muted { color: var(--ff-color-muted); }
 .badge { display: inline-block; border-radius: 999px; padding: 5px 9px; background: var(--ff-color-accent-100); color: var(--ff-color-accent-600); font-size: .8rem; font-weight: 700; text-transform: capitalize; }
 button { border: 0; border-radius: 8px; background: var(--ff-color-brand-700); color: white; padding: 10px 14px; font: inherit; cursor: pointer; }
@@ -73,7 +115,7 @@ input, select { width: 100%; padding: 12px; border: 1px solid var(--ff-color-bor
 .badge-cancelled { background: #f7ecec; color: #713e43; }
 .job-meta { font-size: .82rem; margin-top: 2px; }
 .confirm-badge { margin-left: 6px; }
-.confirm-pending { background: #f7ecec; color: #713e43; }
+.confirm-pending { background: var(--ff-color-accent-100); color: var(--ff-color-accent-600); }
 .confirm-contacted { background: #f7efd9; color: #7c5d24; }
 .confirm-confirmed { background: #e1f4e7; color: #17613c; }
 .confirm-no_response { background: #f7ecec; color: #713e43; }
@@ -149,7 +191,7 @@ button.btn-danger.is-armed { background: #8a1f1f; color: #fff; border-color: #8a
 .client-list { display: flex; flex-direction: column; gap: 10px; }
 .client-row { display: flex; justify-content: space-between; align-items: center; padding: 14px 16px; border-radius: 12px; background: #fff; border: 1px solid #dbe6de; }
 
-.section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.section-header { align-items: center; display: flex; justify-content: space-between; margin-bottom: 12px; }
 .empty-state { color: #617168; padding: 24px; text-align: center; border: 1px dashed #dbe6de; border-radius: 12px; }
 
 section[hidden] { display: none; }
@@ -160,6 +202,9 @@ section[hidden] { display: none; }
   .topbar-actions { flex-wrap: wrap; width: 100%; }
   .topbar-actions button { flex: 1 1 auto; }
   .tabs { max-width: 100%; overflow-x: auto; }
-  .job, .agenda-item, .client-row { align-items: flex-start; flex-direction: column; }
+  .job { gap: 12px; grid-template-columns: 76px minmax(0, 1fr); padding: 15px; }
+  .job-time { padding-right: 12px; }
+  .job-state { align-items: flex-start; flex-direction: row; flex-wrap: wrap; grid-column: 2; min-width: 0; }
+  .agenda-item, .client-row { align-items: flex-start; flex-direction: column; }
   .cal-nav { flex-wrap: wrap; }
 }
