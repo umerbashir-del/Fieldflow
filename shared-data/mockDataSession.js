@@ -64,15 +64,37 @@ function applyRecordChanges(baseline, changes) {
   return [...records.values()];
 }
 
+// Older local demo sessions store complete job records in window.name. When
+// the bundled baseline gains a new field, retain a person's edits while
+// filling in only fields that did not exist in their older saved records.
+function hydrateScheduledStartTimes(records, baselineJobs) {
+  const baselineById = new Map((baselineJobs ?? []).map((job) => [job.id, job]));
+  return records.map((job) => {
+    if (Object.hasOwn(job, 'scheduled_start_time')) return job;
+    const baselineJob = baselineById.get(job.id);
+    return baselineJob?.scheduled_start_time
+      ? { ...job, scheduled_start_time: baselineJob.scheduled_start_time }
+      : job;
+  });
+}
+
 export function loadMockAccountData(accountId, fallback) {
   const session = readSession();
   const saved = session.accounts[accountId];
-  if (saved && Array.isArray(saved.clients) && Array.isArray(saved.jobs)) return clone(saved);
+  if (saved && Array.isArray(saved.clients) && Array.isArray(saved.jobs)) {
+    return {
+      clients: clone(saved.clients),
+      jobs: clone(hydrateScheduledStartTimes(saved.jobs, fallback.jobs)),
+    };
+  }
   const changes = session.changes[accountId];
   if (changes) {
     return {
       clients: applyRecordChanges((fallback.clients ?? []).filter((client) => client.account_id === accountId), changes.clients),
-      jobs: applyRecordChanges((fallback.jobs ?? []).filter((job) => job.account_id === accountId), changes.jobs),
+      jobs: hydrateScheduledStartTimes(
+        applyRecordChanges((fallback.jobs ?? []).filter((job) => job.account_id === accountId), changes.jobs),
+        fallback.jobs,
+      ),
     };
   }
   return {
