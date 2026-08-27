@@ -48,9 +48,7 @@ const STORAGE_KEY = 'fieldflow_chatbot_account_v1';
 
 const SUGGESTIONS = [
   'How do I create a new job?',
-  'What do job statuses mean?',
   "What's my plan?",
-  "Why can't I see another company's jobs?",
   'What jobs do I have this week?',
 ];
 

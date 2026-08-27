@@ -75,7 +75,7 @@ body {
 
 .ff-card {
   width: 100%;
-  height: min(640px, calc(100vh - 48px));
+  height: min(720px, calc(100vh - 48px));
   background: var(--ff-color-surface);
   border: 1px solid var(--ff-color-border);
   border-radius: 20px;
@@ -228,7 +228,7 @@ body.ff-embed .ff-sign-out { display: none; }
 
 .ff-bubble {
   padding: 12px 15px;
-  font-size: .9rem; line-height: 1.5;
+  font-size: 1rem; line-height: 1.55;
   white-space: pre-line; word-wrap: break-word;
   animation: ff-in .32s cubic-bezier(.2,.7,.3,1) both;
 }
