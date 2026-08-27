@@ -228,7 +228,7 @@ body.ff-embed .ff-sign-out { display: none; }
 
 .ff-bubble {
   padding: 12px 15px;
-  font-size: .9rem; line-height: 1.5;
+  font-size: 1rem; line-height: 1.55;
   white-space: pre-line; word-wrap: break-word;
   animation: ff-in .32s cubic-bezier(.2,.7,.3,1) both;
 }
