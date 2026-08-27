@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { getAccountById, getAnalyticsSummary, getClientsForAccount, getJobActivityForAccount, getJobsForAccount, getOperationsSession, getSignedInAccount, isSupabaseConfigured, signOut, subscribeToAccountChanges } from '../../shared-data/supabase.js';
 import { buildMockAppLink, isMockContractor, mockUserFromSearch } from '../../shared-data/mockSession.js';
 import { buildMockDataLink, loadMockAccountData } from '../../shared-data/mockDataSession.js';
-import { buildAnalyticsInsights, buildAnalyticsSummary, buildSchedulingLink, changePresentation, chatSummaryText, toIsoDate } from './analyticsSummary.js';
+import { buildAnalyticsInsights, buildAnalyticsSummary, buildSchedulingLink, changePresentation, toIsoDate } from './analyticsSummary.js';
 import SignInPage from './SignInPage.jsx';
 import { APP_URLS } from '../../shared-data/appConfig.js';
 import { formatReportingDate, reportingDateFromAccount, toggleReportingDateInCurrentUrl, withReportingDate } from '../../shared-data/reportingDate.js';
@@ -58,7 +58,6 @@ export default function AnalyticsPage() {
   const [timeframe, setTimeframe] = useState('this_week');
   const [customRange, setCustomRange] = useState({ start: '', end: '' });
   const [inactiveDays, setInactiveDays] = useState(30);
-  const [copyStatus, setCopyStatus] = useState('');
   const [hoveredPoint, setHoveredPoint] = useState(null);
   const [visibleInsights, setVisibleInsights] = useState(() => new Set(INSIGHT_OPTIONS.map((option) => option.id)));
   const [sessionState, setSessionState] = useState({ loading: isSupabaseConfigured, account: null, clients: [], jobs: [], activities: [], user: null, isOps: false, error: '' });
@@ -201,10 +200,6 @@ export default function AnalyticsPage() {
   const operationsReturnBase = `${OPERATIONS_URL}${isDemoOps ? '?demo_user=ops' : ''}&account_id=${encodeURIComponent(accountId)}`.replace('?&', '?');
   const returnLink = isOperationsView ? withReportingDate(operationsReturnBase, reporting) : schedulingLink;
   const returnLabel = isOperationsView ? 'Back to Operations' : 'Back to Scheduling';
-  const copyChatSummary = async () => {
-    await navigator.clipboard.writeText(chatSummaryText(account?.name ?? 'Your business', summary));
-    setCopyStatus('Copied — paste this into FieldFlow Chat.');
-  };
   const maxJobs = Math.max(...trend.map((week) => week.jobs), 1);
   const chartWidth = 560;
   const chartHeight = 280;
@@ -410,13 +405,6 @@ export default function AnalyticsPage() {
           <text className="chart-axis-title" x={chartLeft + plotWidth / 2} y={chartHeight - 6} textAnchor="middle">{selectedPeriod.granularity === 'day' ? 'Day' : 'Week beginning'}</text>
           <text className="chart-axis-title" x="15" y={chartTop + plotHeight / 2} textAnchor="middle" transform={`rotate(-90 15 ${chartTop + plotHeight / 2})`}>Scheduled jobs</text>
         </svg>
-      </section>
-
-      <section className="integration-actions" aria-label="Connect with other FieldFlow tools">
-        <div>
-          <button className="copy-button" type="button" title="Copies the current Analytics summary so you can paste it into FieldFlow Chat." onClick={copyChatSummary}><Icon name="receipt" />Copy summary for Chat</button>
-          {copyStatus && <p className="copy-status" role="status">{copyStatus}</p>}
-        </div>
       </section>
     </main>
   );
