@@ -104,9 +104,9 @@ if (isSupabaseConfigured) {
     // A stale or invalid stored session must not block the sign-in form.
     // Clear it when possible, then let the person establish a fresh session.
     try { await signOut(); } catch { /* the local sign-in form still works offline */ }
-    liveLoadError = 'Your previous session could not be restored. Please sign in again.';
-    error.textContent = liveLoadError;
-    document.getElementById('operationsLoginDescription').textContent = liveLoadError;
+    liveLoadError = '';
+    error.textContent = '';
+    document.getElementById('operationsLoginDescription').textContent = 'Use your registered FieldFlow staff email and password. Contractor accounts use Scheduling instead.';
     retryButton.hidden = true;
   });
 }

@@ -32,7 +32,9 @@ if (isSupabaseConfigured) {
     // Do not leave a broken or stale automatic session blocking the login
     // screen. The person can establish a fresh Operations session instead.
     try { await signOut(); } catch { /* Keep the sign-in form usable if offline. */ }
-    loadError = 'Your previous session could not be restored. Please sign in again.';
+    // The login gate remains visible; do not leave an error from a cleared
+    // session on a form that is ready for a fresh sign-in.
+    loadError = '';
   }
 }
 
