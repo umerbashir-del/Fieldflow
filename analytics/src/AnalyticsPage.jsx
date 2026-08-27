@@ -6,6 +6,16 @@ import { buildAnalyticsInsights, buildAnalyticsSummary, buildSchedulingLink, cha
 import SignInPage from './SignInPage.jsx';
 import { APP_URLS } from '../../shared-data/appConfig.js';
 import { formatReportingDate, reportingDateFromAccount, toggleReportingDateInCurrentUrl, withReportingDate } from '../../shared-data/reportingDate.js';
+import Icon, { categoryStyle } from './icons.jsx';
+
+const STATUS_ICON = { scheduled: 'calendar', in_progress: 'trend', completed: 'check', cancelled: 'pulse' };
+const STATUS_TINT_STYLE = {
+  scheduled: { background: '#e5ebea', color: '#29544f' },
+  in_progress: { background: '#f7efd9', color: '#7c5d24' },
+  completed: { background: '#e7ebe2', color: '#424b37' },
+  cancelled: { background: '#f7ecec', color: '#713e43' },
+};
+const CHANGE_TONE_TINT = { positive: 'tint-sage', negative: 'tint-rose', neutral: 'tint-neutral' };
 
 const [demoAccounts, demoClients, demoJobs, demoActivity] = __FIELDFLOW_DEMO__
   ? await Promise.all([
@@ -224,7 +234,7 @@ export default function AnalyticsPage() {
         <h1>{account?.name ?? 'Your business'} — Analytics</h1>
         <div className="header-row">
           <p className="subtitle">{isOperationsView ? 'Read-only Operations view. ' : ''}A quick look at how your business is doing.{!isSupabaseConfigured && !isDemoOps ? ' Demo edits stay in this browser tab until sign-out.' : ''}</p>
-          <label className="timeframe-control">Timeframe
+          <label className="timeframe-control"><span className="timeframe-control-label"><Icon name="calendar" />Timeframe</span>
             <select title="Updates every card and chart to the selected date range." value={timeframe} onChange={(event) => {
               const nextTimeframe = event.target.value;
               setTimeframe(nextTimeframe);
@@ -253,23 +263,23 @@ export default function AnalyticsPage() {
       </p>}
 
       <div className="scheduler-action">
-        <a className="action-link" href={returnLink} title={isDemoOps ? 'Returns to this account in Operations.' : 'Opens Scheduling with this account and selected date range.'}>{returnLabel}</a>
+        <a className="action-link back-link" href={returnLink} title={isDemoOps ? 'Returns to this account in Operations.' : 'Opens Scheduling with this account and selected date range.'}><Icon name="arrowLeft" />{returnLabel}</a>
       </div>
 
       <section className="summary-grid" aria-label="Weekly job summary">
         <article className="card primary-card" title={`Counts every job scheduled from ${selectedRangeLabel}.`}>
           <p className="card-label">{selectedRangeLabel}</p>
-          <p className="metric">{selectedJobsCount}</p>
+          <div className="stat-metric"><span className="icon-badge tint-navy"><Icon name="calendar" /></span><p className="metric">{selectedJobsCount}</p></div>
           <p className="helper">Selected period</p>
         </article>
         <article className="card" title={`Counts every job scheduled from ${comparisonRangeLabel}.`}>
           <p className="card-label">{comparisonRangeLabel}</p>
-          <p className="metric">{comparisonJobsCount}</p>
+          <div className="stat-metric"><span className="icon-badge tint-neutral"><Icon name="calendar" /></span><p className="metric">{comparisonJobsCount}</p></div>
           <p className="helper">Matching previous period</p>
         </article>
         <article className="card" title={`Calculated from ${selectedJobsCount} jobs in the selected period and ${comparisonJobsCount} jobs in the previous period.`}>
           <p className="card-label">Change vs. previous period</p>
-          <p className={`metric metric-status ${changeStatus.tone}`}>{changeStatus.value}</p>
+          <div className="stat-metric"><span className={`icon-badge ${CHANGE_TONE_TINT[changeStatus.tone] ?? 'tint-neutral'}`}><Icon name="trend" /></span><p className={`metric metric-status ${changeStatus.tone}`}>{changeStatus.value}</p></div>
           <p className="helper">{changeStatus.detail}</p>
         </article>
       </section>
@@ -288,18 +298,18 @@ export default function AnalyticsPage() {
 
       {isInsightVisible('status') && <section className="insights-grid" aria-label="Job status insights">
         <article className="card insight-card">
-          <p className="eyebrow">Job status</p>
-          <h2>Work in this period</h2>
+          <div className="card-head"><span className="icon-badge sm tint-neutral"><Icon name="chart" /></span><div><p className="eyebrow">Job status</p><h2>Work in this period</h2></div></div>
           <div className="status-list">
             {insights.statusBreakdown.map((item) => <div className="status-row" key={item.status}>
-              <span className="status-label"><i className={`status-dot ${item.status}`} aria-hidden="true" />{item.label}</span>
+              <span className="icon-badge sm" style={STATUS_TINT_STYLE[item.status]}><Icon name={STATUS_ICON[item.status] ?? 'chart'} /></span>
+              <span className="status-label">{item.label}</span>
               <span className="status-track" aria-hidden="true"><span className={`status-fill ${item.status}`} style={{ width: `${selectedJobs.length ? (item.jobs / selectedJobs.length) * 100 : 0}%` }} /></span>
               <strong>{item.jobs}</strong>
             </div>)}
           </div>
         </article>
         <article className="card insight-card completion-card">
-          <p className="eyebrow">Completion</p>
+          <div className="card-head"><span className="icon-badge sm tint-sage"><Icon name="check" /></span><p className="eyebrow">Completion</p></div>
           <h2>{insights.completionRate === null ? 'No jobs to complete' : `${insights.completionRate}% complete`}</h2>
           <p className="helper">{insights.completionRate === null ? 'Choose a period with scheduled work to see a completion rate.' : `${insights.statusBreakdown.find((item) => item.status === 'completed').jobs} completed out of ${selectedJobs.length} jobs.`}</p>
           <div className="busiest-day">
@@ -310,27 +320,26 @@ export default function AnalyticsPage() {
       </section>}
 
       {isInsightVisible('upcoming') && <section className="card insight-card list-card" aria-labelledby="upcoming-heading">
-        <div><p className="eyebrow">Upcoming work</p><h2 id="upcoming-heading">Next scheduled jobs</h2></div>
+        <div className="card-head"><span className="icon-badge sm tint-terracotta"><Icon name="calendar" /></span><div><p className="eyebrow">Upcoming work</p><h2 id="upcoming-heading">Next scheduled jobs</h2></div></div>
         {insights.upcomingJobs.length ? <ul className="insight-list">
-          {insights.upcomingJobs.map((job) => <li key={job.id}><div><strong>{job.clientName}</strong><span>{job.assigneeLabel} · {job.status === 'in_progress' ? 'In progress' : 'Scheduled'}</span></div><time dateTime={job.scheduled_for}>{formatJobDate(job.scheduled_for)}</time></li>)}
+          {insights.upcomingJobs.map((job) => <li key={job.id}><div><strong>{job.clientName}</strong><span>{job.assigneeLabel}</span></div><span className={`status-pill ${job.status}`}>{job.status === 'in_progress' ? 'In progress' : 'Scheduled'}</span><time dateTime={job.scheduled_for}>{formatJobDate(job.scheduled_for)}</time></li>)}
         </ul> : <p className="helper">There is no upcoming scheduled work yet.</p>}
       </section>}
 
       {isInsightVisible('workload') && <section className="insights-grid" aria-label="Technician and client insights">
         <article className="card insight-card">
-          <p className="eyebrow">Technician workload</p><h2>Jobs by assignee</h2>
+          <div className="card-head"><span className="icon-badge sm tint-rose"><Icon name="users" /></span><div><p className="eyebrow">Technician workload</p><h2>Jobs by assignee</h2></div></div>
           {insights.workload.length ? <ul className="ranked-list">{insights.workload.map((item) => <li key={item.assignee}><span>{item.assignee}</span><strong>{item.jobs}</strong></li>)}</ul> : <p className="helper">No jobs are assigned in this period.</p>}
         </article>
         <article className="card insight-card">
-          <p className="eyebrow">Top clients</p><h2>Most jobs this period</h2>
+          <div className="card-head"><span className="icon-badge sm tint-ochre"><Icon name="building" /></span><div><p className="eyebrow">Top clients</p><h2>Most jobs this period</h2></div></div>
           {insights.topClients.length ? <ul className="ranked-list">{insights.topClients.map((item) => <li key={item.clientId}><span>{item.name}</span><strong>{item.jobs}</strong></li>)}</ul> : <p className="helper">No client work in this period yet.</p>}
         </article>
       </section>}
 
       {isInsightVisible('clients') && <section className="card client-card" aria-labelledby="client-heading">
         <div>
-          <p className="eyebrow">Client mix</p>
-          <h2 id="client-heading">Who this period’s work came from</h2>
+          <div className="card-head"><span className="icon-badge sm tint-terracotta"><Icon name="users" /></span><div><p className="eyebrow">Client mix</p><h2 id="client-heading">Who this period’s work came from</h2></div></div>
           <label className="inactive-control">Inactive after<select value={inactiveDays} onChange={(event) => setInactiveDays(Number(event.target.value))}><option value="30">30 days</option><option value="60">60 days</option><option value="90">90 days</option></select></label>
         </div>
         <div className="client-mix">
@@ -355,7 +364,8 @@ export default function AnalyticsPage() {
 
       {isInsightVisible('performance') && <section className="insights-grid" aria-label="Revenue and service performance">
         <article className="card insight-card">
-          <p className="eyebrow">Completed-work invoice value</p><h2>{insights.performance.invoicedJobs ? formatCurrency(insights.performance.invoiceTotal) : 'No invoice values yet'}</h2>
+          <div className="card-head"><span className="icon-badge sm tint-neutral"><Icon name="receipt" /></span><p className="eyebrow">Completed-work invoice value</p></div>
+          <h2>{insights.performance.invoicedJobs ? formatCurrency(insights.performance.invoiceTotal) : 'No invoice values yet'}</h2>
           <p className="helper">{insights.performance.invoicedJobs ? `${insights.performance.invoicedJobs} completed job${insights.performance.invoicedJobs === 1 ? '' : 's'} with recorded invoice values. Average: ${formatCurrency(insights.performance.averageInvoice)}.` : 'Add invoice totals to completed jobs to see this measure.'}</p>
           <div className="performance-stats">
             <span><strong>{insights.performance.averageActualMinutes === null ? '—' : `${insights.performance.averageActualMinutes} min`}</strong>Average actual duration</span>
@@ -363,7 +373,7 @@ export default function AnalyticsPage() {
           </div>
         </article>
         <article className="card insight-card">
-          <p className="eyebrow">Completed-work value</p><h2>Invoice trend</h2>
+          <div className="card-head"><span className="icon-badge sm tint-sage"><Icon name="trend" /></span><div><p className="eyebrow">Completed-work value</p><h2>Invoice trend</h2></div></div>
           <div className="revenue-bars" role="img" aria-label="Completed-work invoice value over the selected period">
             {insights.performance.revenueTrend.map((point) => <div key={point.detail} title={`${point.detail}: ${formatCurrency(point.value)}`}><strong>{point.value ? formatCurrency(point.value) : '—'}</strong><i style={{ height: `${Math.max(4, (point.value / Math.max(...insights.performance.revenueTrend.map((item) => item.value), 1)) * 100)}%` }} /><small>{point.label}</small></div>)}
           </div>
@@ -371,22 +381,22 @@ export default function AnalyticsPage() {
       </section>}
 
       {isInsightVisible('performance') && <section className="card insight-card list-card" aria-label="Service categories">
-          <p className="eyebrow">Service categories</p><h2>Work by category</h2>
-          {insights.performance.categoryPerformance.length ? <ul className="category-list">{insights.performance.categoryPerformance.map((item) => <li key={item.category}><div><span>{item.category}</span><small>{item.jobs} job{item.jobs === 1 ? '' : 's'}</small></div><strong>{item.invoiceTotal ? formatCurrency(item.invoiceTotal) : '—'}</strong></li>)}</ul> : <p className="helper">No service categories are recorded for this period.</p>}
+          <div className="card-head"><span className="icon-badge sm tint-rose"><Icon name="wrench" /></span><div><p className="eyebrow">Service categories</p><h2>Work by category</h2></div></div>
+          {insights.performance.categoryPerformance.length ? <ul className="category-list">{insights.performance.categoryPerformance.map((item) => <li key={item.category}><span className={`icon-badge sm ${categoryStyle(item.category).tint}`}><Icon name={categoryStyle(item.category).icon} /></span><div><span>{item.category}</span><small>{item.jobs} job{item.jobs === 1 ? '' : 's'}</small></div><strong>{item.invoiceTotal ? formatCurrency(item.invoiceTotal) : '—'}</strong></li>)}</ul> : <p className="helper">No service categories are recorded for this period.</p>}
       </section>}
 
       {isInsightVisible('recent') && <section className="card insight-card list-card" aria-labelledby="recent-heading">
-        <div><p className="eyebrow">Recent activity</p><h2 id="recent-heading">Latest job updates</h2></div>
+        <div className="card-head"><span className="icon-badge sm tint-neutral"><Icon name="pulse" /></span><div><p className="eyebrow">Recent activity</p><h2 id="recent-heading">Latest job updates</h2></div></div>
         {insights.recentActivity.length ? <ul className="insight-list">
           {insights.recentActivity.map((activity) => <li key={activity.id}><div><strong>{activity.clientName}</strong><span>{activity.detail}</span></div><time dateTime={activity.occurred_at}>{new Date(activity.occurred_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' })}</time></li>)}
         </ul> : <p className="helper">No recorded job activity yet.</p>}
       </section>}
 
       <section className="card trend-card" aria-labelledby="trend-heading">
-        <div>
+        <div className="card-head"><span className="icon-badge sm tint-terracotta"><Icon name="trend" /></span><div>
           <p className="eyebrow">{selectedPeriod.granularity === 'day' ? 'Daily jobs trend' : 'Weekly jobs trend'}</p>
           <h2 id="trend-heading">{selectedPeriod.label}</h2>
-        </div>
+        </div></div>
         <svg className="line-chart" viewBox={`0 0 ${chartWidth} ${chartHeight}`} role="img" aria-labelledby="line-chart-title line-chart-description">
           <title id="line-chart-title">Weekly jobs trend</title>
           <desc id="line-chart-description">The number of scheduled jobs for each {selectedPeriod.granularity} in {selectedPeriod.label.toLowerCase()}.</desc>
@@ -404,7 +414,7 @@ export default function AnalyticsPage() {
 
       <section className="integration-actions" aria-label="Connect with other FieldFlow tools">
         <div>
-          <button className="copy-button" type="button" title="Copies the current Analytics summary so you can paste it into FieldFlow Chat." onClick={copyChatSummary}>Copy summary for Chat</button>
+          <button className="copy-button" type="button" title="Copies the current Analytics summary so you can paste it into FieldFlow Chat." onClick={copyChatSummary}><Icon name="receipt" />Copy summary for Chat</button>
           {copyStatus && <p className="copy-status" role="status">{copyStatus}</p>}
         </div>
       </section>
