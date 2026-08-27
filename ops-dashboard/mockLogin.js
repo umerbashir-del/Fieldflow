@@ -100,17 +100,14 @@ if (isSupabaseConfigured) {
   getOperationsSession().then((context) => {
     liveContext = context;
     if (context?.staff) showDashboard();
-  }).catch((loadError) => {
-    const message = String(loadError?.message ?? '').toLowerCase();
-    liveLoadError = message.includes('jwt') || message.includes('session') || message.includes('401')
-      ? 'Your session expired. Please sign in again.'
-      : typeof navigator !== 'undefined' && !navigator.onLine
-      ? 'You appear to be offline. Check your connection and try again.'
-      : 'We couldn’t load your data. Check your connection and try again.';
-    error.textContent = `${liveLoadError} You can try signing in again.`;
-    document.getElementById('operationsLoginDescription').textContent = liveLoadError;
-    retryButton.hidden = liveLoadError.includes('session');
-    retryButton.addEventListener('click', () => window.location.reload(), { once: true });
+  }).catch(async () => {
+    // A stale or invalid stored session must not block the sign-in form.
+    // Clear it when possible, then let the person establish a fresh session.
+    try { await signOut(); } catch { /* the local sign-in form still works offline */ }
+    liveLoadError = '';
+    error.textContent = '';
+    document.getElementById('operationsLoginDescription').textContent = 'Use your registered FieldFlow staff email and password. Contractor accounts use Scheduling instead.';
+    retryButton.hidden = true;
   });
 }
 

@@ -1,5 +1,5 @@
 import { APP_URLS } from '../shared-data/appConfig.js';
-import { getOperationsAccountDetail, getOperationsSession, getOperationsSummaries, isSupabaseConfigured } from '../shared-data/supabase.js';
+import { getOperationsAccountDetail, getOperationsSession, getOperationsSummaries, isSupabaseConfigured, signOut } from '../shared-data/supabase.js';
 import { formatReportingDate, reportingDateFromAccount, withReportingDate } from '../shared-data/reportingDate.js';
 
 const [accounts, clients, jobs] = __FIELDFLOW_DEMO__
@@ -28,11 +28,13 @@ if (isSupabaseConfigured) {
       clientData = [];
       jobData = [];
     }
-  } catch (error) {
-    const message = String(error?.message ?? '').toLowerCase();
-    loadError = message.includes('permission') || message.includes('row-level')
-      ? 'You don’t have access to Operations data.'
-      : 'We couldn’t load your data. Check your connection and try again.';
+  } catch {
+    // Do not leave a broken or stale automatic session blocking the login
+    // screen. The person can establish a fresh Operations session instead.
+    try { await signOut(); } catch { /* Keep the sign-in form usable if offline. */ }
+    // The login gate remains visible; do not leave an error from a cleared
+    // session on a form that is ready for a fresh sign-in.
+    loadError = '';
   }
 }
 
