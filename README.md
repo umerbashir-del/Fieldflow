@@ -19,6 +19,12 @@ FieldFlow now includes a Supabase/PostgreSQL backend foundation: secure account-
 
 For a production release, follow [the FieldFlow deployment guide](docs/deployment.md). The production build places all four products on one domain so they share one secure Supabase browser session.
 
+## Internal Operations Dashboard
+
+The Internal Operations Dashboard gives FieldFlow staff a read-only view across customer companies, rather than the single-company view a contractor sees. It helps the FieldFlow team understand which accounts are active, how many clients and jobs each company has, how much work is completed or still open, and which companies may need attention.
+
+It uses the same account, client, and job data as Scheduling, Analytics, and Support. Scheduling records the day-to-day work; Analytics turns one company’s jobs into business insights; Support explains those insights in plain language; and Operations brings together account-level summaries so FieldFlow staff can support the whole customer base without changing contractor data. Operations access is restricted to approved staff accounts and is intentionally read-only for customer records.
+
 ## Ownership
 
 | Area | Owner |
