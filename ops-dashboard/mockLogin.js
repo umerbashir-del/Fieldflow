@@ -12,12 +12,18 @@ const resetForm = document.getElementById('opsResetForm');
 const resetMessage = document.getElementById('opsResetMessage');
 const retryButton = document.getElementById('opsRetryButton');
 const demoSignInButton = document.getElementById('opsDemoSignIn');
+const fillTestEmailButton = document.getElementById('opsFillTestEmail');
 
 if (isSupabaseConfigured) {
   document.getElementById('operationsLoginEyebrow').textContent = 'FieldFlow';
   document.getElementById('operationsLoginDescription').textContent = 'Use your registered FieldFlow staff email and password. Contractor accounts use Scheduling instead.';
   document.getElementById('operationsResetDescription').textContent = 'Enter your registered staff email and we will send a password-reset link.';
   document.getElementById('operationsDemoAccount').hidden = true;
+  fillTestEmailButton.hidden = false;
+  fillTestEmailButton.addEventListener('click', () => {
+    email.value = 'operations@fieldflow.demo';
+    password.focus();
+  });
 } else if (isDemoModeAvailable) {
   const demoAccount = document.getElementById('operationsDemoAccount');
   const heading = document.createElement('strong');
