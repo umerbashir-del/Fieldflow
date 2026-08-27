@@ -60,6 +60,7 @@
         <p class="eyebrow">FieldFlow · Scheduling</p>
         <h1>Field Schedule</h1>
         <p class="muted" id="accountLine">Northstar Field Services</p>
+        <p class="schedule-intro">Everything you need for the next stop — clear, quick, and ready to go.</p>
       </div>
       <div class="topbar-actions">
         <button type="button" id="newJobBtn">New job</button>
@@ -80,14 +81,14 @@
       <div class="analytics-link-row">
         <a class="analytics-link" id="analyticsLink" href="#" title="Open Customer Analytics for this business">View Analytics</a>
       </div>
-      <section style="margin-top:8px">
+      <section class="dashboard-section" style="margin-top:8px">
         <div class="section-header"><h2>Needs Attention</h2></div>
         <div class="grid" id="needsAttentionGrid"></div>
       </section>
-      <section class="grid" id="statusGrid" style="margin-top:16px"></section>
-      <section style="margin-top:28px">
+      <section class="grid status-overview" id="statusGrid" style="margin-top:16px"></section>
+      <section class="dashboard-section" style="margin-top:28px">
         <div class="section-header">
-          <h2>Today</h2>
+          <div><h2>Today</h2><p class="section-helper">Your next stops, with the details you need.</p></div>
           <div id="homeFilterBanner" class="conflict-flag" hidden style="background:var(--ff-color-accent-100,#e5ebea);color:var(--ff-color-accent-600,#29544f)">
             <span id="homeFilterLabel"></span>
             <button type="button" class="notice-link" id="homeFilterClearBtn" style="margin-left:8px">Clear filter</button>
@@ -95,8 +96,8 @@
         </div>
         <div id="todayList"></div>
       </section>
-      <section style="margin-top:28px">
-        <div class="section-header"><h2>Upcoming work</h2></div>
+      <section class="dashboard-section" style="margin-top:28px">
+        <div class="section-header"><div><h2>Upcoming work</h2><p class="section-helper">Tap a job to update its details.</p></div></div>
         <div id="upcomingList"></div>
       </section>
     </section>
